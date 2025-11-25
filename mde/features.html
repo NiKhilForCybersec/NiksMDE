@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MDE Core Features - Defender Antivirus, EDR, TVM, ASR, Network Protection">
+    <title>Core Features - MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <span class="brand-icon">🛡️</span>
+                <span>MDE Ultimate Guide</span>
+            </a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="architecture.html" class="nav-link">Architecture</a></li>
+                <li class="nav-item"><a href="deployment.html" class="nav-link">Deployment</a></li>
+                <li class="nav-item"><a href="features.html" class="nav-link active">Features</a></li>
+                <li class="nav-item"><a href="asr-rules.html" class="nav-link">ASR Rules</a></li>
+                <li class="nav-item"><a href="analyst-engineer.html" class="nav-link">Analyst vs Engineer</a></li>
+                <li class="nav-item"><a href="troubleshooting.html" class="nav-link">Troubleshooting</a></li>
+                <li class="nav-item"><a href="licensing.html" class="nav-link">Licensing & Comparison</a></li>
+                <li class="nav-item"><a href="kql-rules.html" class="nav-link">KQL Rules</a></li>
+                <li class="nav-item"><a href="use-cases.html" class="nav-link">Use Cases</a></li>
+                <li class="nav-item"><a href="automation.html" class="nav-link">Automation</a></li>
+                <li class="nav-item"><a href="best-practices.html" class="nav-link">Best Practices</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="content-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-title">On This Page</div>
+                    <ul class="sidebar-links">
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#defender-antivirus">Defender Antivirus</a></li>
+                        <li><a href="#edr">EDR Capabilities</a></li>
+                        <li><a href="#tvm">Threat & Vulnerability Mgmt</a></li>
+                        <li><a href="#asr">Attack Surface Reduction</a></li>
+                        <li><a href="#network-protection">Network Protection</a></li>
+                        <li><a href="#device-control">Device Control</a></li>
+                        <li><a href="#air">Automated Investigation</a></li>
+                        <li><a href="#live-response">Live Response</a></li>
+                        <li><a href="#advanced-hunting">Advanced Hunting</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="content">
+                <h1>⚡ MDE Core Features</h1>
+                <p class="section-desc">
+                    Comprehensive overview of all Microsoft Defender for Endpoint capabilities including 
+                    prevention, detection, investigation, and response features.
+                </p>
+
+                <!-- Overview Section -->
+                <section id="overview">
+                    <h2>Feature Overview</h2>
+                    
+                    <div class="diagram-container">
+                        <div class="diagram-title">MDE Feature Stack</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.2; color: var(--text-secondary);">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                    MICROSOFT DEFENDER FOR ENDPOINT                               │
+│                         Complete Feature Stack                                   │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                         PREVENTION LAYER                                   │  │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐         │  │
+│  │  │  Defender   │ │    ASR      │ │  Network    │ │   Device    │         │  │
+│  │  │  Antivirus  │ │   Rules     │ │ Protection  │ │  Control    │         │  │
+│  │  │• Real-time  │ │• 19 Rules   │ │• Web Filter │ │• USB Block  │         │  │
+│  │  │• Cloud Prot │ │• Exploit    │ │• SmartScreen│ │• Bluetooth  │         │  │
+│  │  │• Tamper Prot│ │• Controlled │ │• Indicators │ │• Removable  │         │  │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘         │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                         DETECTION LAYER                                    │  │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐         │  │
+│  │  │    EDR      │ │  Behavioral │ │   Custom    │ │   Threat    │         │  │
+│  │  │  Sensors    │ │  Analytics  │ │ Detections  │ │   Intel     │         │  │
+│  │  │• Process    │ │• ML Models  │ │• KQL Rules  │ │• Microsoft  │         │  │
+│  │  │• Network    │ │• Anomaly    │ │• IOC Import │ │• Custom     │         │  │
+│  │  │• File/Reg   │ │• UEBA       │ │• YARA       │ │• MITRE Map  │         │  │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘         │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                    INVESTIGATION & RESPONSE LAYER                          │  │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐         │  │
+│  │  │  Advanced   │ │    Live     │ │    AIR      │ │  Incident   │         │  │
+│  │  │  Hunting    │ │  Response   │ │  (AutoIR)   │ │   Queue     │         │  │
+│  │  │• 30-day data│ │• Remote CLI │ │• Auto Invest│ │• Correlation│         │  │
+│  │  │• KQL Queries│ │• File Ops   │ │• Remediation│ │• Timeline   │         │  │
+│  │  │• Export     │ │• Memory     │ │• Playbooks  │ │• Evidence   │         │  │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘         │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │           Threat & Vulnerability Management (TVM)                          │  │
+│  │  • Software Inventory  • CVE Dashboard   • Security Baselines             │  │
+│  │  • Security Score      • Remediation     • Browser Extensions             │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- Defender Antivirus -->
+                <section id="defender-antivirus">
+                    <h2>Microsoft Defender Antivirus</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                Microsoft Defender Antivirus is the built-in next-generation protection engine 
+                                providing real-time, behavior-based, and heuristic antivirus protection. It's 
+                                tightly integrated with MDE for enhanced cloud-delivered protection.
+                            </p>
+                        </div>
+                    </div>
+
+                    <h3>Protection Capabilities</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                    <th>Configuration</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Real-Time Protection</strong></td>
+                                    <td>On-access scanning of files, processes, and registry</td>
+                                    <td>Intune, GPO, PowerShell</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cloud-Delivered Protection</strong></td>
+                                    <td>Cloud-based ML analysis for unknown files (Block at First Sight)</td>
+                                    <td>Requires internet, configurable timeout</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Behavior Monitoring</strong></td>
+                                    <td>Detects malicious behavior patterns in processes</td>
+                                    <td>Always enabled with real-time</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tamper Protection</strong></td>
+                                    <td>Prevents unauthorized changes to security settings</td>
+                                    <td>Portal toggle, Intune policy</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>PUA Protection</strong></td>
+                                    <td>Blocks potentially unwanted applications</td>
+                                    <td>Audit or Block mode</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Scheduled Scans</strong></td>
+                                    <td>Quick, Full, or Custom scans on schedule</td>
+                                    <td>GPO, Intune, PowerShell</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>PowerShell Configuration</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">PowerShell</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code># Check Defender Status
+Get-MpComputerStatus | Select-Object AntivirusEnabled, RealTimeProtectionEnabled, 
+    IoavProtectionEnabled, AntispywareEnabled, BehaviorMonitorEnabled
+
+# Enable Cloud-Delivered Protection
+Set-MpPreference -MAPSReporting Advanced
+Set-MpPreference -SubmitSamplesConsent SendAllSamples
+
+# Configure Block at First Sight
+Set-MpPreference -DisableBlockAtFirstSeen $false
+
+# Enable PUA Protection
+Set-MpPreference -PUAProtection Enabled  # 1=Enabled, 2=Audit, 0=Disabled
+
+# Add Exclusions (use sparingly!)
+Add-MpPreference -ExclusionPath "C:\CustomApp"
+Add-MpPreference -ExclusionProcess "customapp.exe"
+Add-MpPreference -ExclusionExtension ".customext"
+
+# View Current Exclusions
+Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
+
+# Run Quick Scan
+Start-MpScan -ScanType QuickScan
+
+# Update Definitions
+Update-MpSignature</code></pre>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Exclusion Warning</div>
+                            <p>
+                                Exclusions create blind spots in protection. Always validate exclusion requests 
+                                and prefer process/path exclusions over extension exclusions. Document all 
+                                exclusions with business justification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EDR Capabilities -->
+                <section id="edr">
+                    <h2>EDR Capabilities</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                Endpoint Detection and Response (EDR) provides deep visibility into endpoint 
+                                activities, enabling detection of advanced threats through rich telemetry, 
+                                behavioral analysis, and threat intelligence correlation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <h3>EDR Data Collection</h3>
+                    <div class="diagram-container">
+                        <div class="diagram-title">EDR Telemetry Sources</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.3; color: var(--text-secondary);">
+┌─────────────────────────────────────────────────────────────────────┐
+│                     EDR TELEMETRY COLLECTION                         │
+│   ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐  │
+│   │    PROCESS      │   │    NETWORK      │   │      FILE       │  │
+│   │ • Creation      │   │ • Connections   │   │ • Creation      │  │
+│   │ • Command Line  │   │ • DNS Queries   │   │ • Modification  │  │
+│   │ • Parent/Child  │   │ • URLs Accessed │   │ • Hash (SHA256) │  │
+│   │ • User Context  │   │ • Remote IPs    │   │ • Path          │  │
+│   └────────┬────────┘   └────────┬────────┘   └────────┬────────┘  │
+│            └─────────────────────┼─────────────────────┘           │
+│                                  ▼                                  │
+│   ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐  │
+│   │    REGISTRY     │   │     LOGON       │   │   IMAGE LOAD    │  │
+│   │ • Key Create    │   │ • Interactive   │   │ • DLL Loads     │  │
+│   │ • Value Set     │   │ • Network       │   │ • Driver Loads  │  │
+│   │ • Key Delete    │   │ • Service       │   │ • Unsigned      │  │
+│   └─────────────────┘   └─────────────────┘   └─────────────────┘  │
+│                          30-DAY RETENTION                            │
+└─────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+
+                    <h3>EDR Alert Categories</h3>
+                    <div class="two-col">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">🔴</div>
+                                <div><h4 class="card-title">High Severity</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Ransomware activity detected</li>
+                                    <li>Credential dumping (LSASS)</li>
+                                    <li>Active malware execution</li>
+                                    <li>Known threat actor tools</li>
+                                    <li>Lateral movement detected</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">🟡</div>
+                                <div><h4 class="card-title">Medium Severity</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Suspicious PowerShell activity</li>
+                                    <li>Persistence mechanism created</li>
+                                    <li>Reconnaissance commands</li>
+                                    <li>Unusual network connections</li>
+                                    <li>Defense evasion attempts</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TVM -->
+                <section id="tvm">
+                    <h2>Threat & Vulnerability Management</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                TVM provides continuous real-time discovery, prioritization, and remediation 
+                                of vulnerabilities and misconfigurations using risk-based prioritization 
+                                to focus on the most critical issues.
+                            </p>
+                        </div>
+                    </div>
+
+                    <h3>TVM Dashboard Components</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Description</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Exposure Score</strong></td>
+                                    <td>Organization's overall vulnerability exposure (0-100)</td>
+                                    <td>Lower is better, track trend</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Secure Score for Devices</strong></td>
+                                    <td>Security configuration score for endpoints</td>
+                                    <td>Higher is better</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Security Recommendations</strong></td>
+                                    <td>Prioritized list of security improvements</td>
+                                    <td>Create remediation tickets</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Software Inventory</strong></td>
+                                    <td>All installed software across endpoints</td>
+                                    <td>Identify vulnerable versions</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Weaknesses</strong></td>
+                                    <td>CVE database with affected devices</td>
+                                    <td>Prioritize by CVSS + exploit status</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ASR -->
+                <section id="asr">
+                    <h2>Attack Surface Reduction</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                Attack Surface Reduction (ASR) rules prevent specific attack techniques 
+                                commonly used by malware. ASR blocks behaviors at the prevention layer 
+                                before threats can execute.
+                            </p>
+                            <p><a href="asr-rules.html" class="btn btn-primary">View All 19 ASR Rules →</a></p>
+                        </div>
+                    </div>
+
+                    <h3>ASR Configuration Modes</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mode</th>
+                                    <th>Value</th>
+                                    <th>Behavior</th>
+                                    <th>Use Case</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge badge-secondary">Disabled</span></td>
+                                    <td>0</td>
+                                    <td>Rule not active</td>
+                                    <td>Rule causes issues</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-danger">Block</span></td>
+                                    <td>1</td>
+                                    <td>Block and log</td>
+                                    <td>Production enforcement</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-warning">Audit</span></td>
+                                    <td>2</td>
+                                    <td>Log only, no block</td>
+                                    <td>Testing before block</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-info">Warn</span></td>
+                                    <td>6</td>
+                                    <td>User can bypass with click</td>
+                                    <td>User awareness</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Network Protection -->
+                <section id="network-protection">
+                    <h2>Network Protection</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                Network Protection extends SmartScreen protection to block outbound HTTP(S) 
+                                traffic to low-reputation destinations based on domain/IP reputation, 
+                                custom indicators, and web content filtering.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">PowerShell - Network Protection</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code># Enable Network Protection (Block Mode)
+Set-MpPreference -EnableNetworkProtection Enabled
+
+# Enable in Audit Mode (for testing)
+Set-MpPreference -EnableNetworkProtection AuditMode
+
+# Check Current Status
+Get-MpPreference | Select-Object EnableNetworkProtection</code></pre>
+                    </div>
+                </section>
+
+                <!-- Device Control -->
+                <section id="device-control">
+                    <h2>Device Control</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                Device Control allows monitoring and controlling removable storage devices, 
+                                USB peripherals, and other hardware to prevent data loss and malware.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Control Type</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Removable Storage</strong></td>
+                                    <td>USB drives, external HDDs, SD cards</td>
+                                    <td>Allow, Block, Read-only</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Printers</strong></td>
+                                    <td>USB and network printers</td>
+                                    <td>Allow, Block by type</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Bluetooth</strong></td>
+                                    <td>Bluetooth peripherals</td>
+                                    <td>Allow, Block categories</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- AIR -->
+                <section id="air">
+                    <h2>Automated Investigation & Response</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                AIR uses AI and automation to investigate alerts, determine threat validity, 
+                                and take remediation actions automatically or with analyst approval.
+                            </p>
+                        </div>
+                    </div>
+
+                    <h3>AIR Automation Levels</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Name</th>
+                                    <th>Behavior</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>0</strong></td>
+                                    <td>No automation</td>
+                                    <td>All actions require approval</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>1</strong></td>
+                                    <td>Semi - require approval for all</td>
+                                    <td>Investigation auto, remediation manual</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2</strong></td>
+                                    <td>Semi - require approval for core folders</td>
+                                    <td>Auto except for system folders</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>4</strong></td>
+                                    <td>Full automation</td>
+                                    <td>Full automation (recommended)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Live Response -->
+                <section id="live-response">
+                    <h2>Live Response</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                Live Response provides a remote shell connection for real-time investigation 
+                                and remediation, enabling analysts to collect forensic data and take actions.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">Live Response Commands</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code># Basic Commands
+dir                     # List directory contents
+cd [path]               # Change directory
+processes               # List running processes
+getfile [path]          # Download file from device
+putfile [path]          # Upload file to device
+analyze [path]          # Deep analysis of file
+remediate file [path]   # Quarantine file
+run [script.ps1]        # Run uploaded PowerShell script
+registry query [key]    # Query registry
+scheduledtasks          # List scheduled tasks
+services                # List services</code></pre>
+                    </div>
+                </section>
+
+                <!-- Advanced Hunting -->
+                <section id="advanced-hunting">
+                    <h2>Advanced Hunting</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                Advanced Hunting is a query-based threat hunting tool providing access to 
+                                30 days of raw endpoint telemetry using Kusto Query Language (KQL).
+                            </p>
+                            <p><a href="kql-rules.html" class="btn btn-primary">View KQL Rules Library →</a></p>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL Quick Reference</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Filtering
+| where Timestamp > ago(24h)
+| where FileName =~ "powershell.exe"
+| where ProcessCommandLine contains "-enc"
+
+// Projection & Aggregation
+| project Timestamp, DeviceName, FileName, ProcessCommandLine
+| summarize count() by DeviceName
+| order by Timestamp desc
+| top 100 by Timestamp</code></pre>
+                    </div>
+                </section>
+
+                <!-- Navigation -->
+                <div class="flex-between mt-4">
+                    <a href="deployment.html" class="btn btn-secondary">← Deployment</a>
+                    <a href="asr-rules.html" class="btn btn-primary">ASR Rules →</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">MDE Ultimate Guide | For Security Analysts & Engineers</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

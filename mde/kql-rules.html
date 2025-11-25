@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MDE KQL Rules Library - 50+ Detection Rules with Use Cases and MITRE ATT&CK Mapping">
+    <title>KQL Rules Library - MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <span class="brand-icon">🛡️</span>
+                <span>MDE Ultimate Guide</span>
+            </a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="architecture.html" class="nav-link">Architecture</a></li>
+                <li class="nav-item"><a href="deployment.html" class="nav-link">Deployment</a></li>
+                <li class="nav-item"><a href="features.html" class="nav-link">Features</a></li>
+                <li class="nav-item"><a href="asr-rules.html" class="nav-link">ASR Rules</a></li>
+                <li class="nav-item"><a href="analyst-engineer.html" class="nav-link">Analyst vs Engineer</a></li>
+                <li class="nav-item"><a href="troubleshooting.html" class="nav-link">Troubleshooting</a></li>
+                <li class="nav-item"><a href="licensing.html" class="nav-link">Licensing & Comparison</a></li>
+                <li class="nav-item"><a href="kql-rules.html" class="nav-link active">KQL Rules</a></li>
+                <li class="nav-item"><a href="use-cases.html" class="nav-link">Use Cases</a></li>
+                <li class="nav-item"><a href="automation.html" class="nav-link">Automation</a></li>
+                <li class="nav-item"><a href="best-practices.html" class="nav-link">Best Practices</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="content-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-title">Rule Categories</div>
+                    <ul class="sidebar-links">
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#tables-reference">Tables Reference</a></li>
+                        <li><a href="#initial-access">Initial Access</a></li>
+                        <li><a href="#execution">Execution</a></li>
+                        <li><a href="#persistence">Persistence</a></li>
+                        <li><a href="#privilege-escalation">Privilege Escalation</a></li>
+                        <li><a href="#defense-evasion">Defense Evasion</a></li>
+                        <li><a href="#credential-access">Credential Access</a></li>
+                        <li><a href="#discovery">Discovery</a></li>
+                        <li><a href="#lateral-movement">Lateral Movement</a></li>
+                        <li><a href="#collection">Collection</a></li>
+                        <li><a href="#exfiltration">Exfiltration</a></li>
+                        <li><a href="#ransomware">Ransomware</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="content">
+                <h1>🔍 KQL Detection Rules Library</h1>
+                <p class="section-desc">
+                    Comprehensive collection of 50+ production-ready KQL detection rules organized by 
+                    MITRE ATT&CK tactics with detailed use cases and implementation guidance.
+                </p>
+
+                <!-- Overview Section -->
+                <section id="overview">
+                    <h2>Overview</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                <strong>Kusto Query Language (KQL)</strong> is the query language used in Microsoft 
+                                Defender for Endpoint's Advanced Hunting feature. These queries enable threat hunting, 
+                                custom detections, and incident investigation across 30 days of endpoint telemetry.
+                            </p>
+                            <h4>Custom Detection Rules</h4>
+                            <p>KQL queries can be saved as custom detection rules that run on schedules (15 min to 24 hours) 
+                            and generate alerts when matches are found.</p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <div class="alert-icon">💡</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Creating Custom Detections</div>
+                            <p>
+                                Navigate to <strong>Hunting → Custom detection rules → Create detection rule</strong> 
+                                in the Microsoft 365 Defender portal. Set frequency, alert title, severity, 
+                                category, and map to MITRE ATT&CK techniques.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tables Reference -->
+                <section id="tables-reference">
+                    <h2>MDE Tables Reference</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Table Name</th>
+                                    <th>Description</th>
+                                    <th>Key Fields</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>DeviceProcessEvents</code></td>
+                                    <td>Process creation and termination</td>
+                                    <td>FileName, ProcessCommandLine, InitiatingProcessFileName</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DeviceNetworkEvents</code></td>
+                                    <td>Network connections</td>
+                                    <td>RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFileName</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DeviceFileEvents</code></td>
+                                    <td>File operations</td>
+                                    <td>FileName, FolderPath, SHA256, ActionType</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DeviceRegistryEvents</code></td>
+                                    <td>Registry modifications</td>
+                                    <td>RegistryKey, RegistryValueName, RegistryValueData</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DeviceLogonEvents</code></td>
+                                    <td>Logon activity</td>
+                                    <td>LogonType, AccountName, RemoteIP, ActionType</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DeviceImageLoadEvents</code></td>
+                                    <td>DLL and driver loads</td>
+                                    <td>FileName, FolderPath, SHA256, InitiatingProcessFileName</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DeviceEvents</code></td>
+                                    <td>Misc security events (ASR, Tamper, etc.)</td>
+                                    <td>ActionType, AdditionalFields</td>
+                                </tr>
+                                <tr>
+                                    <td><code>AlertInfo</code></td>
+                                    <td>Alert metadata</td>
+                                    <td>AlertId, Title, Severity, Category</td>
+                                </tr>
+                                <tr>
+                                    <td><code>AlertEvidence</code></td>
+                                    <td>Evidence linked to alerts</td>
+                                    <td>AlertId, EntityType, EvidenceRole</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Initial Access -->
+                <section id="initial-access">
+                    <h2>Initial Access (TA0001)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🎣</div>
+                            <div>
+                                <h4 class="card-title">Phishing Attachment Execution</h4>
+                                <p class="card-subtitle">T1566.001 - Spearphishing Attachment</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect when Office applications spawn suspicious child processes, indicating potential macro-based malware execution from phishing documents.</p>
+                            <div class="tag-group">
+                                <span class="badge badge-danger">High</span>
+                                <span class="badge badge-secondary">Phishing</span>
+                                <span class="badge badge-secondary">Macro</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Phishing - Office Application Spawning Suspicious Process
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where InitiatingProcessFileName in~ ("winword.exe", "excel.exe", "powerpnt.exe", "outlook.exe", "msaccess.exe")
+| where FileName in~ ("powershell.exe", "cmd.exe", "wscript.exe", "cscript.exe", "mshta.exe", 
+                       "certutil.exe", "bitsadmin.exe", "regsvr32.exe", "rundll32.exe")
+| project Timestamp, DeviceName, InitiatingProcessFileName, FileName, ProcessCommandLine, 
+          AccountName, FolderPath, SHA256
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔗</div>
+                            <div>
+                                <h4 class="card-title">ISO/IMG File Execution</h4>
+                                <p class="card-subtitle">T1566.001 - Phishing via Disk Image</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect execution of files from mounted ISO/IMG disk images, a technique used to bypass Mark-of-the-Web protections.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Execution from Mounted ISO/IMG Image
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where InitiatingProcessFileName in~ ("explorer.exe")
+| where FolderPath matches regex @"[D-Z]:\\" // Non-standard drive letters
+| where FileName endswith ".exe" or FileName endswith ".dll" or FileName endswith ".lnk"
+| join kind=inner (
+    DeviceFileEvents
+    | where ActionType == "FileCreated"
+    | where FileName endswith ".iso" or FileName endswith ".img"
+    | project ISOTimestamp=Timestamp, DeviceName, ISOFileName=FileName
+) on DeviceName
+| where Timestamp between (ISOTimestamp .. (ISOTimestamp + 1h))
+| project Timestamp, DeviceName, FileName, ProcessCommandLine, ISOFileName</code></pre>
+                    </div>
+                </section>
+
+                <!-- Execution -->
+                <section id="execution">
+                    <h2>Execution (TA0002)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">⚡</div>
+                            <div>
+                                <h4 class="card-title">PowerShell Encoded Commands</h4>
+                                <p class="card-subtitle">T1059.001 - PowerShell</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect Base64-encoded PowerShell commands commonly used by attackers to obfuscate malicious scripts.</p>
+                            <div class="tag-group">
+                                <span class="badge badge-danger">High</span>
+                                <span class="badge badge-secondary">PowerShell</span>
+                                <span class="badge badge-secondary">Obfuscation</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// PowerShell Encoded Command Execution
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName =~ "powershell.exe" or FileName =~ "pwsh.exe"
+| where ProcessCommandLine contains "-enc" 
+    or ProcessCommandLine contains "-encodedcommand"
+    or ProcessCommandLine contains "-e " and ProcessCommandLine matches regex "[A-Za-z0-9+/=]{50,}"
+| extend DecodedCommand = base64_decode_tostring(
+    extract(@"-e[ncodedcommand]*\s+([A-Za-z0-9+/=]+)", 1, ProcessCommandLine))
+| project Timestamp, DeviceName, AccountName, ProcessCommandLine, DecodedCommand, 
+          InitiatingProcessFileName, InitiatingProcessCommandLine
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📜</div>
+                            <div>
+                                <h4 class="card-title">WMIC Process Creation</h4>
+                                <p class="card-subtitle">T1047 - Windows Management Instrumentation</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect WMIC being used to create processes, often used for lateral movement or execution.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// WMIC Process Creation (Local and Remote)
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName =~ "wmic.exe"
+| where ProcessCommandLine contains "process" and ProcessCommandLine contains "call" 
+    and ProcessCommandLine contains "create"
+| extend IsRemote = ProcessCommandLine contains "/node:"
+| project Timestamp, DeviceName, AccountName, ProcessCommandLine, IsRemote,
+          InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔧</div>
+                            <div>
+                                <h4 class="card-title">MSHTA Execution</h4>
+                                <p class="card-subtitle">T1218.005 - Mshta</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect MSHTA executing scripts, commonly abused for proxy execution of malicious code.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// MSHTA Suspicious Execution
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName =~ "mshta.exe"
+| where ProcessCommandLine contains "javascript:" 
+    or ProcessCommandLine contains "vbscript:"
+    or ProcessCommandLine contains "http://"
+    or ProcessCommandLine contains "https://"
+    or ProcessCommandLine matches regex @"\\\\[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\\"
+| project Timestamp, DeviceName, AccountName, ProcessCommandLine, 
+          InitiatingProcessFileName, InitiatingProcessCommandLine</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📦</div>
+                            <div>
+                                <h4 class="card-title">Regsvr32 Scriptlet Execution</h4>
+                                <p class="card-subtitle">T1218.010 - Regsvr32 (Squiblydoo)</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect Regsvr32 executing remote scriptlets (SCT files) for proxy execution.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Regsvr32 Scriptlet Execution (Squiblydoo)
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName =~ "regsvr32.exe"
+| where ProcessCommandLine contains "/s" and ProcessCommandLine contains "/u"
+    and (ProcessCommandLine contains "scrobj.dll" or ProcessCommandLine contains ".sct")
+| project Timestamp, DeviceName, AccountName, ProcessCommandLine,
+          InitiatingProcessFileName</code></pre>
+                    </div>
+                </section>
+
+                <!-- Persistence -->
+                <section id="persistence">
+                    <h2>Persistence (TA0003)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔑</div>
+                            <div>
+                                <h4 class="card-title">Registry Run Key Persistence</h4>
+                                <p class="card-subtitle">T1547.001 - Registry Run Keys</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect new entries added to common Run/RunOnce registry keys for persistence.</p>
+                            <div class="tag-group">
+                                <span class="badge badge-warning">Medium</span>
+                                <span class="badge badge-secondary">Persistence</span>
+                                <span class="badge badge-secondary">Registry</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Registry Run Key Persistence
+DeviceRegistryEvents
+| where Timestamp > ago(24h)
+| where ActionType == "RegistryValueSet"
+| where RegistryKey has_any (
+    @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
+    @"SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce",
+    @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run",
+    @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\RunOnce"
+)
+| where RegistryValueData !startswith @"C:\Program Files" 
+    and RegistryValueData !startswith @"C:\Windows\System32"
+| project Timestamp, DeviceName, RegistryKey, RegistryValueName, RegistryValueData,
+          InitiatingProcessFileName, InitiatingProcessCommandLine, AccountName
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">⏰</div>
+                            <div>
+                                <h4 class="card-title">Scheduled Task Creation</h4>
+                                <p class="card-subtitle">T1053.005 - Scheduled Task</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect creation of scheduled tasks via command line for persistence.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Scheduled Task Creation via Command Line
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName =~ "schtasks.exe"
+| where ProcessCommandLine contains "/create"
+| extend TaskName = extract(@"/tn\s+[""']?([^""'/]+)", 1, ProcessCommandLine)
+| extend TaskAction = extract(@"/tr\s+[""']?([^""']+)", 1, ProcessCommandLine)
+| where TaskAction !contains @"C:\Windows\System32" or TaskAction contains "powershell" 
+    or TaskAction contains "cmd" or TaskAction contains "wscript"
+| project Timestamp, DeviceName, AccountName, TaskName, TaskAction, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔧</div>
+                            <div>
+                                <h4 class="card-title">New Windows Service Creation</h4>
+                                <p class="card-subtitle">T1543.003 - Windows Service</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect new Windows services created via sc.exe for persistence or privilege escalation.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Windows Service Creation
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName =~ "sc.exe"
+| where ProcessCommandLine contains "create" and ProcessCommandLine contains "binpath"
+| extend ServiceName = extract(@"create\s+(\S+)", 1, ProcessCommandLine)
+| extend BinPath = extract(@"binpath=\s*[""']?([^""']+)", 1, ProcessCommandLine)
+| project Timestamp, DeviceName, AccountName, ServiceName, BinPath, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📁</div>
+                            <div>
+                                <h4 class="card-title">Startup Folder Persistence</h4>
+                                <p class="card-subtitle">T1547.001 - Startup Folder</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect files dropped into Startup folders for persistence.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Startup Folder Persistence
+DeviceFileEvents
+| where Timestamp > ago(24h)
+| where ActionType == "FileCreated"
+| where FolderPath contains @"\Start Menu\Programs\Startup"
+    or FolderPath contains @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
+| where FileName endswith ".exe" or FileName endswith ".lnk" or FileName endswith ".bat"
+    or FileName endswith ".vbs" or FileName endswith ".cmd"
+| project Timestamp, DeviceName, FileName, FolderPath, SHA256,
+          InitiatingProcessFileName, InitiatingProcessCommandLine, AccountName</code></pre>
+                    </div>
+                </section>
+
+                <!-- Privilege Escalation -->
+                <section id="privilege-escalation">
+                    <h2>Privilege Escalation (TA0004)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">👑</div>
+                            <div>
+                                <h4 class="card-title">UAC Bypass Attempt</h4>
+                                <p class="card-subtitle">T1548.002 - Bypass User Account Control</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect common UAC bypass techniques using fodhelper, eventvwr, or computerdefaults.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// UAC Bypass via Auto-Elevate Binaries
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where InitiatingProcessFileName in~ ("fodhelper.exe", "eventvwr.exe", "computerdefaults.exe", 
+                                        "sdclt.exe", "slui.exe")
+| where FileName in~ ("powershell.exe", "cmd.exe", "wscript.exe", "mshta.exe")
+| project Timestamp, DeviceName, AccountName, InitiatingProcessFileName, 
+          FileName, ProcessCommandLine
+| order by Timestamp desc
+
+// Detect registry modification for fodhelper bypass
+DeviceRegistryEvents
+| where Timestamp > ago(24h)
+| where RegistryKey contains @"Software\Classes\ms-settings\Shell\Open\command"
+| project Timestamp, DeviceName, RegistryKey, RegistryValueName, RegistryValueData,
+          InitiatingProcessFileName</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔓</div>
+                            <div>
+                                <h4 class="card-title">Token Impersonation Tools</h4>
+                                <p class="card-subtitle">T1134.001 - Token Impersonation</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect use of known privilege escalation tools like PrintSpoofer, JuicyPotato, etc.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Token Impersonation/Privilege Escalation Tools
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName in~ ("PrintSpoofer.exe", "JuicyPotato.exe", "SweetPotato.exe", 
+                       "RoguePotato.exe", "GodPotato.exe", "SharpEfsPotato.exe")
+    or ProcessCommandLine has_any ("PrintSpoofer", "JuicyPotato", "SweetPotato", 
+                                    "SeImpersonatePrivilege", "SeAssignPrimaryTokenPrivilege")
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                    </div>
+                </section>
+
+                <!-- Defense Evasion -->
+                <section id="defense-evasion">
+                    <h2>Defense Evasion (TA0005)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🛡️</div>
+                            <div>
+                                <h4 class="card-title">Defender Tampering</h4>
+                                <p class="card-subtitle">T1562.001 - Disable or Modify Tools</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect attempts to disable Windows Defender components.</p>
+                            <div class="tag-group">
+                                <span class="badge badge-danger">Critical</span>
+                                <span class="badge badge-secondary">Evasion</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Defender Tampering Attempts
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where ProcessCommandLine has_any (
+    "Set-MpPreference -DisableRealtimeMonitoring",
+    "Set-MpPreference -DisableBehaviorMonitoring",
+    "Set-MpPreference -DisableIOAVProtection",
+    "Set-MpPreference -DisableScriptScanning",
+    "sc stop WinDefend",
+    "sc config WinDefend start= disabled",
+    "net stop WinDefend"
+)
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc
+
+// Registry-based Defender Disable
+DeviceRegistryEvents
+| where Timestamp > ago(24h)
+| where RegistryKey contains @"SOFTWARE\Policies\Microsoft\Windows Defender"
+| where RegistryValueName in ("DisableAntiSpyware", "DisableRealtimeMonitoring")
+| where RegistryValueData == "1"
+| project Timestamp, DeviceName, RegistryKey, RegistryValueName, RegistryValueData,
+          InitiatingProcessFileName</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📝</div>
+                            <div>
+                                <h4 class="card-title">Event Log Clearing</h4>
+                                <p class="card-subtitle">T1070.001 - Clear Windows Event Logs</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect attempts to clear Windows event logs to hide evidence.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Event Log Clearing
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where (FileName =~ "wevtutil.exe" and ProcessCommandLine contains "cl")
+    or (FileName =~ "powershell.exe" and ProcessCommandLine contains "Clear-EventLog")
+    or (ProcessCommandLine contains "Remove-EventLog")
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🕶️</div>
+                            <div>
+                                <h4 class="card-title">AMSI Bypass Attempt</h4>
+                                <p class="card-subtitle">T1562.001 - AMSI Bypass</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect common AMSI bypass patterns in PowerShell commands.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// AMSI Bypass Attempts
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+| where ProcessCommandLine has_any (
+    "AmsiUtils",
+    "amsiInitFailed",
+    "AmsiScanBuffer",
+    "[Ref].Assembly.GetType",
+    "System.Management.Automation.AmsiUtils"
+)
+| project Timestamp, DeviceName, AccountName, ProcessCommandLine,
+          InitiatingProcessFileName</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">⏱️</div>
+                            <div>
+                                <h4 class="card-title">Timestomping Detection</h4>
+                                <p class="card-subtitle">T1070.006 - Timestomp</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect potential timestomping where file modification times are older than creation times.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Timestomping Detection (PowerShell tools)
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where ProcessCommandLine has_any (
+    "Set-ItemProperty",
+    "LastWriteTime",
+    "CreationTime",
+    "timestomp",
+    "[System.IO.File]::SetLastWriteTime",
+    "[System.IO.File]::SetCreationTime"
+)
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName</code></pre>
+                    </div>
+                </section>
+
+                <!-- Credential Access -->
+                <section id="credential-access">
+                    <h2>Credential Access (TA0006)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔐</div>
+                            <div>
+                                <h4 class="card-title">LSASS Memory Access</h4>
+                                <p class="card-subtitle">T1003.001 - LSASS Memory</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect tools accessing LSASS memory for credential dumping (Mimikatz, etc.).</p>
+                            <div class="tag-group">
+                                <span class="badge badge-danger">Critical</span>
+                                <span class="badge badge-secondary">Mimikatz</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// LSASS Access Detection
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where ProcessCommandLine has_any (
+    "sekurlsa::logonpasswords",
+    "sekurlsa::wdigest",
+    "lsadump::sam",
+    "lsadump::dcsync",
+    "mimikatz",
+    "procdump",
+    "MiniDump",
+    "comsvcs.dll"
+) or (
+    FileName =~ "procdump.exe" and ProcessCommandLine contains "lsass"
+) or (
+    FileName =~ "rundll32.exe" and ProcessCommandLine contains "comsvcs.dll" 
+    and ProcessCommandLine contains "MiniDump"
+)
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc
+
+// LSASS.exe accessed by unusual process
+DeviceEvents
+| where Timestamp > ago(24h)
+| where ActionType == "ProcessAccess" 
+| where FileName =~ "lsass.exe"
+| where InitiatingProcessFileName !in~ ("svchost.exe", "csrss.exe", "services.exe", 
+                                         "lsm.exe", "wininit.exe", "MsMpEng.exe")
+| project Timestamp, DeviceName, InitiatingProcessFileName, 
+          InitiatingProcessCommandLine, AccountName</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🗄️</div>
+                            <div>
+                                <h4 class="card-title">SAM/SYSTEM/SECURITY Hive Access</h4>
+                                <p class="card-subtitle">T1003.002 - Security Account Manager</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect access to registry hives containing credential data.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Registry Hive Credential Dumping
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where ProcessCommandLine has_any (
+    "reg save HKLM\\SAM",
+    "reg save HKLM\\SYSTEM", 
+    "reg save HKLM\\SECURITY",
+    "reg.exe save",
+    "copy sam",
+    "copy system",
+    "copy security"
+)
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc
+
+// Shadow Copy Credential Access (ntds.dit)
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where ProcessCommandLine contains "vssadmin" 
+    and (ProcessCommandLine contains "create shadow" or ProcessCommandLine contains "list shadows")
+| project Timestamp, DeviceName, AccountName, ProcessCommandLine</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🌐</div>
+                            <div>
+                                <h4 class="card-title">DCSync Attack Detection</h4>
+                                <p class="card-subtitle">T1003.006 - DCSync</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect DCSync attacks replicating credentials from Domain Controllers.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// DCSync Attack Indicators
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where ProcessCommandLine has_any (
+    "lsadump::dcsync",
+    "GetNCChanges",
+    "DsGetNCChanges",
+    "/user:krbtgt",
+    "secretsdump"
+)
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+
+// Correlate with network events to DC
+DeviceNetworkEvents
+| where Timestamp > ago(24h)
+| where RemotePort in (135, 389, 636, 445) // RPC, LDAP ports
+| where InitiatingProcessFileName !in~ ("svchost.exe", "lsass.exe", "services.exe")
+| summarize ConnectionCount=count() by DeviceName, RemoteIP, InitiatingProcessFileName, bin(Timestamp, 1h)
+| where ConnectionCount > 100 // Unusual volume
+| order by ConnectionCount desc</code></pre>
+                    </div>
+                </section>
+
+                <!-- Discovery -->
+                <section id="discovery">
+                    <h2>Discovery (TA0007)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔭</div>
+                            <div>
+                                <h4 class="card-title">Active Directory Enumeration</h4>
+                                <p class="card-subtitle">T1087.002 - Domain Account Discovery</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect use of AD enumeration tools like BloodHound, SharpHound, ADFind.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// AD Enumeration Tool Usage
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName in~ ("SharpHound.exe", "BloodHound.exe", "ADFind.exe", "ADRecon.exe",
+                       "Get-ADUser.exe", "ldapsearch.exe")
+    or ProcessCommandLine has_any ("SharpHound", "BloodHound", "ADFind", 
+                                    "Get-ADUser", "Get-ADGroup", "Get-ADComputer",
+                                    "-CollectionMethod", "Invoke-BloodHound")
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🖥️</div>
+                            <div>
+                                <h4 class="card-title">System Information Discovery</h4>
+                                <p class="card-subtitle">T1082 - System Information Discovery</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect reconnaissance commands gathering system information.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// System Reconnaissance Activity
+DeviceProcessEvents
+| where Timestamp > ago(1h)
+| where FileName in~ ("systeminfo.exe", "hostname.exe", "whoami.exe", "ipconfig.exe",
+                       "net.exe", "nltest.exe", "nslookup.exe", "qwinsta.exe")
+| summarize Commands=make_set(FileName), CommandCount=count() by DeviceName, AccountName, bin(Timestamp, 5m)
+| where CommandCount >= 3 // Multiple recon commands in short time
+| project Timestamp, DeviceName, AccountName, CommandCount, Commands
+| order by CommandCount desc</code></pre>
+                    </div>
+                </section>
+
+                <!-- Lateral Movement -->
+                <section id="lateral-movement">
+                    <h2>Lateral Movement (TA0008)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">↔️</div>
+                            <div>
+                                <h4 class="card-title">PsExec Usage</h4>
+                                <p class="card-subtitle">T1570 - Lateral Tool Transfer</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect PsExec and similar tools used for remote execution.</p>
+                            <div class="tag-group">
+                                <span class="badge badge-danger">High</span>
+                                <span class="badge badge-secondary">Lateral Movement</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// PsExec Remote Execution Detection
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName =~ "psexec.exe" or FileName =~ "psexec64.exe"
+    or FileName =~ "paexec.exe" or FileName =~ "remcom.exe"
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc
+
+// Detect PSEXESVC service installation (target side)
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName =~ "PSEXESVC.exe" or ProcessCommandLine contains "PSEXESVC"
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🖥️</div>
+                            <div>
+                                <h4 class="card-title">WMI Remote Execution</h4>
+                                <p class="card-subtitle">T1047 - Windows Management Instrumentation</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect WMI being used for remote command execution.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// WMI Remote Process Execution
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where InitiatingProcessFileName =~ "wmiprvse.exe"
+| where FileName in~ ("powershell.exe", "cmd.exe", "wscript.exe", "cscript.exe")
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessCommandLine
+| order by Timestamp desc
+
+// WMIC Remote Execution (Initiator Side)
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName =~ "wmic.exe"
+| where ProcessCommandLine contains "/node:" and ProcessCommandLine contains "process call create"
+| extend TargetNode = extract(@"/node:""?([^""\s]+)", 1, ProcessCommandLine)
+| project Timestamp, DeviceName, AccountName, TargetNode, ProcessCommandLine</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🎫</div>
+                            <div>
+                                <h4 class="card-title">Pass-the-Hash / Pass-the-Ticket</h4>
+                                <p class="card-subtitle">T1550.002/003 - Pass the Hash/Ticket</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect potential Pass-the-Hash or Pass-the-Ticket attacks.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Pass-the-Hash Indicators (Mimikatz commands)
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where ProcessCommandLine has_any (
+    "sekurlsa::pth",
+    "kerberos::ptt",
+    "kerberos::golden",
+    "kerberos::silver",
+    "/rc4:",
+    "/ntlm:",
+    "Invoke-Mimikatz"
+)
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+
+// Unusual NTLM authentications (network logon type 3)
+DeviceLogonEvents
+| where Timestamp > ago(24h)
+| where LogonType == "Network" // Type 3
+| where isnotempty(RemoteIP)
+| summarize LogonCount=count(), UniqueDevices=dcount(RemoteIP) 
+    by AccountName, bin(Timestamp, 1h)
+| where LogonCount > 50 or UniqueDevices > 10
+| order by LogonCount desc</code></pre>
+                    </div>
+                </section>
+
+                <!-- Collection -->
+                <section id="collection">
+                    <h2>Collection (TA0009)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📦</div>
+                            <div>
+                                <h4 class="card-title">Archive Creation for Exfiltration</h4>
+                                <p class="card-subtitle">T1560.001 - Archive via Utility</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect archive creation that may indicate data staging for exfiltration.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Archive Creation for Potential Exfiltration
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where FileName in~ ("7z.exe", "7za.exe", "winrar.exe", "rar.exe", "zip.exe", "tar.exe")
+    or (FileName =~ "powershell.exe" and ProcessCommandLine contains "Compress-Archive")
+| where ProcessCommandLine has_any ("-p", "-password", "Documents", "Desktop", 
+                                     "Downloads", "*.doc", "*.xls", "*.pdf", "*.pst")
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📧</div>
+                            <div>
+                                <h4 class="card-title">Email Collection</h4>
+                                <p class="card-subtitle">T1114 - Email Collection</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect access to email archives (PST/OST files).</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// PST/OST File Access
+DeviceFileEvents
+| where Timestamp > ago(24h)
+| where FileName endswith ".pst" or FileName endswith ".ost"
+| where ActionType in ("FileCreated", "FileModified", "FileRenamed")
+| where InitiatingProcessFileName !in~ ("outlook.exe", "OUTLOOK.EXE")
+| project Timestamp, DeviceName, ActionType, FileName, FolderPath,
+          InitiatingProcessFileName, InitiatingProcessCommandLine, AccountName</code></pre>
+                    </div>
+                </section>
+
+                <!-- Exfiltration -->
+                <section id="exfiltration">
+                    <h2>Exfiltration (TA0010)</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📤</div>
+                            <div>
+                                <h4 class="card-title">Data Exfiltration via Web Services</h4>
+                                <p class="card-subtitle">T1567 - Exfiltration Over Web Service</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect large uploads to cloud storage services.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Large Uploads to Cloud Services
+DeviceNetworkEvents
+| where Timestamp > ago(24h)
+| where RemoteUrl has_any ("dropbox.com", "mega.nz", "wetransfer.com", "sendspace.com",
+                            "file.io", "anonfiles.com", "mediafire.com", "pastebin.com",
+                            "transfer.sh", "gofile.io")
+| where ActionType == "ConnectionSuccess"
+| project Timestamp, DeviceName, RemoteUrl, RemoteIP, RemotePort,
+          InitiatingProcessFileName, InitiatingProcessCommandLine, AccountName
+| order by Timestamp desc
+
+// Curl/PowerShell uploads
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where (FileName =~ "curl.exe" and ProcessCommandLine has_any ("-X POST", "--upload-file", "-F"))
+    or (FileName in~ ("powershell.exe", "pwsh.exe") and ProcessCommandLine has_any 
+        ("Invoke-WebRequest", "Invoke-RestMethod", "WebClient", "UploadFile"))
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🌐</div>
+                            <div>
+                                <h4 class="card-title">DNS Exfiltration</h4>
+                                <p class="card-subtitle">T1048.003 - Exfiltration Over DNS</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect potential DNS tunneling/exfiltration.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// DNS Exfiltration - Long Subdomain Queries
+DeviceNetworkEvents
+| where Timestamp > ago(24h)
+| where ActionType == "DnsQueryResponse"
+| extend SubdomainLength = strlen(tostring(split(RemoteUrl, ".")[0]))
+| where SubdomainLength > 40 // Unusually long subdomain
+| summarize QueryCount=count(), Domains=make_set(RemoteUrl) by DeviceName, bin(Timestamp, 1h)
+| where QueryCount > 50
+| project Timestamp, DeviceName, QueryCount, Domains</code></pre>
+                    </div>
+                </section>
+
+                <!-- Ransomware -->
+                <section id="ransomware">
+                    <h2>Ransomware Detection</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">💀</div>
+                            <div>
+                                <h4 class="card-title">Mass File Encryption</h4>
+                                <p class="card-subtitle">T1486 - Data Encrypted for Impact</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect rapid file modifications indicative of ransomware encryption.</p>
+                            <div class="tag-group">
+                                <span class="badge badge-danger">Critical</span>
+                                <span class="badge badge-secondary">Ransomware</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Ransomware - High Volume File Modifications
+DeviceFileEvents
+| where Timestamp > ago(1h)
+| where ActionType == "FileModified"
+| summarize ModifiedCount=count(), 
+            UniqueExtensions=dcount(extract(@"\.([^.]+)$", 1, FileName))
+    by DeviceName, InitiatingProcessFileName, bin(Timestamp, 5m)
+| where ModifiedCount > 100 // High modification rate
+| order by ModifiedCount desc
+
+// Ransomware Extension Detection
+DeviceFileEvents
+| where Timestamp > ago(24h)
+| where ActionType == "FileRenamed"
+| where FileName endswith ".encrypted" or FileName endswith ".locked" 
+    or FileName endswith ".crypted" or FileName endswith ".enc"
+    or FileName matches regex @"\.[a-z0-9]{5,8}$" // Random extensions
+| summarize RenamedCount=count(), Extensions=make_set(extract(@"\.([^.]+)$", 1, FileName))
+    by DeviceName, InitiatingProcessFileName, bin(Timestamp, 10m)
+| where RenamedCount > 50
+| project Timestamp, DeviceName, InitiatingProcessFileName, RenamedCount, Extensions</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🗑️</div>
+                            <div>
+                                <h4 class="card-title">Shadow Copy Deletion</h4>
+                                <p class="card-subtitle">T1490 - Inhibit System Recovery</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect deletion of Volume Shadow Copies (common ransomware behavior).</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Shadow Copy Deletion
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where (FileName =~ "vssadmin.exe" and ProcessCommandLine contains "delete shadows")
+    or (FileName =~ "wmic.exe" and ProcessCommandLine contains "shadowcopy delete")
+    or (FileName =~ "wbadmin.exe" and ProcessCommandLine contains "delete")
+    or (FileName =~ "bcdedit.exe" and ProcessCommandLine has_any ("recoveryenabled no", 
+                                                                    "bootstatuspolicy ignoreallfailures"))
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📝</div>
+                            <div>
+                                <h4 class="card-title">Ransom Note Creation</h4>
+                                <p class="card-subtitle">Ransomware Indicator</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Use Case:</strong> Detect creation of common ransom note files.</p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code>// Ransom Note File Creation
+DeviceFileEvents
+| where Timestamp > ago(24h)
+| where ActionType == "FileCreated"
+| where FileName has_any ("readme", "decrypt", "restore", "recover", "ransom", "how_to")
+    and (FileName endswith ".txt" or FileName endswith ".html" or FileName endswith ".hta")
+| summarize NoteCount=count(), Folders=make_set(FolderPath) 
+    by DeviceName, FileName, InitiatingProcessFileName, bin(Timestamp, 10m)
+| where NoteCount > 5 // Multiple ransom notes created
+| project Timestamp, DeviceName, FileName, NoteCount, InitiatingProcessFileName</code></pre>
+                    </div>
+                </section>
+
+                <!-- Best Practices -->
+                <div class="alert alert-success mt-4">
+                    <div class="alert-icon">✅</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Custom Detection Best Practices</div>
+                        <ul>
+                            <li>Test queries in Advanced Hunting before creating detection rules</li>
+                            <li>Start with longer intervals (24h) and decrease as you tune</li>
+                            <li>Add exclusions for known-good processes to reduce false positives</li>
+                            <li>Map detections to MITRE ATT&CK for better incident correlation</li>
+                            <li>Set appropriate severity and category for alert routing</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex-between mt-4">
+                    <a href="licensing.html" class="btn btn-secondary">← Licensing</a>
+                    <a href="use-cases.html" class="btn btn-primary">Use Cases →</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">MDE Ultimate Guide | For Security Analysts & Engineers</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

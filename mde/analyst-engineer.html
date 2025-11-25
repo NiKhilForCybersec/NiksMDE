@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyst vs Engineer - MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand"><span class="brand-icon">🛡️</span><span>MDE Ultimate Guide</span></a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="architecture.html" class="nav-link">Architecture</a></li>
+                <li class="nav-item"><a href="deployment.html" class="nav-link">Deployment</a></li>
+                <li class="nav-item"><a href="features.html" class="nav-link">Features</a></li>
+                <li class="nav-item"><a href="asr-rules.html" class="nav-link">ASR Rules</a></li>
+                <li class="nav-item"><a href="analyst-engineer.html" class="nav-link active">Analyst vs Engineer</a></li>
+                <li class="nav-item"><a href="troubleshooting.html" class="nav-link">Troubleshooting</a></li>
+                <li class="nav-item"><a href="licensing.html" class="nav-link">Licensing & Comparison</a></li>
+                <li class="nav-item"><a href="kql-rules.html" class="nav-link">KQL Rules</a></li>
+                <li class="nav-item"><a href="use-cases.html" class="nav-link">Use Cases</a></li>
+                <li class="nav-item"><a href="automation.html" class="nav-link">Automation</a></li>
+                <li class="nav-item"><a href="best-practices.html" class="nav-link">Best Practices</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div class="content-wrapper">
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-title">On This Page</div>
+                    <ul class="sidebar-links">
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#role-comparison">Role Comparison</a></li>
+                        <li><a href="#analyst-tasks">Analyst Daily Tasks</a></li>
+                        <li><a href="#engineer-tasks">Engineer Daily Tasks</a></li>
+                        <li><a href="#rbac">Portal Access & RBAC</a></li>
+                        <li><a href="#enterprise">Enterprise Scenario</a></li>
+                        <li><a href="#career">Career Progression</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <div class="content">
+                <h1>👥 Security Analyst vs Security Engineer</h1>
+                <p class="section-desc">Understanding distinct roles, responsibilities, and daily workflows for MDE operations.</p>
+
+                <section id="overview">
+                    <h2>Role Overview</h2>
+                    <div class="diagram-container">
+                        <div class="diagram-title">Security Operations Team Structure</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.2; color: var(--text-secondary);">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                         SECURITY OPERATIONS CENTER                               │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│   ┌─────────────────────────────────────────────────────────────────────────┐  │
+│   │                        SECURITY ENGINEERS                                │  │
+│   │                    (Build, Configure, Optimize)                          │  │
+│   │  ┌───────────────┐ ┌───────────────┐ ┌───────────────┐                  │  │
+│   │  │   Platform    │ │   Detection   │ │  Integration  │                  │  │
+│   │  │  Engineering  │ │  Engineering  │ │  Engineering  │                  │  │
+│   │  │• Deployment   │ │• Custom Rules │ │• SIEM/SOAR    │                  │  │
+│   │  │• Policies     │ │• KQL Queries  │ │• API/Graph    │                  │  │
+│   │  │• Intune/GPO   │ │• Tuning       │ │• Automation   │                  │  │
+│   │  └───────────────┘ └───────────────┘ └───────────────┘                  │  │
+│   └─────────────────────────────────────────────────────────────────────────┘  │
+│                                    ▲                                            │
+│                                    │ Escalate / Feedback                        │
+│                                    ▼                                            │
+│   ┌─────────────────────────────────────────────────────────────────────────┐  │
+│   │                        SECURITY ANALYSTS                                 │  │
+│   │                  (Detect, Investigate, Respond)                          │  │
+│   │  ┌───────────────┐ ┌───────────────┐ ┌───────────────┐                  │  │
+│   │  │   L1 / Tier 1 │ │   L2 / Tier 2 │ │   L3 / Tier 3 │                  │  │
+│   │  │• Alert Triage │ │• Investigation│ │• Threat Hunt  │                  │  │
+│   │  │• Initial Resp │ │• Incident Resp│ │• Forensics    │                  │  │
+│   │  │• Escalation   │ │• Containment  │ │• Malware Anlys│                  │  │
+│   │  └───────────────┘ └───────────────┘ └───────────────┘                  │  │
+│   └─────────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+                </section>
+
+                <section id="role-comparison">
+                    <h2>Role Comparison</h2>
+                    <div class="table-container">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr><th>Aspect</th><th>Security Analyst</th><th>Security Engineer</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Primary Focus</strong></td><td>Detection, investigation, response</td><td>Build, configure, optimize, automate</td></tr>
+                                <tr><td><strong>Daily Work</strong></td><td>Alert queue, incidents, hunting</td><td>Policies, rules, integrations, health</td></tr>
+                                <tr><td><strong>Portal Time</strong></td><td>80% in Defender portal investigating</td><td>50% portal, 50% Intune/scripts/docs</td></tr>
+                                <tr><td><strong>KQL Usage</strong></td><td>Run existing queries, basic modifications</td><td>Author complex queries, create detections</td></tr>
+                                <tr><td><strong>Policy Changes</strong></td><td>Request changes, provide feedback</td><td>Design, implement, test policy changes</td></tr>
+                                <tr><td><strong>Metrics Owned</strong></td><td>MTTD, MTTR, alert closure rate</td><td>Coverage, health, false positive rate</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="analyst-tasks">
+                    <h2>Security Analyst Daily Tasks</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔍</div>
+                            <div><h4 class="card-title">Tier 1 - Alert Triage</h4></div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Review overnight alert queue in M365 Defender portal</li>
+                                <li>Triage high/critical severity alerts first</li>
+                                <li>Determine: True positive, false positive, or benign?</li>
+                                <li>Quick response: Isolate device, stop process, quarantine file</li>
+                                <li>Escalate complex cases to Tier 2</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔬</div>
+                            <div><h4 class="card-title">Tier 2 - Investigation & Response</h4></div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Deep investigation: Full attack chain reconstruction</li>
+                                <li>Advanced Hunting: KQL queries for threat hunting</li>
+                                <li>Live Response: Remote forensics and remediation</li>
+                                <li>Incident Management: Coordinate response activities</li>
+                                <li>IOC Extraction: Identify and submit indicators</li>
+                            </ul>
+                            <div class="code-block">
+                                <div class="code-header"><span class="code-lang">KQL - Investigation Workflow</span></div>
+                                <pre><code>// Investigate suspicious process
+DeviceProcessEvents
+| where Timestamp > ago(24h)
+| where DeviceName == "WORKSTATION01"
+| where FileName =~ "powershell.exe"
+| project Timestamp, ProcessCommandLine, AccountName, 
+          InitiatingProcessFileName
+
+// Check network connections
+DeviceNetworkEvents
+| where DeviceName == "WORKSTATION01"
+| where InitiatingProcessFileName =~ "powershell.exe"
+| project Timestamp, RemoteIP, RemotePort, RemoteUrl</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🎯</div>
+                            <div><h4 class="card-title">Tier 3 - Threat Hunting & Forensics</h4></div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Proactive threat hunting: Hypothesis-driven searches</li>
+                                <li>Malware analysis: Reverse engineering, sandbox analysis</li>
+                                <li>Digital forensics: Memory dumps, disk imaging</li>
+                                <li>Detection development: Work with engineers on new rules</li>
+                                <li>Purple teaming: Validate detections with red team</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="engineer-tasks">
+                    <h2>Security Engineer Daily Tasks</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">⚙️</div>
+                            <div><h4 class="card-title">Platform Engineering</h4></div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Onboarding:</strong> Deploy MDE to new devices via Intune/GPO/SCCM</li>
+                                <li><strong>Policy Management:</strong> ASR rules, AV settings, EDR config</li>
+                                <li><strong>Health Monitoring:</strong> Sensor issues, connectivity problems</li>
+                                <li><strong>Exclusion Management:</strong> Review and approve exclusion requests</li>
+                                <li><strong>Upgrades:</strong> Platform updates, feature rollouts</li>
+                            </ul>
+                            <div class="code-block">
+                                <div class="code-header"><span class="code-lang">Engineer Workspace</span></div>
+                                <pre><code>security.microsoft.com
+├── Settings → Endpoints (platform configuration)
+├── Reports → Device Health (sensor status)
+└── Endpoints → Configuration Management
+
+endpoint.microsoft.com (Intune)
+├── Endpoint Security → Antivirus
+├── Endpoint Security → Attack Surface Reduction
+└── Endpoint Security → EDR</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📊</div>
+                            <div><h4 class="card-title">Detection Engineering</h4></div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Custom Detection Rules:</strong> Author KQL-based detections</li>
+                                <li><strong>False Positive Reduction:</strong> Tune rules based on analyst feedback</li>
+                                <li><strong>Indicator Management:</strong> Import/manage IOCs</li>
+                                <li><strong>MITRE ATT&CK Mapping:</strong> Ensure detection coverage</li>
+                            </ul>
+                            <div class="code-block">
+                                <div class="code-header"><span class="code-lang">KQL - Custom Detection</span></div>
+                                <pre><code>// Detect Cobalt Strike Named Pipe
+DeviceEvents
+| where ActionType == "NamedPipeEvent"
+| where AdditionalFields contains "MSSE-" 
+    or AdditionalFields contains "postex_"
+| project Timestamp, DeviceName, InitiatingProcessFileName
+| extend AlertTitle = "Cobalt Strike Named Pipe"
+| extend Severity = "High"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔗</div>
+                            <div><h4 class="card-title">Integration Engineering</h4></div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Sentinel Integration:</strong> Configure data connectors, analytics rules</li>
+                                <li><strong>Graph API:</strong> Build custom integrations, automate tasks</li>
+                                <li><strong>SOAR Playbooks:</strong> Automated response workflows</li>
+                                <li><strong>Reporting:</strong> Power BI dashboards, executive reports</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="rbac">
+                    <h2>Portal Access & RBAC</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Role</th><th>Azure AD Role</th><th>MDE Permissions</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Tier 1 Analyst</strong></td><td>Security Reader</td><td>View alerts, basic response</td></tr>
+                                <tr><td><strong>Tier 2 Analyst</strong></td><td>Security Operator</td><td>Investigate, respond, Live Response (basic)</td></tr>
+                                <tr><td><strong>Tier 3 Analyst</strong></td><td>Security Operator + Custom</td><td>Full Live Response, Advanced Hunting</td></tr>
+                                <tr><td><strong>Security Engineer</strong></td><td>Security Administrator</td><td>Configure settings, manage policies</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="enterprise">
+                    <h2>Enterprise Scenario: 250,000 Endpoints</h2>
+                    <div class="diagram-container">
+                        <div class="diagram-title">Global SOC Team Structure</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.2; color: var(--text-secondary);">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                    GLOBAL SOC - 250,000 ENDPOINTS | 40+ Countries               │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│   ENGINEERING TEAM (8-10 FTEs)                                                  │
+│   ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐             │
+│   │  Platform   │ │  Detection  │ │ Integration │ │  Automation │             │
+│   │  Engineers  │ │  Engineers  │ │  Engineers  │ │  Engineers  │             │
+│   │    (3)      │ │    (2)      │ │    (2)      │ │    (1-2)    │             │
+│   └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘             │
+│                                                                                  │
+│   ANALYST TEAM (20-30 FTEs across shifts)                                       │
+│   ┌─────────────────────────────────────────────────────────────────────────┐  │
+│   │  AMERICAS SHIFT    │    EMEA SHIFT     │    APAC SHIFT                  │  │
+│   │  T1: 4, T2: 2, T3:1│  T1: 4, T2: 2, T3:1│  T1: 4, T2: 2, T3:1          │  │
+│   └─────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                  │
+│   METRICS: Daily Alerts: 500-1000 | MTTD: < 1 hour | MTTR: < 4 hours           │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+                </section>
+
+                <section id="career">
+                    <h2>Career Progression</h2>
+                    <div class="two-col">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">📈</div>
+                                <div><h4 class="card-title">Analyst → Engineer Path</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Master KQL query development</li>
+                                    <li>Learn PowerShell/Python scripting</li>
+                                    <li>Understand Intune/GPO policies</li>
+                                    <li>Study MDE architecture deeply</li>
+                                    <li>Build automation projects</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">🎓</div>
+                                <div><h4 class="card-title">Certifications</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>SC-200:</strong> Security Operations Analyst</li>
+                                    <li><strong>SC-100:</strong> Cybersecurity Architect</li>
+                                    <li><strong>AZ-500:</strong> Azure Security Engineer</li>
+                                    <li><strong>MS-500:</strong> M365 Security Admin</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="flex-between mt-4">
+                    <a href="asr-rules.html" class="btn btn-secondary">← ASR Rules</a>
+                    <a href="troubleshooting.html" class="btn btn-primary">Troubleshooting →</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">MDE Ultimate Guide | For Security Analysts & Engineers</p>
+        </div>
+    </footer>
+    <script src="js/main.js"></script>
+</body>
+</html>

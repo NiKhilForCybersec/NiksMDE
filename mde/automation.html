@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation - MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand"><span class="brand-icon">🛡️</span><span>MDE Ultimate Guide</span></a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="architecture.html" class="nav-link">Architecture</a></li>
+                <li class="nav-item"><a href="deployment.html" class="nav-link">Deployment</a></li>
+                <li class="nav-item"><a href="features.html" class="nav-link">Features</a></li>
+                <li class="nav-item"><a href="asr-rules.html" class="nav-link">ASR Rules</a></li>
+                <li class="nav-item"><a href="analyst-engineer.html" class="nav-link">Analyst vs Engineer</a></li>
+                <li class="nav-item"><a href="troubleshooting.html" class="nav-link">Troubleshooting</a></li>
+                <li class="nav-item"><a href="licensing.html" class="nav-link">Licensing & Comparison</a></li>
+                <li class="nav-item"><a href="kql-rules.html" class="nav-link">KQL Rules</a></li>
+                <li class="nav-item"><a href="use-cases.html" class="nav-link">Use Cases</a></li>
+                <li class="nav-item"><a href="automation.html" class="nav-link active">Automation</a></li>
+                <li class="nav-item"><a href="best-practices.html" class="nav-link">Best Practices</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div class="content-wrapper">
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-title">On This Page</div>
+                    <ul class="sidebar-links">
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#graph-api">Microsoft Graph API</a></li>
+                        <li><a href="#sentinel">Sentinel Integration</a></li>
+                        <li><a href="#logic-apps">Logic Apps / SOAR</a></li>
+                        <li><a href="#power-automate">Power Automate</a></li>
+                        <li><a href="#power-bi">Power BI Reporting</a></li>
+                        <li><a href="#scripts">Automation Scripts</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <div class="content">
+                <h1>🤖 Automation & Integration</h1>
+                <p class="section-desc">Automate MDE operations using Microsoft Graph API, Sentinel SOAR, Logic Apps, and custom scripts.</p>
+
+                <section id="overview">
+                    <h2>Automation Architecture</h2>
+                    <div class="diagram-container">
+                        <div class="diagram-title">MDE Integration Ecosystem</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.2; color: var(--text-secondary);">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                        MDE AUTOMATION ECOSYSTEM                                  │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                  │
+│   ┌─────────────────────────────────────────────────────────────────────────┐  │
+│   │                     MICROSOFT DEFENDER FOR ENDPOINT                      │  │
+│   │                                                                          │  │
+│   │   Alerts ◄────► Devices ◄────► Actions ◄────► Hunting                   │  │
+│   └───────────────────────────────┬─────────────────────────────────────────┘  │
+│                                   │                                             │
+│                           Microsoft Graph API                                   │
+│                                   │                                             │
+│   ┌───────────────┬───────────────┼───────────────┬───────────────┐            │
+│   ▼               ▼               ▼               ▼               ▼            │
+│ ┌─────────┐  ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐           │
+│ │Microsoft│  │  Azure  │   │  Power  │   │  Power  │   │ Custom  │           │
+│ │Sentinel │  │ Logic   │   │Automate │   │   BI    │   │ Scripts │           │
+│ │  SOAR   │  │  Apps   │   │         │   │         │   │Python/PS│           │
+│ └────┬────┘  └────┬────┘   └────┬────┘   └────┬────┘   └────┬────┘           │
+│      │            │             │             │             │                 │
+│      ▼            ▼             ▼             ▼             ▼                 │
+│  Playbooks    Workflows     Flows        Dashboards    Automation            │
+│  Analytics    Integration   Teams/Email  Reports       Bulk Ops              │
+│  Hunting      Ticketing     Approval     KPIs          Custom                │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+                </section>
+
+                <section id="graph-api">
+                    <h2>Microsoft Graph Security API</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>The Microsoft Graph Security API provides programmatic access to MDE data and actions. Use it for custom integrations, automation, and reporting.</p>
+                        </div>
+                    </div>
+
+                    <h3>Authentication Setup</h3>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">PowerShell - Get Access Token</span><button class="code-copy">Copy</button></div>
+                        <pre><code># App Registration required in Azure AD
+$tenantId = "your-tenant-id"
+$clientId = "your-app-client-id"
+$clientSecret = "your-client-secret"
+
+$body = @{
+    grant_type    = "client_credentials"
+    client_id     = $clientId
+    client_secret = $clientSecret
+    scope         = "https://graph.microsoft.com/.default"
+}
+
+$tokenResponse = Invoke-RestMethod -Uri "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token" `
+    -Method POST -Body $body
+
+$accessToken = $tokenResponse.access_token
+$headers = @{ Authorization = "Bearer $accessToken" }</code></pre>
+                    </div>
+
+                    <h3>Get Alerts</h3>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">PowerShell - List Alerts</span><button class="code-copy">Copy</button></div>
+                        <pre><code># Get recent high-severity alerts
+$alertsUri = "https://graph.microsoft.com/v1.0/security/alerts_v2?" + 
+    "`$filter=severity eq 'high' and status eq 'new'&`$top=50"
+
+$alerts = Invoke-RestMethod -Uri $alertsUri -Headers $headers
+$alerts.value | Select-Object title, severity, status, createdDateTime
+
+# Get specific alert details
+$alertId = "alert-id-here"
+$alertDetail = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/security/alerts_v2/$alertId" `
+    -Headers $headers</code></pre>
+                    </div>
+
+                    <h3>Device Actions</h3>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">PowerShell - Isolate Device</span><button class="code-copy">Copy</button></div>
+                        <pre><code># Isolate a compromised device
+$deviceId = "device-id-here"
+$isolateUri = "https://graph.microsoft.com/v1.0/security/microsoft/machines/$deviceId/isolate"
+
+$body = @{
+    Comment = "Isolated due to ransomware detection - Ticket INC123456"
+    IsolationType = "Full"  # Full or Selective
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri $isolateUri -Headers $headers -Method POST -Body $body -ContentType "application/json"
+
+# Run antivirus scan
+$scanUri = "https://graph.microsoft.com/v1.0/security/microsoft/machines/$deviceId/runAntivirusScan"
+$body = @{ ScanType = "Quick"; Comment = "Automated scan" } | ConvertTo-Json
+Invoke-RestMethod -Uri $scanUri -Headers $headers -Method POST -Body $body -ContentType "application/json"</code></pre>
+                    </div>
+
+                    <h3>API Permissions Required</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Action</th><th>Permission</th><th>Type</th></tr></thead>
+                            <tbody>
+                                <tr><td>Read alerts</td><td>SecurityAlert.Read.All</td><td>Application</td></tr>
+                                <tr><td>Update alerts</td><td>SecurityAlert.ReadWrite.All</td><td>Application</td></tr>
+                                <tr><td>Read devices</td><td>Machine.Read.All</td><td>Application</td></tr>
+                                <tr><td>Device actions</td><td>Machine.Isolate, Machine.Scan</td><td>Application</td></tr>
+                                <tr><td>Advanced Hunting</td><td>ThreatHunting.Read.All</td><td>Application</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="sentinel">
+                    <h2>Microsoft Sentinel Integration</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>Sentinel provides SIEM/SOAR capabilities for MDE. Stream alerts, create analytics rules, and run automated playbooks.</p>
+                        </div>
+                    </div>
+
+                    <h3>Enable MDE Connector</h3>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">Steps</span></div>
+                        <pre><code># In Azure Portal:
+1. Microsoft Sentinel → Data Connectors
+2. Search "Microsoft 365 Defender"
+3. Click "Open connector page"
+4. Select data types to ingest:
+   - Incidents (recommended)
+   - Alerts
+   - Raw events (DeviceProcessEvents, etc.)
+5. Click "Connect"
+
+# Data appears in tables:
+SecurityAlert          # Alerts
+SecurityIncident       # Incidents  
+DeviceProcessEvents    # Raw EDR data (if enabled)</code></pre>
+                    </div>
+
+                    <h3>Sentinel Analytics Rule (KQL)</h3>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">KQL - Sentinel Rule</span><button class="code-copy">Copy</button></div>
+                        <pre><code>// Custom analytics rule for credential theft
+DeviceProcessEvents
+| where TimeGenerated > ago(1h)
+| where ProcessCommandLine has_any ("sekurlsa", "lsadump", "mimikatz")
+| extend AccountName = tostring(split(AccountUpn, "@")[0])
+| project TimeGenerated, DeviceName, AccountName, ProcessCommandLine
+| extend AlertTitle = "Credential Theft Tool Detected"
+| extend Severity = "High"
+| extend Tactics = "CredentialAccess"</code></pre>
+                    </div>
+
+                    <h3>Automated Playbook Trigger</h3>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">Logic App Trigger</span></div>
+                        <pre><code>// Playbook actions on MDE alert:
+1. Trigger: "When Azure Sentinel incident is created"
+2. Filter: Severity = High, Product = "Microsoft Defender for Endpoint"
+3. Actions:
+   - Get device details from Graph API
+   - Isolate device if ransomware detected
+   - Send Teams notification to SOC channel
+   - Create ServiceNow ticket
+   - Add comment to incident</code></pre>
+                    </div>
+                </section>
+
+                <section id="logic-apps">
+                    <h2>Azure Logic Apps / SOAR Playbooks</h2>
+                    
+                    <h3>Common Playbook Scenarios</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Playbook</th><th>Trigger</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Auto-Isolate</strong></td>
+                                    <td>High severity ransomware alert</td>
+                                    <td>Isolate device, notify SOC, create ticket</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Enrich Alert</strong></td>
+                                    <td>Any new alert</td>
+                                    <td>Query VirusTotal, add IOC context, update alert</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Block IOC</strong></td>
+                                    <td>Confirmed malicious indicator</td>
+                                    <td>Add to MDE indicator list, block hash/IP/domain</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>User Notification</strong></td>
+                                    <td>PUA or policy violation</td>
+                                    <td>Email user, manager; request justification</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Sample: Auto-Isolate Playbook</h3>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">Logic App Flow</span></div>
+                        <pre><code>Trigger: When Sentinel incident created
+  ↓
+Condition: Alert title contains "ransomware" AND severity = "High"
+  ↓ Yes
+Parse: Get device ID from alert entities
+  ↓
+HTTP Action: POST to Graph API - Isolate device
+  ↓
+Teams: Post to #security-alerts channel
+  ↓
+ServiceNow: Create P1 incident
+  ↓
+Sentinel: Add comment to incident - "Device isolated automatically"</code></pre>
+                    </div>
+                </section>
+
+                <section id="power-automate">
+                    <h2>Power Automate Flows</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>Power Automate (formerly Flow) enables low-code automation for common tasks like notifications and approvals.</p>
+                        </div>
+                    </div>
+
+                    <h3>Sample Flows</h3>
+                    <div class="two-col">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">📧</div>
+                                <div><h4 class="card-title">Alert Notification</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <p>Send email/Teams message when high-severity alert is created. Include device name, alert title, and portal link.</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">✅</div>
+                                <div><h4 class="card-title">Approval Workflow</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <p>Request manager approval before device isolation. If approved, trigger isolation via Graph API.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="power-bi">
+                    <h2>Power BI Reporting</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>Build executive dashboards and operational reports using MDE data via Graph API or Sentinel data export.</p>
+                        </div>
+                    </div>
+
+                    <h3>Data Sources</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Source</th><th>Method</th><th>Use Case</th></tr></thead>
+                            <tbody>
+                                <tr><td>Graph API</td><td>REST connector</td><td>Real-time alert/device data</td></tr>
+                                <tr><td>Sentinel</td><td>Azure Monitor Logs</td><td>Historical analysis, trends</td></tr>
+                                <tr><td>Log Analytics</td><td>Export to Storage</td><td>Long-term reporting</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Sample Dashboard Metrics</h3>
+                    <ul>
+                        <li>Alerts by severity over time</li>
+                        <li>MTTD and MTTR trends</li>
+                        <li>Device health and onboarding status</li>
+                        <li>Top triggered ASR rules</li>
+                        <li>Vulnerability exposure score trend</li>
+                    </ul>
+                </section>
+
+                <section id="scripts">
+                    <h2>Automation Scripts</h2>
+                    
+                    <h3>Python: Bulk Device Actions</h3>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copy</button></div>
+                        <pre><code>import requests
+import json
+
+# Get token (use MSAL library in production)
+def get_token(tenant_id, client_id, client_secret):
+    url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+    data = {
+        "grant_type": "client_credentials",
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "scope": "https://graph.microsoft.com/.default"
+    }
+    response = requests.post(url, data=data)
+    return response.json()["access_token"]
+
+# Isolate multiple devices
+def isolate_devices(token, device_ids, comment):
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    
+    for device_id in device_ids:
+        url = f"https://graph.microsoft.com/v1.0/security/microsoft/machines/{device_id}/isolate"
+        body = {"Comment": comment, "IsolationType": "Full"}
+        response = requests.post(url, headers=headers, json=body)
+        print(f"Device {device_id}: {response.status_code}")
+
+# Usage
+token = get_token("tenant-id", "client-id", "secret")
+devices = ["device1-id", "device2-id", "device3-id"]
+isolate_devices(token, devices, "Bulk isolation - IR ticket INC789")</code></pre>
+                    </div>
+
+                    <h3>PowerShell: Export Alerts to CSV</h3>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">PowerShell</span><button class="code-copy">Copy</button></div>
+                        <pre><code># Export last 7 days of alerts to CSV
+$alertsUri = "https://graph.microsoft.com/v1.0/security/alerts_v2?" +
+    "`$filter=createdDateTime ge $((Get-Date).AddDays(-7).ToString('yyyy-MM-ddTHH:mm:ssZ'))"
+
+$allAlerts = @()
+do {
+    $response = Invoke-RestMethod -Uri $alertsUri -Headers $headers
+    $allAlerts += $response.value
+    $alertsUri = $response.'@odata.nextLink'
+} while ($alertsUri)
+
+$allAlerts | Select-Object title, severity, status, createdDateTime, 
+    @{N='DeviceName';E={$_.evidence.deviceEvidence.deviceDnsName}} |
+    Export-Csv -Path "MDE_Alerts_$(Get-Date -Format 'yyyyMMdd').csv" -NoTypeInformation
+
+Write-Host "Exported $($allAlerts.Count) alerts"</code></pre>
+                    </div>
+                </section>
+
+                <div class="flex-between mt-4">
+                    <a href="use-cases.html" class="btn btn-secondary">← Use Cases</a>
+                    <a href="best-practices.html" class="btn btn-primary">Best Practices →</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">MDE Ultimate Guide | For Security Analysts & Engineers</p>
+        </div>
+    </footer>
+    <script src="js/main.js"></script>
+</body>
+</html>

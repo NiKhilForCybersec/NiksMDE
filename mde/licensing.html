@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MDE Licensing Tiers and Competitor Comparison - CrowdStrike, SentinelOne, Trellix">
+    <title>Licensing & Comparison - MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <span class="brand-icon">🛡️</span>
+                <span>MDE Ultimate Guide</span>
+            </a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="architecture.html" class="nav-link">Architecture</a></li>
+                <li class="nav-item"><a href="deployment.html" class="nav-link">Deployment</a></li>
+                <li class="nav-item"><a href="features.html" class="nav-link">Features</a></li>
+                <li class="nav-item"><a href="asr-rules.html" class="nav-link">ASR Rules</a></li>
+                <li class="nav-item"><a href="analyst-engineer.html" class="nav-link">Analyst vs Engineer</a></li>
+                <li class="nav-item"><a href="troubleshooting.html" class="nav-link">Troubleshooting</a></li>
+                <li class="nav-item"><a href="licensing.html" class="nav-link active">Licensing & Comparison</a></li>
+                <li class="nav-item"><a href="kql-rules.html" class="nav-link">KQL Rules</a></li>
+                <li class="nav-item"><a href="use-cases.html" class="nav-link">Use Cases</a></li>
+                <li class="nav-item"><a href="automation.html" class="nav-link">Automation</a></li>
+                <li class="nav-item"><a href="best-practices.html" class="nav-link">Best Practices</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="content-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-title">On This Page</div>
+                    <ul class="sidebar-links">
+                        <li><a href="#licensing-overview">Licensing Overview</a></li>
+                        <li><a href="#license-tiers">License Tiers</a></li>
+                        <li><a href="#feature-matrix">Feature Matrix</a></li>
+                        <li><a href="#competitor-comparison">Competitor Comparison</a></li>
+                        <li><a href="#mde-vs-crowdstrike">MDE vs CrowdStrike</a></li>
+                        <li><a href="#mde-vs-sentinelone">MDE vs SentinelOne</a></li>
+                        <li><a href="#mde-vs-trellix">MDE vs Trellix</a></li>
+                        <li><a href="#gaps-analysis">MDE Gaps Analysis</a></li>
+                        <li><a href="#recommendations">Recommendations</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="content">
+                <h1>💼 Licensing & Competitor Comparison</h1>
+                <p class="section-desc">
+                    Comprehensive guide to MDE licensing tiers and feature comparison with major 
+                    competitors including CrowdStrike, SentinelOne, and Trellix.
+                </p>
+
+                <!-- Licensing Overview -->
+                <section id="licensing-overview">
+                    <h2>Licensing Overview</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                Microsoft Defender for Endpoint is available through multiple licensing paths, 
+                                from standalone plans to enterprise bundles. Understanding the right license 
+                                ensures you get the features needed without overpaying.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <div class="alert-icon">💡</div>
+                        <div class="alert-content">
+                            <div class="alert-title">License Naming</div>
+                            <p>
+                                <strong>Plan 1 (P1)</strong> = Basic EDR capabilities<br>
+                                <strong>Plan 2 (P2)</strong> = Full EDR + Advanced features<br>
+                                Plans are also available as standalone or bundled with Microsoft 365/EMS.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- License Tiers -->
+                <section id="license-tiers">
+                    <h2>License Tiers</h2>
+                    
+                    <div class="diagram-container">
+                        <div class="diagram-title">MDE Licensing Hierarchy</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.2; color: var(--text-secondary);">
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                           MDE LICENSING OPTIONS                                      │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                      │
+│   STANDALONE PLANS                                                                   │
+│   ┌─────────────────────────────┐   ┌─────────────────────────────┐                │
+│   │    MDE Plan 1 (P1)          │   │    MDE Plan 2 (P2)          │                │
+│   │    ~$3/user/month           │   │    ~$5.20/user/month        │                │
+│   │                             │   │                             │                │
+│   │    • Next-Gen Protection    │   │    • Everything in P1       │                │
+│   │    • ASR Rules              │   │    • EDR                    │                │
+│   │    • Device Control         │   │    • Advanced Hunting       │                │
+│   │    • Centralized Mgmt       │   │    • AIR (Auto Response)    │                │
+│   │    • Web Protection         │   │    • Threat Analytics       │                │
+│   │    • Network Protection     │   │    • Sandbox (Detonation)   │                │
+│   │                             │   │    • TVM (Full)             │                │
+│   │    ⚠️ NO EDR Telemetry      │   │    • Microsoft Threat       │                │
+│   │    ⚠️ NO Advanced Hunting   │   │      Experts                │                │
+│   └─────────────────────────────┘   └─────────────────────────────┘                │
+│                                                                                      │
+│   BUNDLED OPTIONS (Include MDE)                                                      │
+│   ┌───────────────────────┐ ┌───────────────────────┐ ┌───────────────────────┐    │
+│   │  Microsoft 365 E5     │ │  Microsoft 365 E3 +   │ │   EMS E5 / Microsoft  │    │
+│   │  (Full MDE P2)        │ │  MDE P1/P2 Add-on     │ │   365 E5 Security     │    │
+│   │  ~$57/user/month      │ │  ~$36 + $3-5          │ │   ~$16/user/month     │    │
+│   │                       │ │                       │ │                       │    │
+│   │  • MDE P2 included    │ │  • Base E3 license    │ │  • MDE P2 included    │    │
+│   │  • MDO, MDI, MCAS     │ │  • Add MDE separately │ │  • Focus on security  │    │
+│   │  • Full M365 suite    │ │  • Flexible option    │ │  • No full M365       │    │
+│   └───────────────────────┘ └───────────────────────┘ └───────────────────────┘    │
+│                                                                                      │
+│   SMB OPTIONS                                                                        │
+│   ┌─────────────────────────────────────────────────────────────────────────────┐  │
+│   │  Microsoft 365 Business Premium (~$22/user/month)                            │  │
+│   │  • MDE P1 included (up to 300 users)                                        │  │
+│   │  • Defender for Business (enhanced SMB features)                            │  │
+│   │  • Good for small organizations                                              │  │
+│   └─────────────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- Feature Matrix -->
+                <section id="feature-matrix">
+                    <h2>Feature Matrix by License</h2>
+                    
+                    <div class="table-container">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Business Premium</th>
+                                    <th>MDE P1</th>
+                                    <th>MDE P2 / E5</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Microsoft Defender Antivirus</strong></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Attack Surface Reduction</strong></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Network Protection</strong></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Web Content Filtering</strong></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Device Control</strong></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tamper Protection</strong></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td><strong>EDR (Detection & Response)</strong></td>
+                                    <td><span class="check-partial">Limited</span></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td><strong>Advanced Hunting (KQL)</strong></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Live Response</strong></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Automated Investigation (AIR)</strong></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Threat & Vulnerability Mgmt (Full)</strong></td>
+                                    <td><span class="check-partial">Basic</span></td>
+                                    <td><span class="check-partial">Basic</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Threat Analytics</strong></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sandbox Detonation</strong></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Microsoft Threat Experts</strong></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-yes">✓</span> (Add-on)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>30-Day Telemetry Retention</strong></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-no">✗</span></td>
+                                    <td><span class="check-yes">✓</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Competitor Comparison Overview -->
+                <section id="competitor-comparison">
+                    <h2>Competitor Comparison Overview</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                The EDR market is highly competitive with several strong players. Each platform 
+                                has unique strengths. Understanding differences helps in vendor selection and 
+                                knowing what to expect when migrating between platforms.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Aspect</th>
+                                    <th>MDE (Microsoft)</th>
+                                    <th>CrowdStrike Falcon</th>
+                                    <th>SentinelOne</th>
+                                    <th>Trellix</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Architecture</strong></td>
+                                    <td>Cloud-native + Built-in</td>
+                                    <td>Cloud-native SaaS</td>
+                                    <td>Cloud/Hybrid options</td>
+                                    <td>On-prem/Cloud/Hybrid</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Agent Size</strong></td>
+                                    <td>Built into Windows</td>
+                                    <td>~25-50MB</td>
+                                    <td>~60-80MB</td>
+                                    <td>~100-200MB</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Query Language</strong></td>
+                                    <td>KQL</td>
+                                    <td>Splunk SPL-like</td>
+                                    <td>Deep Visibility (SQL-like)</td>
+                                    <td>Various</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Data Retention</strong></td>
+                                    <td>30 days (standard)</td>
+                                    <td>7-90 days (tiered)</td>
+                                    <td>14-365 days (tiered)</td>
+                                    <td>Varies by deployment</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Pricing Model</strong></td>
+                                    <td>Per user/month</td>
+                                    <td>Per endpoint/year</td>
+                                    <td>Per endpoint/year</td>
+                                    <td>Per endpoint/year</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Best For</strong></td>
+                                    <td>Microsoft shops</td>
+                                    <td>Speed & cloud-first</td>
+                                    <td>Automation & AI</td>
+                                    <td>On-prem / Legacy</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- MDE vs CrowdStrike -->
+                <section id="mde-vs-crowdstrike">
+                    <h2>MDE vs CrowdStrike Falcon</h2>
+                    
+                    <div class="two-col">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">✅</div>
+                                <div><h4 class="card-title">MDE Advantages</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>Native Windows Integration:</strong> Built into OS, no agent deployment</li>
+                                    <li><strong>M365 Ecosystem:</strong> XDR with MDO, MDI, MCAS included</li>
+                                    <li><strong>Cost for M365 Shops:</strong> Often included in existing licenses</li>
+                                    <li><strong>Intune Integration:</strong> Seamless policy management</li>
+                                    <li><strong>Conditional Access:</strong> Risk-based authentication</li>
+                                    <li><strong>Sentinel Integration:</strong> Native SIEM connectivity</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">⚡</div>
+                                <div><h4 class="card-title">CrowdStrike Advantages</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>Detection Speed:</strong> Industry-leading detection times</li>
+                                    <li><strong>Threat Intelligence:</strong> Superior threat intel team</li>
+                                    <li><strong>MITRE Results:</strong> Consistently top performer</li>
+                                    <li><strong>Real-Time Response:</strong> More powerful RTR shell</li>
+                                    <li><strong>Identity Protection:</strong> Better AD threat detection</li>
+                                    <li><strong>Platform Agnostic:</strong> Equal support all OS</li>
+                                    <li><strong>Overwatch MDR:</strong> Renowned threat hunting team</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>CrowdStrike Features MDE Lacks</h3>
+                    <div class="alert alert-danger">
+                        <div class="alert-icon">❌</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Gaps When Migrating from CrowdStrike to MDE</div>
+                            <ul>
+                                <li><strong>Falcon Intelligence Premium:</strong> Deeper threat actor intelligence and attribution</li>
+                                <li><strong>Real-Time Response (RTR):</strong> More commands and flexibility than Live Response</li>
+                                <li><strong>Falcon Overwatch:</strong> 24/7 managed threat hunting (MDE has Threat Experts but less comprehensive)</li>
+                                <li><strong>Custom IOA Rules:</strong> More flexible behavioral detection creation</li>
+                                <li><strong>USB Device Visibility:</strong> Better device tracking and forensics</li>
+                                <li><strong>Identity Threat Detection:</strong> Falcon Identity superior for AD attacks</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MDE vs SentinelOne -->
+                <section id="mde-vs-sentinelone">
+                    <h2>MDE vs SentinelOne</h2>
+                    
+                    <div class="two-col">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">✅</div>
+                                <div><h4 class="card-title">MDE Advantages</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>No Agent Install:</strong> Native Windows integration</li>
+                                    <li><strong>Microsoft Ecosystem:</strong> Best for M365 environments</li>
+                                    <li><strong>Cost Efficiency:</strong> Often bundled in enterprise licenses</li>
+                                    <li><strong>XDR Breadth:</strong> Email, identity, cloud apps included</li>
+                                    <li><strong>Compliance:</strong> Deep GCC/GCC-H support</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">🤖</div>
+                                <div><h4 class="card-title">SentinelOne Advantages</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>Autonomous Response:</strong> AI-driven auto-remediation</li>
+                                    <li><strong>Storyline Technology:</strong> Better attack visualization</li>
+                                    <li><strong>Rollback Capability:</strong> Ransomware rollback feature</li>
+                                    <li><strong>Longer Retention:</strong> Up to 365 days available</li>
+                                    <li><strong>Kubernetes Security:</strong> Better container protection</li>
+                                    <li><strong>Linux/macOS Parity:</strong> Equal features across OS</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>SentinelOne Features MDE Lacks</h3>
+                    <div class="alert alert-danger">
+                        <div class="alert-icon">❌</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Gaps When Migrating from SentinelOne to MDE</div>
+                            <ul>
+                                <li><strong>Ransomware Rollback:</strong> SentinelOne can restore encrypted files; MDE relies on shadow copies</li>
+                                <li><strong>Storyline Visualization:</strong> Superior attack chain visualization and context</li>
+                                <li><strong>Longer Data Retention:</strong> SentinelOne offers up to 365 days; MDE limited to 30</li>
+                                <li><strong>Container/Kubernetes:</strong> SentinelOne has better cloud workload protection</li>
+                                <li><strong>Autonomous AI Response:</strong> More aggressive auto-remediation options</li>
+                                <li><strong>Remote Script Orion:</strong> More flexible remote scripting capabilities</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MDE vs Trellix -->
+                <section id="mde-vs-trellix">
+                    <h2>MDE vs Trellix (McAfee/FireEye)</h2>
+                    
+                    <div class="two-col">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">✅</div>
+                                <div><h4 class="card-title">MDE Advantages</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>Cloud-Native:</strong> No on-prem infrastructure required</li>
+                                    <li><strong>Simpler Architecture:</strong> No ePO server management</li>
+                                    <li><strong>Modern Interface:</strong> Better analyst UX</li>
+                                    <li><strong>Lower TCO:</strong> Reduced infrastructure costs</li>
+                                    <li><strong>Faster Updates:</strong> Cloud-delivered capabilities</li>
+                                    <li><strong>M365 Integration:</strong> Seamless ecosystem</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">🏢</div>
+                                <div><h4 class="card-title">Trellix Advantages</h4></div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>On-Premises Option:</strong> Air-gapped environment support</li>
+                                    <li><strong>DLP Integration:</strong> Mature data loss prevention</li>
+                                    <li><strong>Email Security:</strong> Strong email gateway</li>
+                                    <li><strong>Granular Policies:</strong> Extremely detailed policy control</li>
+                                    <li><strong>Legacy Support:</strong> Better older Windows support</li>
+                                    <li><strong>ePO Orchestration:</strong> Centralized multi-product management</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Trellix Features MDE Lacks</h3>
+                    <div class="alert alert-danger">
+                        <div class="alert-icon">❌</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Gaps When Migrating from Trellix to MDE</div>
+                            <ul>
+                                <li><strong>True On-Premises:</strong> MDE requires cloud connectivity; Trellix can be fully on-prem</li>
+                                <li><strong>ePO Orchestration:</strong> Single console for multiple security products</li>
+                                <li><strong>Endpoint DLP:</strong> Trellix DLP more mature (though Purview DLP is improving)</li>
+                                <li><strong>Application Control:</strong> Trellix whitelisting more granular</li>
+                                <li><strong>Policy Granularity:</strong> ePO offers extremely detailed policy inheritance</li>
+                                <li><strong>Rogue System Detection:</strong> Network-based unmanaged device discovery</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MDE Gaps Analysis -->
+                <section id="gaps-analysis">
+                    <h2>MDE Gaps Analysis Summary</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                While MDE is a strong platform, especially for Microsoft-centric organizations, 
+                                there are areas where competitors excel. Understanding these gaps helps set 
+                                realistic expectations and plan mitigations.
+                            </p>
+                        </div>
+                    </div>
+
+                    <h3>Key Gaps and Mitigations</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Gap Area</th>
+                                    <th>Description</th>
+                                    <th>Mitigation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Data Retention</strong></td>
+                                    <td>30 days vs competitors' 90-365 days</td>
+                                    <td>Stream to Sentinel (90 days free) or Log Analytics</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ransomware Rollback</strong></td>
+                                    <td>No native file rollback capability</td>
+                                    <td>Enable Volume Shadow Copies, backup solutions</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Linux/macOS Feature Parity</strong></td>
+                                    <td>Windows gets features first, other OS lag</td>
+                                    <td>Monitor Microsoft roadmap, test before deploying</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Container Security</strong></td>
+                                    <td>Limited Kubernetes/container protection</td>
+                                    <td>Use Microsoft Defender for Cloud for containers</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Air-Gapped Support</strong></td>
+                                    <td>Requires cloud connectivity</td>
+                                    <td>Use proxy, consider hybrid approach</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Live Response Limitations</strong></td>
+                                    <td>Fewer commands than CrowdStrike RTR</td>
+                                    <td>Custom scripts, PowerShell remoting</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Third-Party Intel Feeds</strong></td>
+                                    <td>Limited native STIX/TAXII support</td>
+                                    <td>Use Sentinel with TI connectors, Graph API</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>MDE Strengths Summary</h3>
+                    <div class="alert alert-success">
+                        <div class="alert-icon">✅</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Where MDE Excels</div>
+                            <ul>
+                                <li><strong>Microsoft Integration:</strong> Unmatched for M365/Azure environments</li>
+                                <li><strong>XDR Coverage:</strong> Email, identity, cloud apps, endpoints in one platform</li>
+                                <li><strong>Cost Efficiency:</strong> Often included in existing E5 licenses</li>
+                                <li><strong>Windows Native:</strong> No agent deployment, tamper-resistant</li>
+                                <li><strong>Conditional Access:</strong> Risk signals feed into Zero Trust</li>
+                                <li><strong>Sentinel Integration:</strong> Native SIEM/SOAR capabilities</li>
+                                <li><strong>Government Cloud:</strong> Strong GCC/GCC-H compliance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recommendations -->
+                <section id="recommendations">
+                    <h2>Platform Selection Recommendations</h2>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🎯</div>
+                            <div><h4 class="card-title">Choose MDE When:</h4></div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>You're primarily a Microsoft shop (M365, Azure, Windows)</li>
+                                <li>You have or plan to get E5 licensing</li>
+                                <li>You want unified XDR across email, identity, endpoints, and cloud</li>
+                                <li>You're using or migrating to Intune for device management</li>
+                                <li>You need strong Conditional Access and Zero Trust integration</li>
+                                <li>You want to minimize agent footprint and infrastructure</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔄</div>
+                            <div><h4 class="card-title">Consider Alternatives When:</h4></div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>You have significant Linux/macOS populations requiring feature parity</li>
+                                <li>You operate air-gapped or highly restricted network environments</li>
+                                <li>You need longer data retention without additional SIEM costs</li>
+                                <li>You require advanced container/Kubernetes workload protection</li>
+                                <li>You prefer a single vendor agnostic of your infrastructure choices</li>
+                                <li>You need more aggressive automated response capabilities</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Navigation -->
+                <div class="flex-between mt-4">
+                    <a href="troubleshooting.html" class="btn btn-secondary">← Troubleshooting</a>
+                    <a href="kql-rules.html" class="btn btn-primary">KQL Rules →</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">MDE Ultimate Guide | For Security Analysts & Engineers</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
