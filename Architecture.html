@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MDE Architecture - Microsoft Defender for Endpoint Architecture and Data Flow">
+    <title>Architecture - MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <span class="brand-icon">🛡️</span>
+                <span>MDE Ultimate Guide</span>
+            </a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="architecture.html" class="nav-link active">Architecture</a></li>
+                <li class="nav-item"><a href="deployment.html" class="nav-link">Deployment</a></li>
+                <li class="nav-item"><a href="features.html" class="nav-link">Features</a></li>
+                <li class="nav-item"><a href="asr-rules.html" class="nav-link">ASR Rules</a></li>
+                <li class="nav-item"><a href="analyst-engineer.html" class="nav-link">Analyst vs Engineer</a></li>
+                <li class="nav-item"><a href="troubleshooting.html" class="nav-link">Troubleshooting</a></li>
+                <li class="nav-item"><a href="licensing.html" class="nav-link">Licensing & Comparison</a></li>
+                <li class="nav-item"><a href="kql-rules.html" class="nav-link">KQL Rules</a></li>
+                <li class="nav-item"><a href="use-cases.html" class="nav-link">Use Cases</a></li>
+                <li class="nav-item"><a href="automation.html" class="nav-link">Automation</a></li>
+                <li class="nav-item"><a href="best-practices.html" class="nav-link">Best Practices</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="content-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-title">On This Page</div>
+                    <ul class="sidebar-links">
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#core-architecture">Core Architecture</a></li>
+                        <li><a href="#sensor-agent">Sensor Components</a></li>
+                        <li><a href="#cloud-backend">Cloud Backend</a></li>
+                        <li><a href="#data-flow">Data Flow</a></li>
+                        <li><a href="#integration-points">Integration Points</a></li>
+                        <li><a href="#terminology">Terminology</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="content">
+                <h1>🏗️ MDE Architecture & Overview</h1>
+                <p class="section-desc">
+                    Understanding MDE architecture is fundamental for security professionals. 
+                    This chapter covers components, data flow, and integration points.
+                </p>
+
+                <!-- Overview Section -->
+                <section id="overview">
+                    <h2>Overview</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <p>
+                                <strong>Microsoft Defender for Endpoint (MDE)</strong> is a cloud-powered endpoint security 
+                                platform providing preventative protection, post-breach detection, automated investigation, 
+                                and response. The architecture uses lightweight endpoint sensors that send telemetry to 
+                                Microsoft's cloud for processing using ML, behavioral analytics, and global threat intelligence.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <div class="alert-icon">💡</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Key Architecture Principle</div>
+                            <p>MDE follows a "shift to cloud" philosophy - minimal processing on endpoints, maximum intelligence in the cloud.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Core Architecture Section -->
+                <section id="core-architecture">
+                    <h2>Core Architecture Diagram</h2>
+                    
+                    <div class="diagram-container">
+                        <div class="diagram-title">Microsoft Defender for Endpoint - Complete Architecture</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.3; color: var(--text-secondary);">
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                           MICROSOFT CLOUD                                     │
+│                                                                               │
+│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  │              Microsoft 365 Defender Portal (security.microsoft.com)      │ │
+│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐           │ │
+│  │  │ Alerts  │ │Incidents│ │ Device  │ │Advanced │ │   TVM   │           │ │
+│  │  │ Queue   │ │ Queue   │ │Inventory│ │ Hunting │ │Dashboard│           │ │
+│  │  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘           │ │
+│  └─────────────────────────────────────────────────────────────────────────┘ │
+│                                     │                                         │
+│  ┌──────────────────────────────────┼──────────────────────────────────────┐ │
+│  │                 Cloud Processing Engine                                  │ │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐      │ │
+│  │  │    ML    │ │Behavioral│ │  Threat  │ │  Alert   │ │   AIR    │      │ │
+│  │  │  Models  │ │ Analytics│ │  Intel   │ │Correlate │ │ (AutoIR) │      │ │
+│  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘      │ │
+│  └──────────────────────────────────┼──────────────────────────────────────┘ │
+│                                     │                                         │
+│  ┌──────────────────────────────────┼──────────────────────────────────────┐ │
+│  │                    Data Storage & APIs                                   │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                   │ │
+│  │  │  Telemetry   │  │    Alert     │  │  Graph API   │                   │ │
+│  │  │    Store     │  │    Store     │  │   Gateway    │                   │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘                   │ │
+│  └─────────────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────────────┘
+                                      ▲
+                                      │ HTTPS (TLS 1.2+) Port 443
+                                      ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                          ENTERPRISE NETWORK                                   │
+│                                                                               │
+│  ┌────────────────┐   ┌────────────────┐   ┌────────────────┐                │
+│  │  WORKSTATIONS  │   │    SERVERS     │   │   CLOUD VMs    │                │
+│  │  Windows 10/11 │   │ Windows Server │   │  Azure/AWS/GCP │                │
+│  │                │   │  2012R2-2022   │   │                │                │
+│  │ ┌────────────┐ │   │ ┌────────────┐ │   │ ┌────────────┐ │                │
+│  │ │MDE Sensor  │ │   │ │MDE Sensor/ │ │   │ │Arc Agent + │ │                │
+│  │ │(Built-in)  │ │   │ │Unified Agt │ │   │ │MDE Sensor  │ │                │
+│  │ └────────────┘ │   │ └────────────┘ │   │ └────────────┘ │                │
+│  │ ┌────────────┐ │   │ ┌────────────┐ │   │ ┌────────────┐ │                │
+│  │ │ Defender   │ │   │ │ Defender   │ │   │ │ Defender   │ │                │
+│  │ │ Antivirus  │ │   │ │ Antivirus  │ │   │ │ Antivirus  │ │                │
+│  │ └────────────┘ │   │ └────────────┘ │   │ └────────────┘ │                │
+│  └────────────────┘   └────────────────┘   └────────────────┘                │
+│                                                                               │
+│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  │                    Management Infrastructure                             │ │
+│  │ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐       │ │
+│  │ │  Intune  │ │   AD     │ │   SCCM   │ │  Azure   │ │   GPO    │       │ │
+│  │ │ (Cloud)  │ │(On-Prem) │ │(On-Prem) │ │   Arc    │ │          │       │ │
+│  │ └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘       │ │
+│  └─────────────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+
+                    <h3>Architecture Layers</h3>
+                    <div class="two-col">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">🖥️</div>
+                                <div>
+                                    <h4 class="card-title">Endpoint Layer</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>MDE Sensor:</strong> Built into Windows 10/11</li>
+                                    <li><strong>Defender AV:</strong> Real-time protection</li>
+                                    <li><strong>Unified Agent:</strong> Server 2012 R2/2016</li>
+                                    <li><strong>Platform Agents:</strong> macOS, Linux</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">☁️</div>
+                                <div>
+                                    <h4 class="card-title">Cloud Layer</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>ML Models:</strong> Unknown threat detection</li>
+                                    <li><strong>Behavioral Analytics:</strong> Attack patterns</li>
+                                    <li><strong>Threat Intel:</strong> Global correlation</li>
+                                    <li><strong>AIR Engine:</strong> Automated response</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sensor/Agent Components -->
+                <section id="sensor-agent">
+                    <h2>Sensor/Agent Components</h2>
+                    
+                    <div class="diagram-container">
+                        <div class="diagram-title">MDE Sensor Architecture (Windows)</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.3; color: var(--text-secondary);">
+┌────────────────────────────────────────────────────────────────────────┐
+│                        WINDOWS ENDPOINT                                 │
+│                                                                         │
+│  ┌───────────────────────────────────────────────────────────────────┐ │
+│  │                     USER MODE (Ring 3)                             │ │
+│  │                                                                     │ │
+│  │   ┌───────────────────────────────────────────────────────────┐   │ │
+│  │   │           MsSense.exe (MDE Sensor Service)                 │   │ │
+│  │   │   ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐     │   │ │
+│  │   │   │ Process  │ │ Network  │ │   File   │ │ Registry │     │   │ │
+│  │   │   │ Monitor  │ │ Monitor  │ │ Monitor  │ │ Monitor  │     │   │ │
+│  │   │   └──────────┘ └──────────┘ └──────────┘ └──────────┘     │   │ │
+│  │   │   ┌────────────────────────────────────────────────────┐  │   │ │
+│  │   │   │        Cloud Communication (HTTPS 443)              │  │   │ │
+│  │   │   │     *.securitycenter.windows.com                    │  │   │ │
+│  │   │   └────────────────────────────────────────────────────┘  │   │ │
+│  │   └───────────────────────────────────────────────────────────┘   │ │
+│  │                                                                     │ │
+│  │   ┌───────────────────────────────────────────────────────────┐   │ │
+│  │   │              MpCmdRun.exe (Defender AV)                    │   │ │
+│  │   │   ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐     │   │ │
+│  │   │   │Real-Time │ │ Behavior │ │  Cloud   │ │  Tamper  │     │   │ │
+│  │   │   │Protection│ │Monitoring│ │Protection│ │Protection│     │   │ │
+│  │   │   └──────────┘ └──────────┘ └──────────┘ └──────────┘     │   │ │
+│  │   └───────────────────────────────────────────────────────────┘   │ │
+│  └───────────────────────────────────────────────────────────────────┘ │
+│                               │                                         │
+│  ┌───────────────────────────────────────────────────────────────────┐ │
+│  │                     KERNEL MODE (Ring 0)                           │ │
+│  │                                                                     │ │
+│  │   ┌─────────────────────────────────────────────────────────┐     │ │
+│  │   │          WdFilter.sys (Kernel-Mode Driver)               │     │ │
+│  │   │   • File system minifilter                               │     │ │
+│  │   │   • Process/Thread creation callbacks                    │     │ │
+│  │   │   • Registry callbacks                                   │     │ │
+│  │   │   • ETW (Event Tracing for Windows) provider            │     │ │
+│  │   └─────────────────────────────────────────────────────────┘     │ │
+│  │                                                                     │ │
+│  │   ┌─────────────────────────────────────────────────────────┐     │ │
+│  │   │         WdNisDrv.sys (Network Inspection)                │     │ │
+│  │   │   • Network packet inspection • Protocol analysis        │     │ │
+│  │   └─────────────────────────────────────────────────────────┘     │ │
+│  └───────────────────────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+
+                    <h3>Sensor Components by Platform</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Platform</th>
+                                    <th>Sensor Type</th>
+                                    <th>Key Processes</th>
+                                    <th>Requirements</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Windows 10/11</strong></td>
+                                    <td>Built-in Sensor</td>
+                                    <td><code>MsSense.exe</code>, <code>SenseIR.exe</code></td>
+                                    <td>Win10 1607+, onboarding package</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Windows Server 2019/2022</strong></td>
+                                    <td>Built-in Sensor</td>
+                                    <td><code>MsSense.exe</code>, <code>SenseIR.exe</code></td>
+                                    <td>Desktop Experience or Server Core</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Windows Server 2012 R2/2016</strong></td>
+                                    <td>Unified Agent</td>
+                                    <td><code>MsSenseS.exe</code></td>
+                                    <td>KB required, unified agent install</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>macOS</strong></td>
+                                    <td>Microsoft Defender</td>
+                                    <td><code>wdavdaemon</code></td>
+                                    <td>macOS 11.0+, MDM profile</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Linux</strong></td>
+                                    <td>Microsoft Defender</td>
+                                    <td><code>mdatp</code> daemon</td>
+                                    <td>RHEL 7+, Ubuntu 18.04+</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Key Windows Services & Commands</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">PowerShell</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code># Check MDE Sensor Service
+Get-Service -Name "Sense"
+# Display Name: Windows Defender Advanced Threat Protection Service
+
+# Check Defender Antivirus Service
+Get-Service -Name "WinDefend"
+# Display Name: Microsoft Defender Antivirus Service
+
+# Check sensor status
+Get-MpComputerStatus | Select-Object AMRunningMode, RealTimeProtectionEnabled
+
+# Check onboarding status (registry)
+Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"
+
+# MDE Client Analyzer (diagnostic tool)
+# Download from Microsoft and run:
+MDEClientAnalyzer.cmd</code></pre>
+                    </div>
+                </section>
+
+                <!-- Cloud Backend -->
+                <section id="cloud-backend">
+                    <h2>Cloud Backend Architecture</h2>
+                    
+                    <div class="diagram-container">
+                        <div class="diagram-title">Cloud Processing Pipeline</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.3; color: var(--text-secondary);">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      CLOUD PROCESSING PIPELINE                           │
+│                                                                          │
+│  ┌────────────────┐                                                     │
+│  │   Endpoint     │                                                     │
+│  │   Telemetry    │                                                     │
+│  └───────┬────────┘                                                     │
+│          │                                                               │
+│          ▼                                                               │
+│  ┌────────────────┐   ┌────────────────┐   ┌────────────────┐          │
+│  │   Ingestion    │──▶│ Normalization  │──▶│   Enrichment   │          │
+│  │   Gateway      │   │  & Parsing     │   │    Engine      │          │
+│  │ • Rate limit   │   │ • Schema map   │   │ • Device ctx   │          │
+│  │ • Auth         │   │ • Dedup        │   │ • User ctx     │          │
+│  └────────────────┘   └────────────────┘   └───────┬────────┘          │
+│                                                     │                    │
+│          ┌──────────────────────────────────────────┘                   │
+│          ▼                                                               │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │                     DETECTION ENGINES                             │  │
+│  │  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐     │  │
+│  │  │   Static   │ │  ML-Based  │ │ Behavioral │ │   Custom   │     │  │
+│  │  │   Rules    │ │ Detection  │ │  Analytics │ │ Detections │     │  │
+│  │  │ • IOC      │ │ • File ML  │ │ • Process  │ │  (KQL)     │     │  │
+│  │  │ • YARA     │ │ • Behavior │ │   chains   │ │ • User     │     │  │
+│  │  │ • Sigma    │ │   ML       │ │ • Anomaly  │ │   rules    │     │  │
+│  │  └────────────┘ └────────────┘ └────────────┘ └────────────┘     │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                  │                                      │
+│                                  ▼                                      │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │                   ALERT & INCIDENT ENGINE                         │  │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐               │  │
+│  │  │    Alert    │─▶│    Alert    │─▶│  Incident   │               │  │
+│  │  │  Generation │  │ Correlation │  │  Creation   │               │  │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘               │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                  │                                      │
+│               ┌──────────────────┼──────────────────┐                  │
+│               ▼                  ▼                  ▼                  │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐           │
+│  │     Portal     │  │      AIR       │  │  Integrations  │           │
+│  │  (Dashboard)   │  │ (Auto Response)│  │ (Sentinel,API) │           │
+│  └────────────────┘  └────────────────┘  └────────────────┘           │
+└─────────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+
+                    <h3>Detection Engine Types</h3>
+                    <div class="accordion">
+                        <div class="accordion-item active">
+                            <button class="accordion-header">
+                                <span>🎯 Static Rule-Based Detection</span>
+                                <span class="accordion-icon">▼</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li><strong>File Hash Matching:</strong> SHA-256/SHA-1/MD5 against known malware</li>
+                                        <li><strong>YARA Rules:</strong> Pattern matching in files and memory</li>
+                                        <li><strong>Network IOCs:</strong> Malicious IPs, domains, URLs</li>
+                                        <li><strong>Registry Patterns:</strong> Known malicious modifications</li>
+                                    </ul>
+                                    <p><em>Latency: Near real-time (seconds)</em></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>🤖 Machine Learning Detection</span>
+                                <span class="accordion-icon">▼</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li><strong>File ML:</strong> Analyzes PE structure without signatures</li>
+                                        <li><strong>Behavior ML:</strong> Malicious action sequences</li>
+                                        <li><strong>Network ML:</strong> Anomalous patterns and C2 detection</li>
+                                        <li><strong>Document ML:</strong> Malicious macros/scripts</li>
+                                    </ul>
+                                    <p><em>Latency: Seconds to minutes</em></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>📊 Behavioral Analytics</span>
+                                <span class="accordion-icon">▼</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li><strong>Process Trees:</strong> Unusual parent-child relationships</li>
+                                        <li><strong>Attack Chains:</strong> Multi-step pattern recognition</li>
+                                        <li><strong>UEBA:</strong> User/entity behavior anomalies</li>
+                                        <li><strong>Baseline Deviation:</strong> Departures from normal</li>
+                                    </ul>
+                                    <p><em>Latency: Minutes (requires context)</em></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>✏️ Custom Detections (KQL)</span>
+                                <span class="accordion-icon">▼</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li><strong>Custom Rules:</strong> Organization-specific logic</li>
+                                        <li><strong>Scheduled Queries:</strong> 15 min to 24 hour intervals</li>
+                                        <li><strong>Alert Actions:</strong> Custom severity and response</li>
+                                        <li><strong>Threat Hunting:</strong> Proactive discovery</li>
+                                    </ul>
+                                    <p><em>Latency: Based on schedule (min 15 minutes)</em></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Flow Section -->
+                <section id="data-flow">
+                    <h2>End-to-End Data Flow</h2>
+                    
+                    <div class="diagram-container">
+                        <div class="diagram-title">Telemetry Flow - From Event to Alert</div>
+                        <div class="flow-diagram" style="flex-wrap: wrap;">
+                            <div class="flow-box">
+                                <div class="flow-box-title">1. Event</div>
+                                <div class="flow-box-desc">PowerShell runs</div>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-box">
+                                <div class="flow-box-title">2. Kernel Hook</div>
+                                <div class="flow-box-desc">WdFilter captures</div>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-box">
+                                <div class="flow-box-title">3. Sensor</div>
+                                <div class="flow-box-desc">MsSense collects</div>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-box primary">
+                                <div class="flow-box-title">4. Upload</div>
+                                <div class="flow-box-desc">HTTPS to cloud</div>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-box">
+                                <div class="flow-box-title">5. Process</div>
+                                <div class="flow-box-desc">Detection engines</div>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-box success">
+                                <div class="flow-box-title">6. Alert</div>
+                                <div class="flow-box-desc">Portal shows</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Data Types & Tables</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data Category</th>
+                                    <th>Examples</th>
+                                    <th>Advanced Hunting Table</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Process Events</strong></td>
+                                    <td>Process creation, command lines, parent-child</td>
+                                    <td><code>DeviceProcessEvents</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Network Events</strong></td>
+                                    <td>Connections, DNS queries, URLs</td>
+                                    <td><code>DeviceNetworkEvents</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>File Events</strong></td>
+                                    <td>Creation, modification, deletion</td>
+                                    <td><code>DeviceFileEvents</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Registry Events</strong></td>
+                                    <td>Key creation, value modification</td>
+                                    <td><code>DeviceRegistryEvents</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Logon Events</strong></td>
+                                    <td>Interactive, network, service logons</td>
+                                    <td><code>DeviceLogonEvents</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Image Load Events</strong></td>
+                                    <td>DLL loads, driver loads</td>
+                                    <td><code>DeviceImageLoadEvents</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Required Network URLs</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">Required URLs (HTTPS 443)</span>
+                            <button class="code-copy">Copy</button>
+                        </div>
+                        <pre><code># Core MDE Service URLs
+*.securitycenter.windows.com
+*.security.microsoft.com
+
+# Defender Antivirus Updates
+*.wdcp.microsoft.com
+*.wdcpalt.microsoft.com
+*.wd.microsoft.com
+
+# Telemetry & Diagnostics
+*.events.data.microsoft.com
+*.blob.core.windows.net
+
+# Certificate Validation
+crl.microsoft.com
+ctldl.windowsupdate.com
+
+# SmartScreen
+*.smartscreen.microsoft.com
+*.smartscreen-prod.microsoft.com</code></pre>
+                    </div>
+                </section>
+
+                <!-- Integration Points -->
+                <section id="integration-points">
+                    <h2>Integration Points</h2>
+                    
+                    <div class="diagram-container">
+                        <div class="diagram-title">MDE Integration Ecosystem</div>
+                        <pre style="font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.3; color: var(--text-secondary);">
+                   ┌──────────────────────────────────────┐
+                   │      Microsoft 365 Defender (XDR)    │
+                   │    Cross-domain Alert Correlation    │
+                   └─────────────────┬────────────────────┘
+                                     │
+     ┌───────────┬──────────┬────────┼────────┬──────────┬───────────┐
+     │           │          │        │        │          │           │
+     ▼           ▼          ▼        ▼        ▼          ▼           ▼
+┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
+│   MDE   │ │   MDI   │ │   MDO   │ │  MCAS   │ │   MDC   │ │ Sentinel│
+│Endpoint │ │Identity │ │Office365│ │CloudApp │ │  Cloud  │ │  SIEM   │
+└────┬────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘
+     │
+     │
+     ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    MDE Integration Points                            │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐   │
+│  │  Microsoft  │ │  Microsoft  │ │  Microsoft  │ │  Third-Party│   │
+│  │   Intune    │ │  Entra ID   │ │   Sentinel  │ │    SIEM     │   │
+│  │ • Policy    │ │ • Cond.     │ │ • Alert     │ │ • Syslog    │   │
+│  │ • Compliance│ │   Access    │ │   sync      │ │ • API       │   │
+│  │ • Deploy    │ │ • Risk auth │ │ • Hunting   │ │ • CEF       │   │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘   │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐   │
+│  │  Power BI   │ │ ServiceNow  │ │  Graph API  │ │   SOAR      │   │
+│  │ • Dashboards│ │ • Tickets   │ │ • Automate  │ │ • Playbooks │   │
+│  │ • Reports   │ │ • Workflow  │ │ • Custom    │ │ • Response  │   │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘   │
+└─────────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- Terminology -->
+                <section id="terminology">
+                    <h2>Key Terminology</h2>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Term</th>
+                                    <th>Definition</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>EDR</strong></td>
+                                    <td>Endpoint Detection and Response - Monitors endpoints to detect and respond to threats</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>XDR</strong></td>
+                                    <td>Extended Detection and Response - Unified platform correlating endpoint, identity, email, cloud</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>TVM</strong></td>
+                                    <td>Threat and Vulnerability Management - Discovers and prioritizes vulnerabilities</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ASR</strong></td>
+                                    <td>Attack Surface Reduction - Rules that proactively block attack techniques</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>AIR</strong></td>
+                                    <td>Automated Investigation and Response - AI-driven investigation and remediation</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sensor</strong></td>
+                                    <td>Endpoint component (MsSense.exe) collecting telemetry</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Live Response</strong></td>
+                                    <td>Remote shell for real-time device investigation</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Advanced Hunting</strong></td>
+                                    <td>KQL-based threat hunting across 30 days of telemetry</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Navigation -->
+                <div class="flex-between mt-4">
+                    <a href="index.html" class="btn btn-secondary">← Home</a>
+                    <a href="deployment.html" class="btn btn-primary">Deployment Models →</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">MDE Ultimate Guide | For Security Analysts & Engineers</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
