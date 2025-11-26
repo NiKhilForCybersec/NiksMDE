@@ -783,6 +783,7 @@ li::marker {
     left: 0;
     color: var(--accent-success);
     font-weight: bold;
+    pointer-events: none;
 }
 
 .list-arrow li {
@@ -796,6 +797,7 @@ li::marker {
     position: absolute;
     left: 0;
     color: var(--accent-primary);
+    pointer-events: none;
 }
 
 /* ============================================
@@ -1063,6 +1065,7 @@ li::marker {
     bottom: 0;
     width: 2px;
     background: var(--border-primary);
+    pointer-events: none;
 }
 
 .timeline-item {
@@ -1080,6 +1083,7 @@ li::marker {
     border-radius: 50%;
     background: var(--accent-primary);
     border: 2px solid var(--bg-primary);
+    pointer-events: none;
 }
 
 .timeline-date {
@@ -1121,6 +1125,7 @@ li::marker {
     background: radial-gradient(circle at 30% 30%, rgba(0, 120, 212, 0.15) 0%, transparent 40%),
                 radial-gradient(circle at 70% 70%, rgba(92, 45, 145, 0.15) 0%, transparent 40%);
     animation: heroGlow 10s ease-in-out infinite;
+    pointer-events: none;
 }
 
 @keyframes heroGlow {
