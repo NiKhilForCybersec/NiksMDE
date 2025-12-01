@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Portal Navigation | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to the Microsoft 365 Defender portal (security.microsoft.com). Learn portal layout, key sections, daily navigation patterns, keyboard shortcuts, and how to efficiently find what you need.</p>
+            </div>
+
+            <h1>Security Portal Navigation</h1>
+
+            <p>The Microsoft 365 Defender portal (security.microsoft.com) is the unified interface for all Microsoft security products. Understanding how to navigate efficiently is essential for effective security operations.</p>
+
+            <h2>Portal Access</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal URLs</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PRIMARY PORTAL:
+https://security.microsoft.com
+
+LEGACY PORTALS (Being Deprecated):
+https://securitycenter.windows.com  → Redirects to M365 Defender
+https://securitycenter.microsoft.com → Redirects to M365 Defender
+
+DIRECT LINKS:
+https://security.microsoft.com/incidents       → Incidents queue
+https://security.microsoft.com/alerts          → Alerts queue
+https://security.microsoft.com/machines        → Device inventory
+https://security.microsoft.com/hunting         → Advanced hunting
+https://security.microsoft.com/securescore     → Secure Score
+
+REQUIRED PERMISSIONS:
+• Azure AD role: Security Reader (view only)
+• Azure AD role: Security Operator (view + respond)
+• Azure AD role: Security Administrator (full access)</code></pre>
+                </div>
+            </div>
+
+            <h2>Portal Layout</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Portal Interface Structure</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  TOP BAR                                                         │   │
+│  │  [≡ Menu] [Microsoft 365 Defender] [Search...] [? Help] [⚙ Settings]│
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  ┌──────────────┬───────────────────────────────────────────────────┐  │
+│  │              │                                                    │  │
+│  │  LEFT NAV    │           MAIN CONTENT AREA                       │  │
+│  │              │                                                    │  │
+│  │  Home        │  ┌─────────────────────────────────────────────┐  │  │
+│  │              │  │                                             │  │  │
+│  │  Incidents   │  │  Dashboards, queues, details               │  │  │
+│  │  & alerts    │  │  Investigation pages                       │  │  │
+│  │  ├ Incidents │  │  Configuration screens                     │  │  │
+│  │  └ Alerts    │  │                                             │  │  │
+│  │              │  │                                             │  │  │
+│  │  Hunting     │  │                                             │  │  │
+│  │  ├ Advanced  │  │                                             │  │  │
+│  │  └ Custom    │  │                                             │  │  │
+│  │              │  └─────────────────────────────────────────────┘  │  │
+│  │  Actions     │                                                    │  │
+│  │              │  ┌─────────────────────────────────────────────┐  │  │
+│  │  Threat      │  │  CONTEXT PANEL (Right side, when open)     │  │  │
+│  │  intelligence│  │  Details, actions, related info            │  │  │
+│  │              │  └─────────────────────────────────────────────┘  │  │
+│  │  Assets      │                                                    │  │
+│  │  ├ Devices   │                                                    │  │
+│  │  └ Identities│                                                    │  │
+│  │              │                                                    │  │
+│  │  Endpoints   │                                                    │  │
+│  │              │                                                    │  │
+│  │  Settings    │                                                    │  │
+│  │              │                                                    │  │
+│  └──────────────┴───────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Main Navigation Sections</h2>
+
+            <h3>Home Dashboard</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Home Dashboard Widgets</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>HOME DASHBOARD SHOWS:
+
+SECURITY AT A GLANCE:
+├── Active incidents (by severity)
+├── Devices at risk
+├── Users at risk
+├── Mailboxes at risk
+└── Apps at risk
+
+INCIDENT SUMMARY:
+├── New incidents today
+├── Incidents needing review
+└── Critical incidents open
+
+DEVICE HEALTH:
+├── Devices with active alerts
+├── Devices needing attention
+├── Exposure score trend
+└── Secure score trend
+
+THREAT ANALYTICS:
+├── Active threat campaigns
+├── Relevant to your environment
+└── Recommended actions
+
+CUSTOMIZATION:
+• Add/remove cards
+• Resize cards
+• Reorder cards</code></pre>
+                </div>
+            </div>
+
+            <h3>Incidents & Alerts Section</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Incidents & Alerts Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INCIDENTS & ALERTS:
+
+├── INCIDENTS
+│   ├── Incident queue (correlated alerts)
+│   ├── Filters: Severity, Status, Category, Service source
+│   ├── Columns: Customizable
+│   └── Actions: Assign, classify, resolve
+│
+├── ALERTS
+│   ├── Individual alert queue
+│   ├── All detection sources
+│   ├── Can link to incidents
+│   └── Faster triage for simple alerts
+│
+└── ALERT POLICIES (Email & collaboration)
+    └── Configure alert notifications
+
+DAILY WORKFLOW:
+1. Start with Incidents (see correlated picture)
+2. Drop to Alerts for quick FP closures
+3. Use filters to prioritize work</code></pre>
+                </div>
+            </div>
+
+            <h3>Hunting Section</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Hunting Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>HUNTING:
+
+├── ADVANCED HUNTING
+│   ├── KQL query editor
+│   ├── Schema reference (all tables)
+│   ├── Query examples
+│   ├── Shared queries
+│   └── Results export
+│
+├── CUSTOM DETECTIONS
+│   ├── Create detection rules from queries
+│   ├── Manage existing rules
+│   ├── Enable/disable rules
+│   └── View rule matches
+│
+└── QUERY RESOURCES
+    ├── Schema reference
+    ├── Functions reference
+    ├── Community queries
+    └── Microsoft sample queries
+
+KEYBOARD SHORTCUTS IN HUNTING:
+• Ctrl+Enter: Run query
+• Ctrl+Space: Autocomplete
+• Ctrl+S: Save query
+• F1: Help/documentation</code></pre>
+                </div>
+            </div>
+
+            <h3>Assets Section</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Assets Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ASSETS:
+
+├── DEVICES
+│   ├── Device inventory (all onboarded devices)
+│   ├── Device page (detailed view)
+│   │   ├── Overview
+│   │   ├── Alerts
+│   │   ├── Timeline (crucial for investigation)
+│   │   ├── Security recommendations
+│   │   ├── Software inventory
+│   │   └── Discovered vulnerabilities
+│   │
+│   └── Actions from device page:
+│       ├── Isolate device
+│       ├── Restrict app execution
+│       ├── Run AV scan
+│       ├── Collect investigation package
+│       ├── Initiate Live Response
+│       └── Initiate automated investigation
+│
+├── IDENTITIES
+│   ├── User accounts
+│   ├── Risk scoring
+│   └── Related alerts
+│
+└── DEVICE GROUPS
+    └── Manage device grouping for policies</code></pre>
+                </div>
+            </div>
+
+            <h3>Endpoints Section</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Endpoints Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ENDPOINTS:
+
+├── VULNERABILITY MANAGEMENT
+│   ├── Dashboard (exposure score, recommendations)
+│   ├── Recommendations
+│   ├── Remediation
+│   ├── Software inventory
+│   ├── Weaknesses
+│   └── Event timeline
+│
+├── CONFIGURATION MANAGEMENT
+│   ├── Security baselines
+│   └── Onboarding
+│
+└── REPORTS
+    ├── Threat protection
+    ├── Device health
+    ├── Vulnerable devices
+    └── Web protection</code></pre>
+                </div>
+            </div>
+
+            <h3>Settings Section</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Settings Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SETTINGS → ENDPOINTS:
+
+├── GENERAL
+│   ├── Advanced features
+│   │   ├── Automated investigation
+│   │   ├── Live Response
+│   │   ├── Live Response for servers
+│   │   ├── EDR in block mode
+│   │   └── Auto-resolve alerts
+│   │
+│   ├── Email notifications
+│   ├── Data retention
+│   └── Alert suppression
+│
+├── PERMISSIONS
+│   ├── Roles (RBAC)
+│   └── Device groups
+│
+├── RULES
+│   ├── Indicators (IOCs)
+│   ├── Web content filtering
+│   ├── Automation uploads
+│   ├── Automation folder exclusions
+│   └── Alert suppression rules
+│
+├── DEVICE MANAGEMENT
+│   ├── Onboarding
+│   ├── Offboarding
+│   └── Device tags
+│
+└── APIS
+    └── SIEM integration, API access</code></pre>
+                </div>
+            </div>
+
+            <h2>Global Search</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Search Capabilities</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>GLOBAL SEARCH (Top bar):
+
+SEARCH FOR:
+├── Devices (by name, IP, user)
+├── Users (by name, email, UPN)
+├── Files (by name, hash)
+├── IPs (search across network events)
+├── Domains/URLs
+├── Alerts (by ID or title)
+└── Incidents (by ID)
+
+SEARCH TIPS:
+• Partial matches work for device names
+• Use full hash for file search
+• IP search returns connections
+• Results grouped by entity type
+
+KEYBOARD SHORTCUT:
+• Press "/" to focus search bar
+• Ctrl+K in some browsers</code></pre>
+                </div>
+            </div>
+
+            <h2>Keyboard Shortcuts</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Shortcut</th>
+                            <th>Location</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><kbd>/</kbd></td>
+                            <td>Global</td>
+                            <td>Focus search bar</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>?</kbd></td>
+                            <td>Global</td>
+                            <td>Show keyboard shortcuts</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td>
+                            <td>Advanced Hunting</td>
+                            <td>Run query</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>Space</kbd></td>
+                            <td>Advanced Hunting</td>
+                            <td>Autocomplete</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>S</kbd></td>
+                            <td>Advanced Hunting</td>
+                            <td>Save query</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Esc</kbd></td>
+                            <td>Panels</td>
+                            <td>Close side panel</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Daily Workflow Patterns</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">SOC Analyst Daily Workflow</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MORNING ROUTINE:
+
+1. CHECK DASHBOARD
+   Home → Review overnight activity
+   └── New incidents? High severity alerts?
+
+2. REVIEW INCIDENT QUEUE
+   Incidents & alerts → Incidents
+   └── Filter: Status=Active, Severity=High
+   └── Assign yourself to new incidents
+
+3. TRIAGE ALERTS
+   Incidents & alerts → Alerts
+   └── Filter: Status=New, Assigned=Unassigned
+   └── Quick review, classify obvious FP/TP
+
+4. CHECK DEVICE HEALTH
+   Assets → Devices
+   └── Filter: Health state issues
+   └── Check for offline critical devices
+
+5. REVIEW ACTION CENTER
+   Actions → Action center
+   └── Pending actions need approval?
+   └── Failed actions need attention?
+
+INVESTIGATION WORKFLOW:
+
+1. Start from incident/alert
+2. Go to device page
+3. Review timeline
+4. Pivot to Advanced Hunting if needed
+5. Take response actions
+6. Document and close</code></pre>
+                </div>
+            </div>
+
+            <h2>Browser Tips</h2>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Productivity Tips</h5>
+                    <ul>
+                        <li><strong>Pin tabs</strong>: Keep Incidents and Advanced Hunting pinned</li>
+                        <li><strong>Multiple tabs</strong>: Open device timelines in new tabs for comparison</li>
+                        <li><strong>Bookmarks</strong>: Bookmark filtered views you use often</li>
+                        <li><strong>Browser profile</strong>: Use dedicated profile for security work</li>
+                        <li><strong>Extensions</strong>: Consider JSON formatter for API work</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Portal Operations</h4>
+                <ul>
+                    <li>Navigate incident and alert queues efficiently</li>
+                    <li>Use device timelines for investigation</li>
+                    <li>Configure settings and policies</li>
+                    <li>Manage indicators and rules</li>
+                    <li>Generate and export reports</li>
+                    <li>Access Advanced Hunting for custom queries</li>
+                </ul>
+
+                <h4>Common Navigation</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Find specific device"</span>
+                    <span class="ticket-solution">→ Global search or Assets → Devices → Filter by name</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Check if IOC is blocked"</span>
+                    <span class="ticket-solution">→ Settings → Endpoints → Indicators → Search for hash/IP/domain</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Review pending actions"</span>
+                    <span class="ticket-solution">→ Actions & submissions → Action center → Pending tab</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Portal URL</strong>: security.microsoft.com (unified M365 Defender)</li>
+                    <li><strong>Key sections</strong>: Incidents, Alerts, Hunting, Assets, Endpoints, Settings</li>
+                    <li><strong>Investigation path</strong>: Incident → Alert → Device → Timeline → Hunting</li>
+                    <li><strong>Device actions</strong>: Available from device page - isolate, scan, collect package</li>
+                    <li><strong>Settings location</strong>: Settings → Endpoints for MDE-specific configuration</li>
+                    <li><strong>Search</strong>: Global search finds devices, users, files, IPs across data</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="1-8-licensing-features.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Licensing & Features</span>
+                </a>
+                <a href="2-2-device-inventory.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Device Inventory</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

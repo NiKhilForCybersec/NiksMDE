@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Inventory | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to the MDE Device Inventory. Learn to navigate device lists, understand device health, use filters, and access device details for investigation.</p>
+            </div>
+
+            <h1>Device Inventory</h1>
+
+            <p>The Device Inventory is your central view of all endpoints onboarded to MDE. It provides health status, risk levels, and quick access to device investigation.</p>
+
+            <h2>Device Inventory Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Device Inventory Layout</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    DEVICE INVENTORY                                     │
+│                    Assets → Devices                                     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  FILTERS BAR:                                                           │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ Health state ▼ │ Risk level ▼ │ OS ▼ │ Tags ▼ │ + Add filter   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  DEVICE LIST:                                                           │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ Device Name    │ Health │ Risk │ Exposure │ OS      │ Last Seen │   │
+│  ├─────────────────────────────────────────────────────────────────┤   │
+│  │ WKSTN-001      │ ●Active│ High │ Critical │ Win 11  │ 2 min ago │   │
+│  │ WKSTN-002      │ ●Active│ Low  │ Low      │ Win 10  │ 5 min ago │   │
+│  │ SRV-DC-01      │ ●Active│ Med  │ High     │ WS 2022 │ 1 min ago │   │
+│  │ LAPTOP-003     │ ○Inactive│ -- │ --       │ Win 11  │ 3 days    │   │
+│  │ MAC-DESIGN-01  │ ●Active│ Low  │ Low      │ macOS   │ 10 min    │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  SUMMARY CARDS:                                                         │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐                   │
+│  │ Total    │ │ Active   │ │ At Risk  │ │ Inactive │                   │
+│  │ 1,250    │ │ 1,180    │ │ 45       │ │ 70       │                   │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘                   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Device Health States</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Health States</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEVICE HEALTH STATES:
+
+ACTIVE (Green)
+├── Sensor is running and reporting
+├── Last seen within expected timeframe
+├── Normal operation
+└── No action needed
+
+INACTIVE (Gray)
+├── No sensor data received recently
+├── Device may be offline
+├── Check: Is device powered on?
+├── Check: Network connectivity
+└── Threshold: 7+ days no communication
+
+CAN BE ONBOARDED (Blue)
+├── Device discovered but not onboarded
+├── Found via network discovery
+├── Action: Onboard the device
+└── Only in environments with discovery enabled
+
+MISCONFIGURED (Yellow)
+├── Sensor has configuration issues
+├── May have partial functionality
+├── Check: Sensor version
+├── Check: Policy conflicts
+└── Run Client Analyzer for details
+
+IMPAIRED COMMUNICATION (Orange)
+├── Intermittent connectivity
+├── Some data not reaching cloud
+├── Check: Network/proxy issues
+├── Check: Firewall rules
+└── May need connectivity troubleshooting
+
+NO SENSOR DATA (Red)
+├── Sensor not sending data
+├── Critical health issue
+├── Possible: Service stopped
+├── Possible: Tampering
+└── Immediate investigation needed</code></pre>
+                </div>
+            </div>
+
+            <h2>Risk and Exposure Levels</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Risk Assessment</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>RISK LEVEL (Active Threats):
+
+HIGH RISK
+├── Active security alerts
+├── Ongoing incident
+├── Immediate attention needed
+└── May require containment
+
+MEDIUM RISK
+├── Recent alerts (resolved)
+├── Suspicious activity detected
+├── Monitor closely
+└── Review recent timeline
+
+LOW RISK
+├── No active alerts
+├── Normal activity
+├── Routine monitoring
+└── Good security posture
+
+NONE
+├── No security concerns
+├── Clean device
+└── Optimal state
+
+EXPOSURE LEVEL (Vulnerabilities):
+
+CRITICAL EXPOSURE
+├── Critical CVEs present
+├── Exploitable vulnerabilities
+├── Urgent patching needed
+└── High attack surface
+
+HIGH EXPOSURE
+├── High-severity vulnerabilities
+├── Security misconfigurations
+├── Priority patching
+└── Elevated attack surface
+
+MEDIUM EXPOSURE
+├── Moderate vulnerabilities
+├── Some misconfigurations
+├── Scheduled patching
+└── Manageable attack surface
+
+LOW EXPOSURE
+├── Few/minor vulnerabilities
+├── Good configuration
+├── Regular maintenance
+└── Minimal attack surface</code></pre>
+                </div>
+            </div>
+
+            <h2>Filtering Devices</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Filter Options</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>AVAILABLE FILTERS:
+
+HEALTH STATE:
+├── Active
+├── Inactive
+├── Misconfigured
+├── Impaired communication
+└── No sensor data
+
+RISK LEVEL:
+├── High
+├── Medium
+├── Low
+└── None
+
+EXPOSURE LEVEL:
+├── Critical
+├── High
+├── Medium
+└── Low
+
+OPERATING SYSTEM:
+├── Windows 10
+├── Windows 11
+├── Windows Server 2019
+├── Windows Server 2022
+├── macOS
+└── Linux
+
+ONBOARDING STATUS:
+├── Onboarded
+├── Can be onboarded
+└── Unsupported
+
+TAGS:
+├── Custom tags applied
+├── Use for grouping
+└── Example: "VIP", "Servers", "Finance"
+
+DEVICE GROUPS:
+├── Pre-defined groups
+├── Based on assignment rules
+└── Used for RBAC and policies
+
+ANTIVIRUS STATUS:
+├── Updated
+├── Outdated
+├── Unknown
+
+FIRST SEEN / LAST SEEN:
+├── Date range filters
+└── Find new or stale devices</code></pre>
+                </div>
+            </div>
+
+            <h2>Device Page Details</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Device Page Sections</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEVICE PAGE SECTIONS (Click any device):
+
+OVERVIEW TAB:
+├── Device details (name, OS, IP, domain)
+├── Health status
+├── Risk and exposure levels
+├── Active alerts count
+├── Tags
+└── Response actions buttons
+
+ALERTS TAB:
+├── All alerts for this device
+├── Historical alert data
+├── Filter by severity, status
+└── Link to incident
+
+TIMELINE TAB:
+├── Chronological event log
+├── Process events
+├── Network events
+├── File events
+├── Registry events
+├── Logon events
+└── Filter by event type and time
+
+SECURITY RECOMMENDATIONS TAB:
+├── Device-specific recommendations
+├── Vulnerabilities to patch
+├── Configuration to fix
+└── Impact and effort scores
+
+SOFTWARE INVENTORY TAB:
+├── Installed applications
+├── Versions
+├── Known vulnerabilities
+└── End-of-support status
+
+DISCOVERED VULNERABILITIES TAB:
+├── CVEs affecting device
+├── Severity scores
+├── Remediation guidance
+└── Affected software
+
+MISSING KBS TAB:
+├── Windows updates not installed
+├── Security patches needed
+└── Prioritized by severity
+
+RESPONSE ACTIONS (Top right):
+├── Isolate device
+├── Restrict app execution
+├── Run antivirus scan
+├── Collect investigation package
+├── Initiate Live Response
+└── Consult threat expert</code></pre>
+                </div>
+            </div>
+
+            <h2>Device Groups</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Device Group Management</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEVICE GROUPS:
+
+PURPOSE:
+├── Organize devices logically
+├── Apply different policies
+├── RBAC access control
+├── Automation scope
+└── Reporting segmentation
+
+DEFAULT GROUPS:
+├── Ungrouped devices (no rules match)
+└── All devices (system group)
+
+CREATING GROUPS:
+Path: Settings → Endpoints → Device groups
+
+RULE-BASED ASSIGNMENT:
+├── Device name (contains, starts with)
+├── Domain
+├── Tag
+├── OS
+└── Multiple conditions (AND/OR)
+
+EXAMPLE GROUPS:
+├── "Servers" - OS contains "Server"
+├── "Finance-Dept" - Tag = "Finance"
+├── "VIP-Executives" - Tag = "VIP"
+├── "Pilot-Ring" - Tag = "Pilot"
+└── "Legacy-Systems" - OS = "Windows Server 2012"
+
+RBAC WITH GROUPS:
+├── Assign roles to specific groups
+├── Analysts see only their groups
+├── Restrict response actions by group
+└── Useful for multi-tenant or departmental access</code></pre>
+                </div>
+            </div>
+
+            <h2>Advanced Hunting - Devices</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Device Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Get device inventory summary</span>
+<span class="variable">DeviceInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> <span class="function">arg_max</span>(Timestamp, *) <span class="keyword">by</span> DeviceId
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> OSPlatform
+
+<span class="comment">// Find devices not seen recently</span>
+<span class="variable">DeviceInfo</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> LastSeen = <span class="function">max</span>(Timestamp) <span class="keyword">by</span> DeviceName, DeviceId
+<span class="operator">|</span> <span class="keyword">where</span> LastSeen <span class="operator"><</span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">order by</span> LastSeen <span class="keyword">asc</span>
+
+<span class="comment">// Devices with high risk level</span>
+<span class="variable">DeviceInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> <span class="function">arg_max</span>(Timestamp, *) <span class="keyword">by</span> DeviceId
+<span class="operator">|</span> <span class="keyword">where</span> RiskScore <span class="operator">==</span> <span class="string">"High"</span>
+<span class="operator">|</span> <span class="keyword">project</span> DeviceName, RiskScore, ExposureLevel, OSPlatform
+
+<span class="comment">// Devices by logged-on user</span>
+<span class="variable">DeviceInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> <span class="function">isnotempty</span>(LoggedOnUsers)
+<span class="operator">|</span> <span class="keyword">extend</span> Users = <span class="function">parse_json</span>(LoggedOnUsers)
+<span class="operator">|</span> <span class="keyword">mv-expand</span> Users
+<span class="operator">|</span> <span class="keyword">extend</span> UserName = Users.UserName
+<span class="operator">|</span> <span class="keyword">summarize</span> Devices = <span class="function">make_set</span>(DeviceName) <span class="keyword">by</span> <span class="function">tostring</span>(UserName)</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Monitor health daily</strong>: Check for inactive or misconfigured devices</li>
+                        <li><strong>Use tags</strong>: Organize devices by department, criticality, or function</li>
+                        <li><strong>Create device groups</strong>: Enable targeted policies and RBAC</li>
+                        <li><strong>Review high-risk devices</strong>: Prioritize investigation and patching</li>
+                        <li><strong>Export for reporting</strong>: Use export feature for compliance reports</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Health states</strong>: Active, Inactive, Misconfigured, Impaired, No sensor data</li>
+                    <li><strong>Risk vs Exposure</strong>: Risk = active threats, Exposure = vulnerabilities</li>
+                    <li><strong>Device page tabs</strong>: Overview, Alerts, Timeline, Software, Vulnerabilities</li>
+                    <li><strong>Device groups</strong>: Rule-based, used for RBAC and policy targeting</li>
+                    <li><strong>Response actions</strong>: Isolate, scan, restrict apps, collect package</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="2-1-security-portal-overview.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Security Portal Overview</span>
+                </a>
+                <a href="2-3-alerts-queue.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Alerts Queue</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

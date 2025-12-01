@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Gen Protection | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Overview of MDE's Next-Generation Protection capabilities including antivirus, behavioral blocking, and cloud-delivered protection.</p>
+            </div>
+
+            <h1>Next-Generation Protection Overview</h1>
+
+            <p>Next-Generation Protection (NGP) is the antivirus and anti-malware component of MDE. It goes beyond traditional signature-based detection to include behavioral analysis, machine learning, and cloud-powered protection.</p>
+
+            <h2>NGP Components</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Next-Gen Protection Stack</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    NEXT-GENERATION PROTECTION                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  PROTECTION LAYERS:                                                     │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ 1. REAL-TIME PROTECTION                                         │   │
+│  │    └── Continuous file and process monitoring                   │   │
+│  ├─────────────────────────────────────────────────────────────────┤   │
+│  │ 2. CLOUD-DELIVERED PROTECTION                                   │   │
+│  │    └── MAPS, Block at First Sight, ML models                   │   │
+│  ├─────────────────────────────────────────────────────────────────┤   │
+│  │ 3. BEHAVIORAL BLOCKING                                          │   │
+│  │    └── Process behavior analysis, exploit protection           │   │
+│  ├─────────────────────────────────────────────────────────────────┤   │
+│  │ 4. ATTACK SURFACE REDUCTION                                     │   │
+│  │    └── ASR rules, controlled folders, network protection       │   │
+│  ├─────────────────────────────────────────────────────────────────┤   │
+│  │ 5. SIGNATURE-BASED DETECTION                                    │   │
+│  │    └── Definition updates, known malware                        │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Key Capabilities</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Protection Features</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>NEXT-GEN PROTECTION CAPABILITIES:
+
+REAL-TIME PROTECTION:
+├── Always-on scanning
+├── File access monitoring
+├── Download scanning
+├── Behavior monitoring
+├── Process scanning
+└── Memory scanning
+
+CLOUD-DELIVERED PROTECTION:
+├── Microsoft Active Protection Service (MAPS)
+├── Block at First Sight (BAFS)
+├── Cloud ML models
+├── Threat intelligence
+├── Extended cloud check (50 sec)
+└── Automatic sample submission
+
+BEHAVIORAL BLOCKING:
+├── Process tree analysis
+├── Credential theft prevention
+├── Exploit detection
+├── Tampering detection
+├── Fileless attack protection
+└── Living-off-the-land detection
+
+ATTACK SURFACE REDUCTION:
+├── ASR rules (Office, scripts, etc.)
+├── Controlled Folder Access
+├── Network Protection
+├── Exploit Protection
+├── Application Control
+└── Device Control
+
+DEFINITIONS & UPDATES:
+├── Hourly signature updates
+├── Cloud-based updates
+├── WSUS/SCCM support
+├── Offline update capability
+└── Emergency updates (VDM)</code></pre>
+                </div>
+            </div>
+
+            <h2>Quick Status Check</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Check Status</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check all protection status</span>
+Get-MpComputerStatus | Select-Object `
+    AntivirusEnabled,
+    RealTimeProtectionEnabled,
+    IoavProtectionEnabled,
+    BehaviorMonitorEnabled,
+    AntivirusSignatureAge,
+    NISEnabled
+
+<span class="comment"># Check cloud protection</span>
+Get-MpPreference | Select-Object `
+    MAPSReporting,
+    CloudBlockLevel,
+    CloudExtendedTimeout,
+    SubmitSamplesConsent
+
+<span class="comment"># Quick health check</span>
+Get-MpComputerStatus | Format-List AMRunningMode, *Enabled*, *Age*</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Enable cloud protection</strong>: Essential for zero-day protection</li>
+                        <li><strong>Keep definitions current</strong>: Check SignatureAge daily</li>
+                        <li><strong>Enable all features</strong>: RTP, behavior monitoring, MAPS</li>
+                        <li><strong>Configure ASR rules</strong>: Major attack surface reduction</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>NGP components</strong>: RTP, cloud protection, behavioral, ASR, signatures</li>
+                    <li><strong>Cloud protection</strong>: MAPS, BAFS, cloud ML for zero-day</li>
+                    <li><strong>Behavioral blocking</strong>: Catches fileless and living-off-the-land</li>
+                    <li><strong>ASR</strong>: Rules to block common attack vectors</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="2-8-settings-configuration.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Settings & Configuration</span>
+                </a>
+                <a href="3-2-attack-surface-reduction.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Attack Surface Reduction</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

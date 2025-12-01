@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Types | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to MDE alert types, categories, and severity levels. Learn how alerts are classified and what each category means.</p>
+            </div>
+
+            <h1>Alert Types & Categories</h1>
+
+            <p>MDE generates alerts based on various detection mechanisms. Understanding alert types helps prioritize response and understand the threat landscape.</p>
+
+            <h2>Alert Severity Levels</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Severity Levels</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ALERT SEVERITY LEVELS:
+
+CRITICAL (Highest)
+├── Immediate threat to security
+├── Active attack in progress
+├── Ransomware execution
+├── Confirmed breach
+├── Response: Immediate, all hands
+└── SLA: Minutes
+
+HIGH
+├── Likely malicious activity
+├── Significant security risk
+├── Credential theft attempts
+├── Lateral movement detected
+├── Response: Urgent investigation
+└── SLA: 1-4 hours
+
+MEDIUM
+├── Suspicious activity
+├── Potential security concern
+├── Unusual but not confirmed malicious
+├── Policy violations
+├── Response: Same-day investigation
+└── SLA: 4-24 hours
+
+LOW
+├── Informational alerts
+├── Minor policy violations
+├── Unusual but likely benign
+├── Security hygiene issues
+├── Response: Review when time permits
+└── SLA: 24-72 hours
+
+INFORMATIONAL
+├── For awareness only
+├── No immediate action needed
+├── Baseline activity logging
+├── Compliance-related events
+└── Response: Periodic review</code></pre>
+                </div>
+            </div>
+
+            <h2>Alert Categories (MITRE ATT&CK)</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Alert Categories</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ALERT CATEGORIES (Mapped to MITRE ATT&CK):
+
+INITIAL ACCESS
+├── Phishing attachments executed
+├── Drive-by download
+├── Exploit public-facing application
+├── Valid accounts misuse
+└── Examples: "Suspicious email attachment opened"
+
+EXECUTION
+├── Script execution (PowerShell, VBS)
+├── Command-line abuse
+├── Malicious macro execution
+├── Scheduled task abuse
+└── Examples: "Suspicious PowerShell command"
+
+PERSISTENCE
+├── Registry run key modification
+├── Scheduled task creation
+├── Service installation
+├── Boot/logon scripts
+└── Examples: "Suspicious persistence mechanism"
+
+PRIVILEGE ESCALATION
+├── Token manipulation
+├── Exploitation for privilege escalation
+├── Access token theft
+├── UAC bypass
+└── Examples: "Process privilege escalation"
+
+DEFENSE EVASION
+├── Masquerading
+├── Disabling security tools
+├── Obfuscated scripts
+├── Timestomping
+└── Examples: "Security tool tampering"
+
+CREDENTIAL ACCESS
+├── LSASS memory access
+├── Credential dumping
+├── Brute force attempts
+├── Kerberoasting
+└── Examples: "Suspicious LSASS access"
+
+DISCOVERY
+├── Network scanning
+├── Account enumeration
+├── System information discovery
+├── Security software discovery
+└── Examples: "Network discovery activity"
+
+LATERAL MOVEMENT
+├── Remote service exploitation
+├── Pass-the-hash/ticket
+├── Remote file copy
+├── Internal spearphishing
+└── Examples: "Lateral movement detected"
+
+COLLECTION
+├── Data staging
+├── Clipboard data
+├── Email collection
+├── Screen capture
+└── Examples: "Suspicious data collection"
+
+COMMAND AND CONTROL
+├── C2 communication
+├── Data encoding
+├── Proxy usage
+├── Web protocols abuse
+└── Examples: "Connection to known C2"
+
+EXFILTRATION
+├── Data transfer over C2
+├── Exfiltration over web service
+├── Automated exfiltration
+├── Data compressed
+└── Examples: "Large data transfer detected"
+
+IMPACT
+├── Data encryption (ransomware)
+├── Data destruction
+├── Service disruption
+├── Defacement
+└── Examples: "Ransomware behavior detected"</code></pre>
+                </div>
+            </div>
+
+            <h2>Detection Sources</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Where Alerts Come From</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DETECTION SOURCES:
+
+EDR (Endpoint Detection and Response)
+├── Behavioral detections
+├── Process/network anomalies
+├── Cross-device correlation
+└── Examples: Most advanced detections
+
+ANTIVIRUS
+├── Signature-based detections
+├── Known malware
+├── PUA (Potentially Unwanted Apps)
+└── Examples: "Malware detected: Trojan.Gen"
+
+CLOUD PROTECTION (BAFS)
+├── Block at first sight
+├── Unknown file analysis
+├── Cloud ML verdicts
+└── Examples: "Unknown file blocked"
+
+CUSTOM DETECTIONS
+├── Your KQL-based rules
+├── Organization-specific
+├── Compliance detections
+└── Examples: Rules you created
+
+AUTOMATED INVESTIGATION
+├── Findings from auto-investigation
+├── Additional evidence discovered
+├── Related malicious entities
+└── Examples: Auto-generated findings
+
+THREAT INTELLIGENCE
+├── Known IOC matches
+├── Threat actor TTPs
+├── Campaign indicators
+└── Examples: "Known malicious IP"
+
+NETWORK PROTECTION
+├── Malicious URL blocked
+├── Phishing site access
+├── Dangerous download
+└── Examples: "Connection blocked"
+
+ASR RULES
+├── Attack surface reduction triggers
+├── Office macro blocks
+├── Script restrictions
+└── Examples: "ASR rule triggered"</code></pre>
+                </div>
+            </div>
+
+            <h2>Common Alert Examples</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Real Alert Examples</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>COMMON ALERTS BY CATEGORY:
+
+MALWARE ALERTS:
+├── "Malware detected" - AV signature match
+├── "'Emotet' malware was detected" - Named threat
+├── "Ransomware behavior detected" - Behavioral
+└── "Trojan:Win32/Wacatac detected" - Specific variant
+
+CREDENTIAL ALERTS:
+├── "Suspicious LSASS access" - Mimikatz-like
+├── "Credential dumping activity" - Memory access
+├── "Brute force attack" - Multiple failed logins
+└── "Kerberoasting attack" - SPN enumeration
+
+EXECUTION ALERTS:
+├── "Suspicious PowerShell command line" 
+├── "Encoded command executed"
+├── "WMIC abuse detected"
+└── "Suspicious script execution"
+
+LATERAL MOVEMENT ALERTS:
+├── "Lateral movement detected"
+├── "Remote code execution attempt"
+├── "Suspicious remote activity"
+└── "Pass-the-hash detected"
+
+C2 ALERTS:
+├── "Connection to known C2 server"
+├── "Suspicious network connection"
+├── "Beaconing pattern detected"
+└── "DNS tunneling detected"
+
+PERSISTENCE ALERTS:
+├── "Suspicious scheduled task created"
+├── "Registry run key modified"
+├── "Suspicious service installed"
+└── "Boot persistence detected"</code></pre>
+                </div>
+            </div>
+
+            <h2>Alert Classification</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">How to Classify Alerts</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ALERT CLASSIFICATION OPTIONS:
+
+TRUE POSITIVE (Confirmed threat)
+├── Malicious activity confirmed
+├── Requires remediation
+├── Determination options:
+│   ├── Malware
+│   ├── Security testing
+│   ├── Line-of-business application
+│   ├── Unwanted software
+│   └── Other
+└── Action: Investigate and remediate
+
+FALSE POSITIVE (Incorrect detection)
+├── Alert triggered on benign activity
+├── No threat present
+├── Determination options:
+│   ├── Not malicious
+│   ├── Not enough data to validate
+│   └── Other
+├── Action: Tune detection if recurring
+└── Consider: Suppression rule
+
+INFORMATIONAL
+├── Expected activity
+├── No action required
+├── For awareness only
+└── Action: Close alert
+
+UNCLASSIFIED
+├── Default state
+├── Needs investigation
+├── Pending analyst review
+└── Action: Investigate to classify</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Prioritization Tips</h5>
+                    <ul>
+                        <li><strong>Critical/High first</strong>: Always address these immediately</li>
+                        <li><strong>Check for patterns</strong>: Multiple related alerts may indicate campaign</li>
+                        <li><strong>Use MITRE mapping</strong>: Understand attack stage</li>
+                        <li><strong>Correlate with incidents</strong>: Alerts may be part of larger incident</li>
+                        <li><strong>Classify all alerts</strong>: Improves ML and helps metrics</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Severity levels</strong>: Critical, High, Medium, Low, Informational</li>
+                    <li><strong>Categories</strong>: MITRE ATT&CK tactics (Initial Access through Impact)</li>
+                    <li><strong>Detection sources</strong>: EDR, AV, Cloud, Custom, TI, ASR</li>
+                    <li><strong>Classification</strong>: True Positive, False Positive, Informational</li>
+                    <li><strong>Common alerts</strong>: Credential access, suspicious PowerShell, C2 connections</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-2-detection-sources.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Detection Sources</span>
+                </a>
+                <a href="4-4-device-timeline.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Device Timeline</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

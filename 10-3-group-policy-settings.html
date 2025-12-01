@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Policy Settings | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to configuring Microsoft Defender for Endpoint using Group Policy. Learn GPO paths, recommended settings, and enterprise deployment strategies.</p>
+            </div>
+
+            <h1>Group Policy Settings</h1>
+
+            <p>Group Policy provides centralized configuration management for MDE in Active Directory environments. While Intune is preferred for cloud-managed devices, GPO remains essential for on-premises and hybrid deployments.</p>
+
+            <h2>GPO Structure Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Group Policy Locations</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    GROUP POLICY STRUCTURE                                │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  Computer Configuration → Administrative Templates →                    │
+│  Windows Components →                                                   │
+│                                                                          │
+│  ├── Microsoft Defender Antivirus                                       │
+│  │   ├── Real-time Protection                                           │
+│  │   ├── Scan                                                           │
+│  │   ├── Signature Updates                                              │
+│  │   ├── Exclusions                                                     │
+│  │   ├── Threats                                                        │
+│  │   ├── Quarantine                                                     │
+│  │   ├── Reporting                                                      │
+│  │   ├── Client Interface                                               │
+│  │   ├── MpEngine                                                       │
+│  │   └── Windows Defender Exploit Guard                                 │
+│  │       ├── Attack Surface Reduction                                   │
+│  │       ├── Network Protection                                         │
+│  │       ├── Controlled Folder Access                                   │
+│  │       └── Exploit Protection                                         │
+│  │                                                                       │
+│  ├── Microsoft Defender Application Guard                               │
+│  │                                                                       │
+│  ├── Windows Defender SmartScreen                                       │
+│  │                                                                       │
+│  └── Data Collection and Preview Builds                                 │
+│      └── Allow Telemetry (required for MDE)                            │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Core Antivirus Settings</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">GPO - Microsoft Defender Antivirus</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PATH: Computer Configuration → Administrative Templates → 
+      Windows Components → Microsoft Defender Antivirus
+
+CRITICAL SETTINGS:
+
+Turn off Microsoft Defender Antivirus
+├── Setting: Disabled (ensures AV stays on)
+└── WARNING: "Enabled" DISABLES antivirus protection!
+
+Allow antimalware service to remain running always
+├── Setting: Enabled
+└── Prevents service from being stopped
+
+REAL-TIME PROTECTION:
+Path: ...Microsoft Defender Antivirus → Real-time Protection
+
+Turn on real-time protection
+├── Setting: Enabled
+└── Essential for endpoint protection
+
+Turn on behavior monitoring
+├── Setting: Enabled
+└── Detects suspicious process behaviors
+
+Scan all downloaded files and attachments
+├── Setting: Enabled
+└── Catches malware at download
+
+Monitor file and program activity
+├── Setting: Enabled
+└── Continuous file system monitoring
+
+Turn on process scanning when real-time protection is enabled
+├── Setting: Enabled
+└── Scans processes as they execute
+
+CLOUD PROTECTION:
+Path: ...Microsoft Defender Antivirus → MpEngine
+
+Cloud protection level
+├── Setting: Enabled → High
+└── Options: Default, Moderate, High, High+, Zero tolerance
+
+Configure extended cloud check
+├── Setting: Enabled → 50 seconds
+└── Time to wait for cloud verdict
+
+Join Microsoft MAPS
+├── Setting: Enabled → Advanced MAPS
+└── Required for cloud-delivered protection
+
+Send file samples when further analysis is required
+├── Setting: Enabled → Send safe samples automatically
+└── Options: Always prompt, Send safe samples, Never send, Send all</code></pre>
+                </div>
+            </div>
+
+            <h2>Scan Configuration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">GPO - Scan Settings</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PATH: Computer Configuration → Administrative Templates → 
+      Windows Components → Microsoft Defender Antivirus → Scan
+
+SCHEDULED SCAN:
+
+Specify the scan type for scheduled scan
+├── Setting: Enabled → Quick scan
+└── Options: Quick scan (1), Full scan (2)
+
+Specify the day of week for scheduled scan
+├── Setting: Enabled → Sunday (or 0 for daily)
+└── Options: 0=Daily, 1=Sunday, 2=Monday, etc.
+
+Specify the time for daily quick scan
+├── Setting: Enabled → 120 (2:00 AM in minutes from midnight)
+└── Value: Minutes after midnight (0-1380)
+
+Check for latest definitions before running a scheduled scan
+├── Setting: Enabled
+└── Updates signatures before each scan
+
+SCAN BEHAVIOR:
+
+Scan removable drives
+├── Setting: Enabled
+└── Scans USB drives during full scan
+
+Scan archive files
+├── Setting: Enabled
+└── Scans inside ZIP, RAR, etc.
+
+Turn on email scanning
+├── Setting: Enabled
+└── Scans email files (PST, DBX, etc.)
+
+Scan network files
+├── Setting: Enabled
+└── Scans files accessed over network
+
+PERFORMANCE:
+
+Specify the maximum percentage of CPU utilization
+├── Setting: Enabled → 50
+└── Limits CPU during scans (default 50%)
+
+Scan only when computer is idle
+├── Setting: Not Configured (or Disabled for servers)
+└── Waits for idle time before scanning</code></pre>
+                </div>
+            </div>
+
+            <h2>Attack Surface Reduction</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">GPO - ASR Rules</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PATH: Computer Configuration → Administrative Templates → 
+      Windows Components → Microsoft Defender Antivirus → 
+      Windows Defender Exploit Guard → Attack Surface Reduction
+
+Configure Attack Surface Reduction rules
+├── Setting: Enabled
+└── Click "Show..." to configure rules
+
+RULE CONFIGURATION FORMAT:
+Rule GUID = Value
+├── 0 = Disabled
+├── 1 = Block
+├── 2 = Audit
+└── 6 = Warn
+
+RECOMMENDED RULES (Block mode = 1):
+
+BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550 = 1
+└── Block executable content from email
+
+D4F940AB-401B-4EFC-AADC-AD5F3C50688A = 1
+└── Block Office apps from creating child processes
+
+3B576869-A4EC-4529-8536-B80A7769E899 = 1
+└── Block Office apps from creating executable content
+
+75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84 = 1
+└── Block Office apps from injecting code
+
+D3E037E1-3EB8-44C8-A917-57927947596D = 1
+└── Block JavaScript/VBScript from launching downloads
+
+5BEB7EFE-FD9A-4556-801D-275E5FFC04CC = 1
+└── Block execution of potentially obfuscated scripts
+
+92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B = 1
+└── Block Win32 API calls from Office macros
+
+9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2 = 1
+└── Block credential stealing from LSASS
+
+B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4 = 1
+└── Block untrusted processes from USB
+
+D1E49AAC-8F56-4280-B9BA-993A6D77406C = 1
+└── Block process creations from PSExec/WMI
+
+ASR EXCLUSIONS:
+
+Exclude files and paths from ASR rules
+├── Setting: Enabled
+├── Click "Show..." to add exclusions
+└── Format: Full path to file or folder</code></pre>
+                </div>
+            </div>
+
+            <h2>Network Protection & CFA</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">GPO - Network Protection & Controlled Folder Access</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>NETWORK PROTECTION:
+PATH: ...Windows Defender Exploit Guard → Network Protection
+
+Prevent users and apps from accessing dangerous websites
+├── Setting: Enabled → Block
+└── Options: Disabled (0), Block (1), Audit (2)
+
+CONTROLLED FOLDER ACCESS:
+PATH: ...Windows Defender Exploit Guard → Controlled Folder Access
+
+Configure Controlled folder access
+├── Setting: Enabled → Block mode
+└── Options: Disabled (0), Block (1), Audit (2)
+
+Configure protected folders
+├── Setting: Enabled
+├── Click "Show..." to add folders
+└── Default protected: Documents, Pictures, Videos, Music, Desktop, Favorites
+
+Configure allowed applications
+├── Setting: Enabled
+├── Click "Show..." to add apps
+└── Format: Full path to executable
+
+EXAMPLE ALLOWED APPS:
+C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE
+C:\Program Files\Adobe\Acrobat DC\Acrobat\Acrobat.exe
+C:\Program Files\Notepad++\notepad++.exe</code></pre>
+                </div>
+            </div>
+
+            <h2>Exclusions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">GPO - Exclusion Settings</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PATH: Computer Configuration → Administrative Templates → 
+      Windows Components → Microsoft Defender Antivirus → Exclusions
+
+PATH EXCLUSIONS:
+
+Path Exclusions
+├── Setting: Enabled
+├── Click "Show..."
+└── Add folder paths to exclude
+
+Example entries:
+├── C:\Program Files\CustomApp\
+├── D:\Database\*.mdf
+├── E:\Backups\
+└── %ProgramData%\VendorApp\
+
+EXTENSION EXCLUSIONS:
+
+Extension Exclusions
+├── Setting: Enabled
+├── Click "Show..."
+└── Add file extensions (without dot)
+
+Example entries:
+├── mdf
+├── ldf
+├── bak
+└── log
+
+PROCESS EXCLUSIONS:
+
+Process Exclusions
+├── Setting: Enabled
+├── Click "Show..."
+└── Add process paths
+
+Example entries:
+├── C:\Program Files\Microsoft SQL Server\...\sqlservr.exe
+├── C:\Program Files\Backup Software\backup.exe
+└── vmms.exe
+
+WARNING:
+├── Exclusions are security risks
+├── Document all exclusions
+├── Review quarterly
+├── Use minimum necessary scope
+└── Never exclude user-writable folders like Temp/Downloads</code></pre>
+                </div>
+            </div>
+
+            <h2>Onboarding via GPO</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">GPO - MDE Onboarding</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MDE ONBOARDING VIA GROUP POLICY:
+
+STEP 1: DOWNLOAD PACKAGE
+├── Microsoft Defender portal → Settings → Endpoints → Onboarding
+├── Select: Windows 10/11
+├── Deployment method: Group Policy
+├── Download package (ZIP file)
+└── Extract to network share
+
+STEP 2: COPY FILES
+├── WindowsDefenderATPOnboardingScript.cmd
+├── Copy to: \\domain\NETLOGON\MDE\ (or accessible share)
+└── Ensure NTFS permissions allow read for Domain Computers
+
+STEP 3: CREATE GPO
+├── Open Group Policy Management Console
+├── Create new GPO: "MDE Onboarding"
+├── Link to target OU (Computers)
+└── Configure settings below
+
+STEP 4: CONFIGURE STARTUP SCRIPT
+Path: Computer Configuration → Policies → 
+      Windows Settings → Scripts → Startup
+
+├── Add script
+├── Script name: WindowsDefenderATPOnboardingScript.cmd
+├── Script path: \\domain\NETLOGON\MDE\
+└── Parameters: (leave empty)
+
+STEP 5: CONFIGURE SAMPLE SHARING
+Path: Computer Configuration → Administrative Templates → 
+      Windows Components → Data Collection and Preview Builds
+
+Allow Telemetry
+├── Setting: Enabled → Required (Basic) or above
+└── Minimum for MDE functionality
+
+VERIFICATION:
+├── gpupdate /force on target device
+├── Reboot to trigger startup script
+├── Check: reg query "HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"
+├── OnboardingState should equal 1
+└── Device appears in portal within 20-30 minutes</code></pre>
+                </div>
+            </div>
+
+            <h2>Recommended GPO Structure</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Enterprise GPO Design</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>RECOMMENDED GPO STRUCTURE:
+
+GPO 1: MDE-Onboarding
+├── Scope: All Windows devices
+├── Purpose: Onboard to MDE
+├── Contains: Onboarding script, telemetry settings
+└── Priority: Apply first
+
+GPO 2: MDE-Baseline-Workstations
+├── Scope: Workstations OU
+├── Purpose: Standard workstation protection
+├── Contains:
+│   ├── Real-time protection: Enabled
+│   ├── Cloud protection: High
+│   ├── ASR rules: Block mode
+│   ├── Network protection: Block
+│   ├── Controlled folder access: Block
+│   └── Standard scan schedule
+└── Priority: Apply after onboarding
+
+GPO 3: MDE-Baseline-Servers
+├── Scope: Servers OU
+├── Purpose: Server-optimized protection
+├── Contains:
+│   ├── Same as workstations but:
+│   ├── Performance tuning for servers
+│   ├── Server-specific exclusions
+│   └── Different scan schedule
+└── Priority: Apply after onboarding
+
+GPO 4: MDE-Exclusions-SQLServers
+├── Scope: SQL Servers OU
+├── Purpose: SQL Server exclusions
+├── Contains: SQL file/process exclusions
+└── Priority: Apply last (overrides)
+
+GPO 5: MDE-Exclusions-ExchangeServers
+├── Scope: Exchange Servers OU
+├── Purpose: Exchange exclusions
+├── Contains: Exchange file/process exclusions
+└── Priority: Apply last
+
+PROCESSING ORDER:
+1. MDE-Onboarding (site/domain level)
+2. MDE-Baseline-[Type] (OU level)
+3. MDE-Exclusions-[Role] (child OU level)</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Important Notes</h5>
+                    <ul>
+                        <li><strong>Tamper Protection</strong>: GPO settings may be blocked if Tamper Protection is enabled via Intune</li>
+                        <li><strong>Policy conflicts</strong>: Intune policies take precedence over GPO for co-managed devices</li>
+                        <li><strong>Testing</strong>: Always test GPOs on pilot devices before broad deployment</li>
+                        <li><strong>Documentation</strong>: Document all GPO settings for audit and troubleshooting</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Common GPO Tasks</h4>
+                <ul>
+                    <li>Deploy ASR rules to new OUs</li>
+                    <li>Add exclusions for new applications</li>
+                    <li>Troubleshoot GPO application issues</li>
+                    <li>Audit GPO settings for compliance</li>
+                    <li>Update onboarding scripts for new tenants</li>
+                </ul>
+
+                <h4>Troubleshooting Commands</h4>
+                <div class="code-block">
+                    <div class="code-content">
+<pre><code># Check applied GPOs
+gpresult /r /scope computer
+
+# Force GPO update
+gpupdate /force
+
+# Check specific Defender settings
+reg query "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /s
+
+# Verify MDE onboarding
+reg query "HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>GPO path</strong>: Computer Config → Admin Templates → Windows Components → Microsoft Defender Antivirus</li>
+                    <li><strong>ASR via GPO</strong>: Configure rules using GUID = Value format (0=Disabled, 1=Block, 2=Audit)</li>
+                    <li><strong>Cloud protection</strong>: MpEngine settings for cloud block level and extended timeout</li>
+                    <li><strong>Onboarding</strong>: Startup script method with downloaded package from portal</li>
+                    <li><strong>Conflict resolution</strong>: Intune policies take precedence over GPO</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="10-2-deployment-rings.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Deployment Rings</span>
+                </a>
+                <a href="10-4-intune-policies.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Intune Policies</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

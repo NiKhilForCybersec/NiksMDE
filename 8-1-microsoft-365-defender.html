@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft 365 Defender | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Microsoft 365 Defender XDR platform. Learn how MDE integrates with identity, email, and cloud app security for unified detection and response.</p>
+            </div>
+
+            <h1>Microsoft 365 Defender</h1>
+
+            <p>Microsoft 365 Defender is Microsoft's XDR (Extended Detection and Response) platform that unifies endpoint, identity, email, and cloud app security into a single portal with correlated detection and coordinated response.</p>
+
+            <h2>XDR Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Microsoft 365 Defender Components</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MICROSOFT 365 DEFENDER (XDR)                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│                    ┌─────────────────────────────┐                      │
+│                    │    Unified Portal           │                      │
+│                    │  security.microsoft.com     │                      │
+│                    └─────────────┬───────────────┘                      │
+│                                  │                                       │
+│         ┌────────────────────────┼────────────────────────┐             │
+│         │                        │                        │             │
+│         ▼                        ▼                        ▼             │
+│  ┌─────────────┐         ┌─────────────┐         ┌─────────────┐       │
+│  │    MDE      │         │    MDI      │         │    MDO      │       │
+│  │  Endpoints  │         │  Identity   │         │   Email     │       │
+│  │             │         │             │         │             │       │
+│  │ • Windows   │         │ • AD        │         │ • Exchange  │       │
+│  │ • macOS     │         │ • Azure AD  │         │ • Teams     │       │
+│  │ • Linux     │         │ • Hybrid    │         │ • SharePoint│       │
+│  │ • Mobile    │         │             │         │             │       │
+│  └─────────────┘         └─────────────┘         └─────────────┘       │
+│         │                        │                        │             │
+│         │                        │                        │             │
+│         └────────────────────────┼────────────────────────┘             │
+│                                  │                                       │
+│                                  ▼                                       │
+│                    ┌─────────────────────────────┐                      │
+│                    │    MDCA (Cloud Apps)        │                      │
+│                    │    CASB Functionality       │                      │
+│                    └─────────────────────────────┘                      │
+│                                                                          │
+│  UNIFIED CAPABILITIES:                                                  │
+│  ├── Correlated incidents across all domains                           │
+│  ├── Unified Advanced Hunting (all data sources)                       │
+│  ├── Cross-domain automated investigation                              │
+│  └── Coordinated response actions                                      │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Component Overview</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Coverage</th>
+                            <th>Key Detections</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>MDE</strong></td>
+                            <td>Endpoints (Windows, macOS, Linux, mobile)</td>
+                            <td>Malware, EDR, behavioral, vulnerability</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MDI</strong></td>
+                            <td>Active Directory, Azure AD</td>
+                            <td>Credential theft, lateral movement, reconnaissance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MDO</strong></td>
+                            <td>Exchange, Teams, SharePoint, OneDrive</td>
+                            <td>Phishing, malicious attachments, BEC</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MDCA</strong></td>
+                            <td>Cloud applications (SaaS)</td>
+                            <td>Shadow IT, data exfiltration, risky apps</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Incident Correlation</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Cross-Domain Correlation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INCIDENT CORRELATION EXAMPLE:
+
+ATTACK CHAIN:
+1. MDO: Phishing email delivered
+   └── User clicks malicious link
+
+2. MDE: Malware execution
+   └── Payload drops on endpoint
+   └── Credential harvesting detected
+
+3. MDI: Lateral movement
+   └── Pass-the-hash detected
+   └── Suspicious AD queries
+
+4. MDCA: Data exfiltration
+   └── Unusual cloud app access
+   └── Large file uploads
+
+UNIFIED INCIDENT:
+┌────────────────────────────────────────┐
+│ Incident: Multi-stage attack           │
+│ Status: Active                         │
+│ Severity: High                         │
+├────────────────────────────────────────┤
+│ Alerts:                                │
+│ ├── [MDO] Phishing email delivered     │
+│ ├── [MDE] Malware detected             │
+│ ├── [MDE] Credential theft attempt     │
+│ ├── [MDI] Pass-the-hash detected       │
+│ ├── [MDI] Suspicious LDAP query        │
+│ └── [MDCA] Unusual SharePoint access   │
+├────────────────────────────────────────┤
+│ Entities:                              │
+│ ├── User: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="83e9ecebedade7ece6c3e0eceef3e2edfaade0ecee">[email&#160;protected]</a>         │
+│ ├── Device: DESKTOP-ABC123             │
+│ ├── IP: 192.168.1.100                  │
+│ └── Files: payload.exe, data.zip       │
+└────────────────────────────────────────┘
+
+Without XDR: 6 separate alerts, investigated independently
+With XDR: 1 correlated incident, full attack story</code></pre>
+                </div>
+            </div>
+
+            <h2>Unified Advanced Hunting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Cross-Domain Hunting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Hunt across all data sources</span>
+
+<span class="comment">// Email + Endpoint correlation</span>
+<span class="variable">EmailEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ThreatTypes <span class="function">has</span> <span class="string">"Phish"</span>
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind=inner</span> (
+    <span class="variable">DeviceProcessEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+) <span class="keyword">on</span> <span class="variable">$left</span>.RecipientEmailAddress <span class="operator">==</span> <span class="variable">$right</span>.AccountUpn
+<span class="operator">|</span> <span class="keyword">project</span> EmailTimestamp=Timestamp, Subject, RecipientEmailAddress,
+         ProcessTimestamp=Timestamp1, FileName, ProcessCommandLine
+
+<span class="comment">// Identity + Endpoint correlation</span>
+<span class="variable">IdentityLogonEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> LogonType <span class="operator">==</span> <span class="string">"RemoteInteractive"</span>
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind=inner</span> (
+    <span class="variable">DeviceLogonEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+) <span class="keyword">on</span> AccountName
+<span class="operator">|</span> <span class="keyword">project</span> IdentityTimestamp=Timestamp, AccountName, 
+         TargetDeviceName, DeviceLogonTimestamp=Timestamp1
+
+<span class="comment">// Cloud App + Identity correlation</span>
+<span class="variable">CloudAppEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"FileDownloaded"</span>
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind=inner</span> (
+    <span class="variable">IdentityLogonEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+    <span class="operator">|</span> <span class="keyword">where</span> RiskState <span class="operator">==</span> <span class="string">"atRisk"</span>
+) <span class="keyword">on</span> AccountObjectId</code></pre>
+                </div>
+            </div>
+
+            <h2>Response Actions Across Domains</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Coordinated Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CROSS-DOMAIN RESPONSE ACTIONS:
+
+ENDPOINT (MDE):
+├── Isolate device
+├── Run antivirus scan
+├── Collect investigation package
+├── Restrict app execution
+└── Live response session
+
+IDENTITY (MDI/Azure AD):
+├── Disable user account
+├── Reset user password
+├── Revoke sessions
+├── Require MFA re-registration
+└── Block legacy authentication
+
+EMAIL (MDO):
+├── Soft delete malicious emails
+├── Block sender
+├── Submit for analysis
+├── Purge from all mailboxes
+└── Enable Safe Links/Attachments
+
+CLOUD APPS (MDCA):
+├── Suspend user
+├── Revoke app permissions
+├── Block access to app
+├── Require step-up authentication
+└── Apply session controls
+
+AUTOMATED RESPONSE:
+├── AIR can take actions across domains
+├── Playbooks can coordinate response
+├── Actions logged in unified Action Center
+└── Approval workflows for sensitive actions</code></pre>
+                </div>
+            </div>
+
+            <h2>Unified Tables Reference</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Advanced Hunting Tables</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ENDPOINT TABLES (MDE):
+├── DeviceProcessEvents
+├── DeviceNetworkEvents
+├── DeviceFileEvents
+├── DeviceRegistryEvents
+├── DeviceLogonEvents
+├── DeviceImageLoadEvents
+├── DeviceEvents
+└── DeviceInfo
+
+IDENTITY TABLES (MDI):
+├── IdentityLogonEvents
+├── IdentityQueryEvents
+├── IdentityDirectoryEvents
+├── AADSignInEventsBeta
+└── AADSpnSignInEventsBeta
+
+EMAIL TABLES (MDO):
+├── EmailEvents
+├── EmailAttachmentInfo
+├── EmailUrlInfo
+├── EmailPostDeliveryEvents
+└── UrlClickEvents
+
+CLOUD APP TABLES (MDCA):
+├── CloudAppEvents
+└── CloudAppDiscovery
+
+ALERT/INCIDENT TABLES:
+├── AlertInfo
+├── AlertEvidence
+└── IncidentEvents</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>XDR Benefits</h5>
+                    <ul>
+                        <li><strong>Reduced alert fatigue</strong> - Correlated incidents instead of siloed alerts</li>
+                        <li><strong>Faster investigation</strong> - Full attack story in one view</li>
+                        <li><strong>Coordinated response</strong> - Actions across all domains</li>
+                        <li><strong>Unified hunting</strong> - Query all data sources with KQL</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>XDR definition</strong>: Extended Detection and Response across multiple domains</li>
+                    <li><strong>Components</strong>: MDE (endpoints), MDI (identity), MDO (email), MDCA (cloud apps)</li>
+                    <li><strong>Key benefit</strong>: Correlated incidents show full attack chain</li>
+                    <li><strong>Portal</strong>: security.microsoft.com (unified)</li>
+                    <li><strong>Hunting</strong>: Unified Advanced Hunting queries all data sources</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="7-6-exposure-insights.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Exposure Insights</span>
+                </a>
+                <a href="8-2-sentinel-integration.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Sentinel Integration</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+  

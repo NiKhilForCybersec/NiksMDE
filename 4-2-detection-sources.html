@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Sources | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to MDE detection sources and types. Learn how different detection engines work, what each detection source covers, and how to interpret alerts from various sources.</p>
+            </div>
+
+            <h1>Detection Sources</h1>
+
+            <p>Microsoft Defender for Endpoint uses multiple detection engines and sources to identify threats. Understanding these sources helps analysts properly investigate and respond to alerts.</p>
+
+            <h2>Detection Source Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Detection Engine Architecture</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      MDE DETECTION SOURCES                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ENDPOINT-BASED DETECTION                                                │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                  │   │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │   │
+│  │  │ Antivirus   │  │ EDR         │  │ ASR / Exploit          │ │   │
+│  │  │ (AV)        │  │ Behavioral  │  │ Protection             │ │   │
+│  │  │ • Signatures│  │ • Behavior  │  │ • Rule-based blocks    │ │   │
+│  │  │ • Heuristics│  │ • ML models │  │ • Exploit mitigations  │ │   │
+│  │  │ • Cloud     │  │ • Anomalies │  │ • Memory protections   │ │   │
+│  │  └─────────────┘  └─────────────┘  └─────────────────────────┘ │   │
+│  │                                                                  │   │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │   │
+│  │  │ Network     │  │ SmartScreen │  │ Custom                  │ │   │
+│  │  │ Protection  │  │             │  │ Detections              │ │   │
+│  │  │ • Malicious │  │ • URL rep   │  │ • Your KQL rules        │ │   │
+│  │  │   IPs/URLs  │  │ • Download  │  │ • Org-specific threats  │ │   │
+│  │  └─────────────┘  └─────────────┘  └─────────────────────────┘ │   │
+│  │                                                                  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  CLOUD-BASED DETECTION                                                   │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                  │   │
+│  │  ┌─────────────────────┐  ┌────────────────────────────────┐   │   │
+│  │  │ Microsoft Threat    │  │ Automated Investigation         │   │   │
+│  │  │ Intelligence        │  │ & Response (AIR)                │   │   │
+│  │  │ • Global threat data│  │ • Correlation                   │   │   │
+│  │  │ • Emerging threats  │  │ • Root cause analysis           │   │   │
+│  │  │ • Campaign tracking │  │ • Auto-remediation              │   │   │
+│  │  └─────────────────────┘  └────────────────────────────────┘   │   │
+│  │                                                                  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Detection Sources Explained</h2>
+
+            <h3>Antivirus (AV)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Antivirus Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DETECTION METHODS:
+
+SIGNATURE-BASED:
+├── Known malware hash matching
+├── Pattern/signature matching
+├── Threat family identification
+└── Fastest detection for known threats
+
+HEURISTIC:
+├── Suspicious code patterns
+├── Packer detection
+├── Obfuscation indicators
+└── Catches variants of known malware
+
+CLOUD PROTECTION (MAPS):
+├── Real-time cloud lookup
+├── Unknown file analysis
+├── Machine learning models
+├── Block at First Sight (BAFS)
+
+ALERT CHARACTERISTICS:
+• Source: Microsoft Defender Antivirus
+• Typically immediate blocking
+• Clear malware identification
+• File path and hash available
+• Action usually automatic (quarantine)</code></pre>
+                </div>
+            </div>
+
+            <h3>EDR (Endpoint Detection and Response)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">EDR Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DETECTION METHODS:
+
+BEHAVIORAL ANALYSIS:
+├── Process behavior monitoring
+├── Suspicious process chains
+├── Anomalous network activity
+├── Registry persistence detection
+└── Living-off-the-land detection
+
+MACHINE LEARNING:
+├── Trained on billions of signals
+├── Anomaly detection
+├── Pattern recognition
+├── Evolves with new threats
+
+THREAT INTELLIGENCE:
+├── Known bad indicators
+├── Threat actor TTPs
+├── Campaign correlation
+└── Global telemetry insights
+
+ALERT CHARACTERISTICS:
+• Source: EDR
+• Behavior-based (may need investigation)
+• Rich context and timeline
+• MITRE ATT&CK mapping
+• May not have file hash (fileless attacks)</code></pre>
+                </div>
+            </div>
+
+            <h3>Attack Surface Reduction (ASR)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">ASR Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DETECTION METHODS:
+
+RULE-BASED BLOCKING:
+├── Pre-defined attack patterns
+├── Configurable rules
+├── Block or Audit mode
+└── GUID-identified rules
+
+COMMON ASR ALERTS:
+├── Office app spawning child process
+├── Script obfuscation detected
+├── Credential stealing from LSASS
+├── Ransomware behavior blocked
+└── Executable content blocked
+
+ALERT CHARACTERISTICS:
+• Source: ASR
+• Preventive (blocks before damage)
+• Rule ID in alert
+• Clear action (Block/Audit)
+• May be FP for legitimate tools</code></pre>
+                </div>
+            </div>
+
+            <h3>Network Protection</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Network Protection Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DETECTION METHODS:
+
+URL/IP REPUTATION:
+├── Known malicious domains
+├── C2 infrastructure
+├── Phishing sites
+├── Malware distribution
+
+WEB CONTENT FILTERING:
+├── Category-based blocking
+├── Custom indicators
+├── Adult content blocking
+└── Policy-based restrictions
+
+ALERT CHARACTERISTICS:
+• Source: Network Protection
+• Connection blocked or warned
+• Remote IP/URL in evidence
+• Initiating process identified
+• May indicate C2 or phishing</code></pre>
+                </div>
+            </div>
+
+            <h3>Custom Detections</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Custom Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DETECTION METHODS:
+
+KQL-BASED RULES:
+├── Your hunting queries as alerts
+├── Scheduled execution
+├── Custom logic and thresholds
+└── Organization-specific threats
+
+INDICATOR MATCHES:
+├── Custom IOCs you've added
+├── File hashes
+├── IP addresses
+├── Domains/URLs
+
+ALERT CHARACTERISTICS:
+• Source: Custom detection
+• Rule name you defined
+• Your severity and category
+• Mapped entities from query
+• Your response actions</code></pre>
+                </div>
+            </div>
+
+            <h2>Detection Source Comparison</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Speed</th>
+                            <th>Coverage</th>
+                            <th>FP Rate</th>
+                            <th>Investigation Need</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Antivirus</strong></td>
+                            <td>Immediate</td>
+                            <td>Known malware</td>
+                            <td>Very Low</td>
+                            <td>Low (usually clear verdict)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EDR Behavioral</strong></td>
+                            <td>Near real-time</td>
+                            <td>Suspicious behavior</td>
+                            <td>Medium</td>
+                            <td>High (requires analysis)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ASR Rules</strong></td>
+                            <td>Immediate</td>
+                            <td>Attack patterns</td>
+                            <td>Medium</td>
+                            <td>Medium (verify legitimacy)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network Protection</strong></td>
+                            <td>Immediate</td>
+                            <td>Malicious network</td>
+                            <td>Low</td>
+                            <td>Medium (check intent)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom Detections</strong></td>
+                            <td>Scheduled</td>
+                            <td>Org-specific</td>
+                            <td>Varies</td>
+                            <td>Varies (your tuning)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Alert Investigation by Source</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Investigation Approach</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>AV ALERT INVESTIGATION:
+1. Check threat name - research the malware family
+2. Verify file was quarantined
+3. Check device timeline for how file arrived
+4. Look for lateral spread
+5. Usually straightforward - verify remediation
+
+EDR BEHAVIORAL ALERT INVESTIGATION:
+1. Review the alert story and timeline
+2. Understand the full process chain
+3. Analyze command lines in detail
+4. Check network connections
+5. Correlate with user activity
+6. May require hunting for scope
+
+ASR ALERT INVESTIGATION:
+1. Identify which ASR rule triggered
+2. Check if blocked action was legitimate
+3. Common FP: IT tools, dev activities
+4. If FP, consider exclusion for that app
+5. If TP, investigate full attack chain
+
+NETWORK PROTECTION INVESTIGATION:
+1. Check what URL/IP was blocked
+2. Identify the connecting process
+3. Research the destination reputation
+4. Check for prior successful connections
+5. May indicate already compromised</code></pre>
+                </div>
+            </div>
+
+            <h2>Identifying Source in Alerts</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Detection Source Analysis</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Alert count by detection source</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> DetectionSource
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// AV detections specifically</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> DetectionSource <span class="operator">==</span> <span class="string">"Antivirus"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, Title, Severity
+
+<span class="comment">// EDR behavioral detections</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> DetectionSource <span class="operator">==</span> <span class="string">"EDR"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> Title
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Detection Analysis</h4>
+                <ul>
+                    <li>Review alerts and identify detection source</li>
+                    <li>Adjust investigation approach based on source</li>
+                    <li>Tune ASR rules based on FP patterns</li>
+                    <li>Create custom detections for gaps</li>
+                    <li>Monitor detection source metrics</li>
+                </ul>
+
+                <h4>Common Patterns</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"AV detection on server"</span>
+                    <span class="ticket-solution">→ Usually clear-cut. Verify quarantine, check arrival vector, scan for spread.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"EDR behavioral alert"</span>
+                    <span class="ticket-solution">→ Requires investigation. Check timeline, process tree, user context.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"ASR block on IT admin"</span>
+                    <span class="ticket-solution">→ Likely FP for legitimate tool. Verify, then create exclusion if valid.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>AV</strong>: Signature/heuristic/cloud - fast, known malware, low FP</li>
+                    <li><strong>EDR</strong>: Behavioral analysis - catches unknown threats, needs investigation</li>
+                    <li><strong>ASR</strong>: Rule-based prevention - blocks attack patterns, may have FPs</li>
+                    <li><strong>Network Protection</strong>: Blocks malicious network connections</li>
+                    <li><strong>Custom</strong>: Your KQL queries as automated alerts</li>
+                    <li><strong>Investigation approach</strong>: Varies by source - AV is quick, EDR needs depth</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-1-edr-overview.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">EDR Overview</span>
+                </a>
+                <a href="4-3-alert-investigation.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Alert Investigation</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

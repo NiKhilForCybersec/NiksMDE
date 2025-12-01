@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continuous Improvement | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Guide to continuous improvement of MDE operations. Learn to measure effectiveness, identify gaps, optimize processes, and evolve security capabilities.</p>
+            </div>
+
+            <h1>Continuous Improvement</h1>
+
+            <p>Security is not a destination but a journey. This guide covers methodologies for continuously improving your MDE operations, detection capabilities, and security posture.</p>
+
+            <h2>Improvement Framework</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Continuous Improvement Cycle</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    CONTINUOUS IMPROVEMENT CYCLE                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│                         ┌───────────────┐                               │
+│                         │    MEASURE    │                               │
+│                         │  • Metrics    │                               │
+│                         │  • KPIs       │                               │
+│                         │  • Baselines  │                               │
+│                         └───────┬───────┘                               │
+│                                 │                                        │
+│        ┌────────────────────────┼────────────────────────┐              │
+│        ▼                        │                        ▼               │
+│  ┌───────────────┐              │              ┌───────────────┐        │
+│  │    ANALYZE    │              │              │   IMPLEMENT   │        │
+│  │  • Gaps       │◀─────────────┴─────────────▶│  • Changes    │        │
+│  │  • Trends     │                             │  • Training   │        │
+│  │  • Root cause │                             │  • Automation │        │
+│  └───────┬───────┘                             └───────┬───────┘        │
+│          │                                             │                 │
+│          │              ┌───────────────┐              │                 │
+│          └─────────────▶│     PLAN      │◀─────────────┘                │
+│                         │  • Priorities │                               │
+│                         │  • Resources  │                               │
+│                         │  • Timeline   │                               │
+│                         └───────────────┘                               │
+│                                                                          │
+│  FREQUENCY: Monthly metrics review, quarterly deep dive, annual plan   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Key Metrics to Track</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Security Metrics</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>KEY METRICS FOR IMPROVEMENT:
+
+DETECTION METRICS:
+├── Mean Time to Detect (MTTD)
+│   └── Target: < 24 hours for high severity
+├── Detection rate by technique (MITRE coverage)
+│   └── Target: > 80% coverage
+├── True positive rate
+│   └── Target: > 80%
+├── False positive rate
+│   └── Target: < 20%
+└── Missed detections (from threat hunts)
+
+RESPONSE METRICS:
+├── Mean Time to Respond (MTTR)
+│   └── Target: < 4 hours for critical
+├── Mean Time to Contain (MTTC)
+│   └── Target: < 1 hour for active threats
+├── Mean Time to Remediate
+│   └── Target: < 24 hours
+└── Incidents per analyst
+
+COVERAGE METRICS:
+├── Endpoint coverage (onboarded devices)
+│   └── Target: 100%
+├── Sensor health (active sensors)
+│   └── Target: > 98%
+├── Policy compliance
+│   └── Target: > 95%
+└── Feature enablement (ASR, NP, CFA)
+
+VULNERABILITY METRICS:
+├── Exposure score trend
+├── Time to patch critical CVEs
+│   └── Target: < 14 days
+├── End-of-support software count
+└── Security recommendation completion rate</code></pre>
+                </div>
+            </div>
+
+            <h2>Gap Analysis</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Identifying Gaps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>GAP ANALYSIS AREAS:
+
+DETECTION GAPS:
+├── MITRE ATT&CK coverage assessment
+│   ├── Map current detections to techniques
+│   ├── Identify uncovered techniques
+│   └── Prioritize based on threat landscape
+├── Custom detection review
+│   ├── Are custom detections firing?
+│   ├── Are they catching real threats?
+│   └── What's missing?
+└── Threat hunt findings
+    ├── What did hunts find that detections missed?
+    └── Convert hunt findings to detections
+
+PROCESS GAPS:
+├── Response playbook review
+│   ├── Are playbooks followed?
+│   ├── Are they effective?
+│   └── What's missing?
+├── Escalation gaps
+│   ├── Are escalations timely?
+│   └── Is the right team notified?
+└── Documentation gaps
+    ├── Are processes documented?
+    └── Is documentation current?
+
+TECHNOLOGY GAPS:
+├── Feature utilization
+│   ├── Which features are enabled?
+│   ├── Which features are not used?
+│   └── Why aren't they used?
+├── Integration gaps
+│   ├── Is MDE integrated with SIEM?
+│   ├── Is automation in place?
+│   └── What's not connected?
+└── Coverage gaps
+    ├── Are all devices onboarded?
+    ├── Are all platforms covered?
+    └── Are there visibility blind spots?
+
+SKILL GAPS:
+├── Team capabilities assessment
+├── Training needs identification
+└── Certification planning</code></pre>
+                </div>
+            </div>
+
+            <h2>Improvement Activities</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Improvement Initiatives</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>IMPROVEMENT ACTIVITIES BY CATEGORY:
+
+WEEKLY:
+├── Review open alerts backlog
+├── Tune noisy detections
+├── Update suppression rules
+├── Review sensor health
+└── Address onboarding failures
+
+MONTHLY:
+├── Metrics review and reporting
+├── Detection rule effectiveness review
+├── Playbook updates based on incidents
+├── Team training/knowledge sharing
+├── MITRE coverage assessment
+└── Threat intelligence integration review
+
+QUARTERLY:
+├── Deep dive metrics analysis
+├── Process improvement initiatives
+├── Feature enablement review
+├── Integration enhancements
+├── Vendor relationship review
+└── Budget and resource planning
+
+ANNUALLY:
+├── Full security assessment
+├── Strategic planning
+├── Major capability investments
+├── Team skill development plan
+├── Tool consolidation review
+└── Incident retrospective summary
+
+POST-INCIDENT:
+├── Lessons learned documentation
+├── Detection gap closure
+├── Playbook updates
+├── Process improvements
+└── Training updates</code></pre>
+                </div>
+            </div>
+
+            <h2>Detection Tuning</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Detection Effectiveness</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Alert volume by classification</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Total = <span class="function">count</span>(),
+    TP = <span class="function">countif</span>(Classification <span class="operator">==</span> <span class="string">"TruePositive"</span>),
+    FP = <span class="function">countif</span>(Classification <span class="operator">==</span> <span class="string">"FalsePositive"</span>),
+    Unclassified = <span class="function">countif</span>(<span class="function">isempty</span>(Classification))
+<span class="operator">|</span> <span class="keyword">extend</span> TPRate = <span class="function">round</span>(<span class="number">100.0</span> * TP / Total, <span class="number">1</span>),
+         FPRate = <span class="function">round</span>(<span class="number">100.0</span> * FP / Total, <span class="number">1</span>)
+
+<span class="comment">// Noisiest detections (candidates for tuning)</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Alerts = <span class="function">count</span>(),
+    FP = <span class="function">countif</span>(Classification <span class="operator">==</span> <span class="string">"FalsePositive"</span>) <span class="keyword">by</span> Title
+<span class="operator">|</span> <span class="keyword">extend</span> FPRate = <span class="function">round</span>(<span class="number">100.0</span> * FP / Alerts, <span class="number">1</span>)
+<span class="operator">|</span> <span class="keyword">where</span> Alerts <span class="operator">></span> <span class="number">10</span>
+<span class="operator">|</span> <span class="keyword">order by</span> FPRate <span class="keyword">desc</span>
+
+<span class="comment">// Detection coverage trend</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">90</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Alerts = <span class="function">count</span>() <span class="keyword">by</span> <span class="function">bin</span>(Timestamp, <span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp</code></pre>
+                </div>
+            </div>
+
+            <h2>Maturity Model</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Security Operations Maturity</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SECURITY OPERATIONS MATURITY LEVELS:
+
+LEVEL 1: INITIAL
+├── Reactive response only
+├── Basic alerting configured
+├── Manual investigation
+├── Limited documentation
+└── No metrics tracking
+
+LEVEL 2: DEVELOPING
+├── Defined incident response process
+├── Some custom detections
+├── Basic automation
+├── Regular metrics review
+└── Training program exists
+
+LEVEL 3: ESTABLISHED
+├── Comprehensive detection coverage
+├── Automated response for common threats
+├── Regular threat hunting
+├── Mature metrics and KPIs
+└── Continuous training
+
+LEVEL 4: ADVANCED
+├── Proactive threat hunting
+├── Threat intelligence integration
+├── Advanced automation
+├── Predictive analytics
+└── Industry benchmarking
+
+LEVEL 5: OPTIMIZED
+├── Continuous improvement culture
+├── Innovation and research
+├── Industry leadership
+├── Full automation where possible
+└── Measurable business value
+
+ASSESSMENT:
+Rate your organization on each capability:
+[ ] Detection coverage
+[ ] Response automation
+[ ] Threat hunting
+[ ] Metrics and reporting
+[ ] Process documentation
+[ ] Team skills
+[ ] Tool integration</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Measure first</strong>: You can't improve what you don't measure</li>
+                        <li><strong>Focus on outcomes</strong>: Security outcomes matter more than activity</li>
+                        <li><strong>Learn from incidents</strong>: Every incident is a learning opportunity</li>
+                        <li><strong>Automate repetitive tasks</strong>: Free analysts for higher-value work</li>
+                        <li><strong>Invest in people</strong>: Tools are only as good as the people using them</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Key metrics</strong>: MTTD, MTTR, TP rate, FP rate, coverage</li>
+                    <li><strong>Gap analysis</strong>: MITRE coverage, process gaps, skill gaps</li>
+                    <li><strong>Improvement cycle</strong>: Measure → Analyze → Plan → Implement</li>
+                    <li><strong>Post-incident</strong>: Lessons learned, detection updates, process fixes</li>
+                    <li><strong>Maturity model</strong>: Initial → Developing → Established → Advanced → Optimized</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="11-3-reporting-stakeholders.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Reporting to Stakeholders</span>
+                </a>
+                <a href="11-5-managed-services.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Managed Services</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

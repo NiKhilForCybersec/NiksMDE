@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings & Configuration | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to MDE portal settings and configuration. Learn about all configurable options, permissions, features, and how to optimize your MDE deployment.</p>
+            </div>
+
+            <h1>Settings & Configuration</h1>
+
+            <p>The Settings section in Microsoft Defender portal controls core MDE functionality, permissions, integrations, and advanced features.</p>
+
+            <h2>Settings Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Settings Categories</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    SETTINGS → ENDPOINTS                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  GENERAL                              PERMISSIONS                        │
+│  ├── Data retention (30-180 days)    ├── Roles (RBAC)                   │
+│  ├── Email notifications             ├── Device groups                  │
+│  ├── Advanced features               └── Scoped access                  │
+│  └── Preview features                                                   │
+│                                                                          │
+│  RULES                                DEVICE MANAGEMENT                  │
+│  ├── Suppression rules               ├── Onboarding packages            │
+│  ├── Indicators (IOC)                ├── Offboarding packages           │
+│  ├── Web content filtering           └── Device tags                    │
+│  └── Automation exclusions                                              │
+│                                                                          │
+│  APIS                                                                    │
+│  ├── SIEM integration                                                   │
+│  └── Connected applications                                             │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Advanced Features</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Advanced Features Toggle</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Location: Settings → Endpoints → Advanced features
+
+AUTOMATED INVESTIGATION:
+├── Enables automatic investigation of alerts
+├── Recommended: ON
+└── Reduces analyst workload
+
+LIVE RESPONSE:
+├── Enables remote shell to endpoints
+├── Recommended: ON for security team
+└── Requires operator role
+
+EDR IN BLOCK MODE:
+├── Block threats even when third-party AV is primary
+├── Recommended: ON
+└── Provides additional protection layer
+
+TAMPER PROTECTION:
+├── Prevents disabling of Defender features
+├── Recommended: ON (via Intune for full control)
+└── Critical for security
+
+CUSTOM NETWORK INDICATORS:
+├── Enables IP/URL/Domain indicators
+├── Recommended: ON
+└── Requires Network Protection enabled
+
+WEB CONTENT FILTERING:
+├── Category-based web blocking
+├── Recommended: ON
+└── Requires Network Protection enabled
+
+DEVICE DISCOVERY:
+├── Discovers unmanaged devices on network
+├── Recommended: ON
+└── Helps identify security gaps</code></pre>
+                </div>
+            </div>
+
+            <h2>RBAC Configuration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Role-Based Access Control</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>BUILT-IN ROLES:
+├── Security Administrator: Full access
+├── Security Operator: Respond to threats, view data
+└── Security Reader: View only, no actions
+
+CUSTOM ROLE PERMISSIONS:
+├── View data - Security operations
+├── View data - TVM
+├── Active remediation actions
+├── Alerts investigation
+├── Manage security settings
+├── Manage portal settings
+└── Live response capabilities
+
+DEVICE GROUPS:
+├── Scope RBAC to specific devices
+├── Create by: Name, Domain, Tags, OS
+├── Example groups:
+│   ├── All-Servers
+│   ├── Finance-Workstations
+│   ├── High-Value-Assets
+│   └── Development-Machines
+└── Used for targeted policies</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Data retention</strong>: Set to 180 days for full investigation capability</li>
+                        <li><strong>Enable key features</strong>: AIR, Live Response, Tamper Protection, EDR block mode</li>
+                        <li><strong>RBAC</strong>: Follow least privilege - operators for SOC, readers for stakeholders</li>
+                        <li><strong>Device groups</strong>: Organize by environment, business unit, or sensitivity</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Data retention</strong>: Up to 180 days, cannot reduce after increasing</li>
+                    <li><strong>RBAC roles</strong>: Admin (full), Operator (respond), Reader (view only)</li>
+                    <li><strong>Device groups</strong>: Scope policies, RBAC, and automation rules</li>
+                    <li><strong>Advanced features</strong>: AIR, Live Response, Tamper Protection are key toggles</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="2-7-reports-dashboards.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Reports & Dashboards</span>
+                </a>
+                <a href="3-1-realtime-protection.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Real-time Protection</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

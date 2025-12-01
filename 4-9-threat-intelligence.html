@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Intelligence | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to integrating threat intelligence with MDE. Learn about Microsoft's built-in intel, third-party TI integration, and automating IOC ingestion from external sources.</p>
+            </div>
+
+            <h1>Threat Intelligence Integration</h1>
+
+            <p>Threat intelligence enhances MDE's detection capabilities by providing context about known threats, attack campaigns, and indicators of compromise from global threat research.</p>
+
+            <h2>Microsoft Threat Intelligence</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Built-in Threat Intelligence Sources</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                  MICROSOFT THREAT INTELLIGENCE                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  MICROSOFT THREAT INTELLIGENCE CENTER (MSTIC)                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ • Nation-state threat tracking                                   │   │
+│  │ • APT group attribution                                          │   │
+│  │ • Campaign analysis                                              │   │
+│  │ • Malware family research                                        │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  MICROSOFT DEFENDER THREAT INTELLIGENCE (MDTI)                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ • Reputation data for IPs, domains, files                       │   │
+│  │ • Actor profiles and TTPs                                       │   │
+│  │ • Vulnerability intelligence                                     │   │
+│  │ • Attack surface mapping                                         │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  THREAT ANALYTICS                                                       │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ • Curated threat reports                                         │   │
+│  │ • Exposure assessment                                            │   │
+│  │ • Recommended mitigations                                        │   │
+│  │ • Hunting queries                                                │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  AUTOMATIC ENRICHMENT                                                   │
+│  ├── Alerts enriched with MITRE ATT&CK techniques                      │
+│  ├── File reputation from cloud intelligence                           │
+│  ├── IP/domain categorization                                          │
+│  └── Actor attribution when available                                  │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Third-Party TI Integration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Integration Methods</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INTEGRATION OPTIONS:
+
+1. INDICATOR API (DIRECT)
+   ├── Push IOCs directly to MDE via API
+   ├── Supports: Hash, IP, Domain, URL, Certificate
+   ├── Actions: Block, Warn, Audit
+   └── Use for: Real-time IOC ingestion
+
+2. MICROSOFT GRAPH SECURITY API
+   ├── tiIndicators resource
+   ├── Standard format for TI platforms
+   ├── Supports bulk operations
+   └── Use for: STIX/TAXII integration
+
+3. SENTINEL INTEGRATION
+   ├── TI connectors in Sentinel
+   ├── Automatic sync to MDE indicators
+   ├── Supported TI platforms:
+   │   ├── MISP
+   │   ├── Anomali ThreatStream
+   │   ├── Palo Alto MineMeld
+   │   ├── AlienVault OTX
+   │   ├── Recorded Future
+   │   └── Many more...
+   └── Use for: Enterprise TI platform integration
+
+4. THREAT INTELLIGENCE PLATFORMS (TIP)
+   ├── Many TIPs have native MDE integration
+   ├── Automated IOC push
+   ├── Bidirectional sync available
+   └── Use for: Large-scale TI operations</code></pre>
+                </div>
+            </div>
+
+            <h2>Automating IOC Ingestion</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Automated IOC Import</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Function to add indicators from threat feed</span>
+<span class="keyword">function</span> Import-ThreatIntelFeed {
+    <span class="keyword">param</span>(
+        [string]<span class="variable">$FeedUrl</span>,
+        [string]<span class="variable">$AccessToken</span>,
+        [string]<span class="variable">$IndicatorType</span>,
+        [string]<span class="variable">$Action</span> = <span class="string">"AlertAndBlock"</span>
+    )
+    
+    <span class="variable">$headers</span> = @{
+        Authorization = <span class="string">"Bearer $AccessToken"</span>
+        <span class="string">"Content-Type"</span> = <span class="string">"application/json"</span>
+    }
+    
+    <span class="comment"># Get IOCs from feed</span>
+    <span class="variable">$iocs</span> = (<span class="function">Invoke-RestMethod</span> <span class="variable">-Uri</span> <span class="variable">$FeedUrl</span>).indicators
+    
+    <span class="keyword">foreach</span> (<span class="variable">$ioc</span> <span class="keyword">in</span> <span class="variable">$iocs</span>) {
+        <span class="variable">$indicator</span> = @{
+            indicatorValue = <span class="variable">$ioc</span>.value
+            indicatorType  = <span class="variable">$IndicatorType</span>
+            action         = <span class="variable">$Action</span>
+            title          = <span class="variable">$ioc</span>.description
+            description    = <span class="string">"Source: $FeedUrl"</span>
+            severity       = <span class="string">"High"</span>
+            generateAlert  = <span class="variable">$true</span>
+            expirationTime = (<span class="function">Get-Date</span>).AddDays(<span class="number">30</span>).ToString(<span class="string">"o"</span>)
+        }
+        
+        <span class="keyword">try</span> {
+            <span class="function">Invoke-RestMethod</span> `
+                <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/indicators"</span> `
+                <span class="variable">-Method</span> POST `
+                <span class="variable">-Headers</span> <span class="variable">$headers</span> `
+                <span class="variable">-Body</span> (<span class="variable">$indicator</span> | <span class="function">ConvertTo-Json</span>)
+            
+            Write-Host <span class="string">"Added: $($ioc.value)"</span>
+        }
+        <span class="keyword">catch</span> {
+            Write-Warning <span class="string">"Failed: $($ioc.value) - $_"</span>
+        }
+    }
+}
+
+<span class="comment"># Example: Import hash feed</span>
+Import-ThreatIntelFeed `
+    <span class="variable">-FeedUrl</span> <span class="string">"https://threatfeed.example.com/hashes.json"</span> `
+    <span class="variable">-AccessToken</span> <span class="variable">$token</span> `
+    <span class="variable">-IndicatorType</span> <span class="string">"FileSha256"</span></code></pre>
+                </div>
+            </div>
+
+            <h2>STIX/TAXII Integration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">STIX/TAXII via Sentinel</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>STIX/TAXII INTEGRATION PATH:
+1. Configure TAXII server in Sentinel
+2. Sentinel ingests STIX indicators
+3. Analytics rule pushes to MDE indicators
+4. MDE enforces block/alert actions
+
+SENTINEL CONFIGURATION:
+Microsoft Sentinel → Data connectors → 
+Threat Intelligence - TAXII → Configure
+
+SETTINGS:
+├── Friendly name: Your TI feed name
+├── API root URL: https://taxii.example.com/api
+├── Collection ID: Collection identifier
+├── Username/Password: API credentials
+├── Import indicators: Toggle on
+└── Polling frequency: 1 hour (default)
+
+ANALYTICS RULE TO PUSH TO MDE:
+<span class="comment">// Example: Push high-confidence file hashes to MDE</span>
+ThreatIntelligenceIndicator
+| where ConfidenceScore > 80
+| where IndicatorType == "file"
+| where ExpirationDateTime > now()
+| project FileHashValue, Description</code></pre>
+                </div>
+            </div>
+
+            <h2>Threat Intel Hunting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - TI Correlation Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Match file hashes against TI</span>
+<span class="keyword">let</span> MaliciousHashes = <span class="keyword">dynamic</span>([
+    <span class="string">"hash1..."</span>,
+    <span class="string">"hash2..."</span>,
+    <span class="string">"hash3..."</span>
+]);
+<span class="variable">DeviceFileEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> SHA256 <span class="function">in</span> (MaliciousHashes)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, FolderPath, SHA256
+
+<span class="comment">// Match IPs against TI feed</span>
+<span class="keyword">let</span> MaliciousIPs = <span class="keyword">dynamic</span>([
+    <span class="string">"192.0.2.1"</span>,
+    <span class="string">"198.51.100.1"</span>
+]);
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> RemoteIP <span class="function">in</span> (MaliciousIPs)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteIP, RemotePort,
+         InitiatingProcessFileName
+
+<span class="comment">// Match domains against TI</span>
+<span class="keyword">let</span> MaliciousDomains = <span class="keyword">dynamic</span>([
+    <span class="string">"evil.com"</span>,
+    <span class="string">"malware.net"</span>
+]);
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> RemoteUrl <span class="function">has_any</span> (MaliciousDomains)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteUrl, 
+         InitiatingProcessFileName</code></pre>
+                </div>
+            </div>
+
+            <h2>TI Sources and Feeds</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Threat Intelligence Sources</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>COMMERCIAL TI PLATFORMS:
+├── Recorded Future - Premium threat intel
+├── Anomali ThreatStream - TI management
+├── Mandiant Advantage - Incident intelligence
+├── CrowdStrike Falcon Intelligence - Adversary intel
+├── Palo Alto Unit 42 - Threat research
+└── Cisco Talos - Security research
+
+OPEN SOURCE / FREE FEEDS:
+├── AlienVault OTX - Community threat data
+├── Abuse.ch (URLhaus, MalwareBazaar, ThreatFox)
+├── MISP - Open source TI sharing
+├── VirusTotal - File/URL reputation
+├── Shodan - Internet-connected device intel
+└── GreyNoise - Internet scanner identification
+
+INDUSTRY-SPECIFIC:
+├── FS-ISAC - Financial services
+├── H-ISAC - Healthcare
+├── IT-ISAC - Information technology
+├── MS-ISAC - State/local government
+└── Sector-specific sharing groups
+
+GOVERNMENT:
+├── CISA AIS - Automated Indicator Sharing
+├── FBI InfraGard - Private sector partnership
+└── National CERTs - Country-specific intel</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>TI Best Practices</h5>
+                    <ul>
+                        <li><strong>Quality over quantity</strong>: High-confidence IOCs are better than bulk imports</li>
+                        <li><strong>Set expiration dates</strong>: IOCs become stale quickly</li>
+                        <li><strong>Provide context</strong>: Include threat actor, campaign, malware family</li>
+                        <li><strong>Automate where possible</strong>: Manual IOC management doesn't scale</li>
+                        <li><strong>Validate before blocking</strong>: Test in Audit mode first</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>MSTIC</strong>: Microsoft Threat Intelligence Center - APT/nation-state tracking</li>
+                    <li><strong>Threat Analytics</strong>: Built-in curated threat reports with exposure assessment</li>
+                    <li><strong>Integration methods</strong>: API, Graph Security API, Sentinel connectors</li>
+                    <li><strong>STIX/TAXII</strong>: Standard formats for threat intelligence sharing</li>
+                    <li><strong>TI lifecycle</strong>: Collect → Normalize → Enrich → Distribute → Act</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-8-indicators-ioc.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Indicators (IOC)</span>
+                </a>
+                <a href="4-10-detection-tuning.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Detection Tuning</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

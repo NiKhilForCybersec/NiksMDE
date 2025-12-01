@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Investigation | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to investigating alerts in MDE. Learn the investigation workflow, how to analyze alert evidence, interpret command lines, trace attack chains, and make accurate classifications.</p>
+            </div>
+
+            <h1>Alert Investigation</h1>
+
+            <p>Alert investigation is the core skill for SOC analysts. This guide covers the systematic approach to analyzing alerts, from initial triage to final classification.</p>
+
+            <h2>Investigation Workflow</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Alert Investigation Process</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    ALERT INVESTIGATION WORKFLOW                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                 │
+│  │ 1. TRIAGE   │───►│ 2. ANALYZE  │───►│ 3. SCOPE    │                 │
+│  │             │    │             │    │             │                 │
+│  │ • Priority  │    │ • Evidence  │    │ • Other     │                 │
+│  │ • Context   │    │ • Timeline  │    │   devices?  │                 │
+│  │ • Quick     │    │ • Process   │    │ • Other     │                 │
+│  │   verdict?  │    │   tree      │    │   users?    │                 │
+│  └─────────────┘    └─────────────┘    └─────────────┘                 │
+│         │                  │                  │                         │
+│         ▼                  ▼                  ▼                         │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                 │
+│  │ 4. RESPOND  │◄───│ 5. CLASSIFY │◄───│ 6. DOCUMENT │                 │
+│  │             │    │             │    │             │                 │
+│  │ • Contain   │    │ • TP/FP     │    │ • Findings  │                 │
+│  │ • Remediate │    │ • Close     │    │ • Timeline  │                 │
+│  │ • Block IOC │    │   alert     │    │ • Lessons   │                 │
+│  └─────────────┘    └─────────────┘    └─────────────┘                 │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Step 1: Initial Triage</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Triage Questions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>FIRST 30 SECONDS - ASSESS:
+
+1. WHAT'S THE ALERT TITLE?
+   └── Does it indicate the threat type?
+   └── Is it a known detection or custom?
+
+2. WHAT'S THE SEVERITY?
+   └── High/Critical = Priority investigation
+   └── Medium = Investigate within SLA
+   └── Low/Info = Can batch process
+
+3. WHAT DEVICE IS AFFECTED?
+   └── Is it a critical asset? (Server, DC, Executive)
+   └── Is it a regular workstation?
+   └── Check device tags
+
+4. WHAT USER IS INVOLVED?
+   └── Is it a privileged account?
+   └── Is user activity expected?
+   └── Check user's department/role
+
+5. WHEN DID IT HAPPEN?
+   └── During business hours?
+   └── After hours = more suspicious
+   └── How old is the alert?
+
+6. QUICK VERDICT POSSIBLE?
+   └── Obvious FP? (Known good app)
+   └── Obvious TP? (Known malware name)
+   └── Needs investigation? (Most cases)</code></pre>
+                </div>
+            </div>
+
+            <h2>Step 2: Analyze Evidence</h2>
+
+            <h3>Alert Page Components</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Alert Page Sections</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ALERT PAGE LAYOUT:
+
+HEADER:
+├── Alert title and severity
+├── Status (New, In progress, Resolved)
+├── Detection source (AV, EDR, ASR, etc.)
+├── MITRE ATT&CK techniques
+└── Timestamps
+
+ALERT STORY:
+├── Visual representation of events
+├── Process tree
+├── Timeline of related activities
+└── Click nodes for details
+
+EVIDENCE TAB:
+├── Entities involved
+│   ├── Processes (name, command line, hash)
+│   ├── Files (path, hash, signature)
+│   ├── Network (IPs, URLs, domains)
+│   └── Registry (keys, values)
+├── Actions available per entity
+└── Deep analysis results
+
+INVESTIGATION TAB:
+├── Related alerts
+├── Related incidents
+├── Automated investigation results
+└── Recommended actions</code></pre>
+                </div>
+            </div>
+
+            <h3>Analyzing Process Evidence</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Process Analysis Checklist</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>FOR EACH SUSPICIOUS PROCESS:
+
+1. PROCESS NAME
+   ├── Is it a legitimate Windows process?
+   ├── Is the spelling correct? (svch0st vs svchost)
+   ├── Is it a known tool? (psexec, mimikatz)
+   └── Research if unknown
+
+2. PROCESS PATH
+   ├── Is it in expected location?
+   │   ├── C:\Windows\System32 = Expected for system
+   │   ├── C:\Program Files = Expected for apps
+   │   ├── C:\Users\*\AppData = Possible, check context
+   │   ├── C:\Users\*\Downloads = Suspicious
+   │   ├── C:\Users\Public = Suspicious
+   │   └── C:\Temp = Very suspicious
+   └── Legitimate process in wrong location = RED FLAG
+
+3. COMMAND LINE
+   ├── What parameters are being used?
+   ├── Encoded commands? (-enc, -e)
+   ├── Download cradles? (IEX, Invoke-WebRequest)
+   ├── Suspicious paths or URLs?
+   └── See "Command Line Analysis" section below
+
+4. PARENT PROCESS
+   ├── What spawned this process?
+   ├── Expected parent? (explorer.exe for user apps)
+   ├── Unusual parent = RED FLAG
+   │   ├── WINWORD.EXE spawning cmd.exe = Suspicious
+   │   ├── excel.exe spawning powershell.exe = Suspicious
+   │   └── w3wp.exe spawning cmd.exe = Web shell likely
+   └── Trace parent chain back to origin
+
+5. DIGITAL SIGNATURE
+   ├── Is it signed?
+   ├── By whom? (Microsoft, known vendor)
+   ├── Is signature valid?
+   └── Unsigned executable = investigate more
+
+6. FILE HASH
+   ├── Check in VirusTotal
+   ├── Check in threat intel
+   ├── First seen date
+   └── Known malware family?</code></pre>
+                </div>
+            </div>
+
+            <h3>Command Line Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Suspicious Command Line Patterns</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>RED FLAG COMMAND LINE PATTERNS:
+
+ENCODED POWERSHELL:
+powershell -enc [base64]
+powershell -e [base64]
+powershell -EncodedCommand [base64]
+└── DECODE IT: [System.Text.Encoding]::Unicode.GetString([Convert]::FromBase64String("..."))
+
+DOWNLOAD CRADLES:
+IEX (New-Object Net.WebClient).DownloadString('http://...')
+Invoke-Expression (Invoke-WebRequest 'http://...')
+certutil -urlcache -split -f http://... output.exe
+bitsadmin /transfer job http://... output.exe
+└── Downloads and executes = MALICIOUS
+
+RECONNAISSANCE:
+whoami /all
+net user /domain
+net group "domain admins" /domain
+nltest /dclist:
+systeminfo
+└── Information gathering = lateral movement prep
+
+CREDENTIAL ACCESS:
+sekurlsa::logonpasswords
+lsadump::sam
+reg save HKLM\SAM
+ntdsutil "ac i ntds" "ifm" "create full"
+└── Credential theft = CRITICAL
+
+PERSISTENCE:
+schtasks /create /sc
+reg add HKLM\...\Run
+wmic process call create
+sc create [service]
+└── Establishing persistence
+
+LATERAL MOVEMENT:
+psexec \\target
+wmic /node:target process call create
+winrm -r:target
+Enter-PSSession -ComputerName target
+└── Moving to other systems
+
+DEFENSE EVASION:
+Set-MpPreference -DisableRealtimeMonitoring $true
+Stop-Service WinDefend
+wevtutil cl Security
+└── Disabling security = CRITICAL</code></pre>
+                </div>
+            </div>
+
+            <h2>Step 3: Trace the Attack Chain</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Attack Chain Analysis</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>TRACE BACKWARD (Find root cause):
+
+START AT ALERT
+    │
+    ▼
+What process triggered the alert?
+    │
+    ▼
+What was the parent process?
+    │
+    ▼
+Continue tracing parents until you find...
+    │
+    ├── User action (clicked link, opened file)
+    ├── Exploitation (browser, service)
+    ├── Remote execution (psexec, wmi, winrm)
+    └── Scheduled task / service start
+
+EXAMPLE CHAIN:
+alert: Suspicious PowerShell
+  └── powershell.exe (malicious command)
+      └── cmd.exe 
+          └── WINWORD.EXE (user opened document)
+              └── OUTLOOK.EXE (received via email)
+                  └── ROOT CAUSE: Phishing email
+
+TRACE FORWARD (Find impact):
+
+FROM ALERT
+    │
+    ▼
+What child processes were spawned?
+    │
+    ▼
+What files were created/modified?
+    │
+    ▼
+What network connections were made?
+    │
+    ▼
+What persistence was established?
+    │
+    ▼
+Was there lateral movement?</code></pre>
+                </div>
+            </div>
+
+            <h2>Step 4: Scope the Incident</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Scoping Questions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DETERMINE FULL SCOPE:
+
+1. OTHER DEVICES AFFECTED?
+   └── Search for same IOCs across environment
+   └── Check for same file hash
+   └── Check for same C2 IP/domain
+   └── Check for same user on other devices
+
+2. OTHER USERS AFFECTED?
+   └── Did malware spread via email?
+   └── Were credentials compromised?
+   └── Check for logons from compromised account
+
+3. DATA ACCESS?
+   └── What data could attacker access?
+   └── Were sensitive files accessed?
+   └── Evidence of exfiltration?
+
+4. PERSISTENCE?
+   └── Registry Run keys?
+   └── Scheduled tasks?
+   └── Services created?
+   └── WMI subscriptions?
+
+KQL FOR SCOPING:
+
+// Find same file hash on other devices
+DeviceFileEvents
+| where SHA256 == "[hash from alert]"
+| summarize Devices = dcount(DeviceName) by SHA256
+
+// Find same C2 connection on other devices
+DeviceNetworkEvents
+| where RemoteIP == "[IP from alert]"
+| summarize by DeviceName, InitiatingProcessFileName</code></pre>
+                </div>
+            </div>
+
+            <h2>Step 5: Classify the Alert</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Classification</th>
+                            <th>Criteria</th>
+                            <th>Examples</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>True Positive (TP)</strong></td>
+                            <td>Confirmed malicious activity</td>
+                            <td>Malware execution, credential theft, C2 communication</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Benign True Positive (B-TP)</strong></td>
+                            <td>Real activity but authorized</td>
+                            <td>Pen test, security tool, IT admin activity</td>
+                        </tr>
+                        <tr>
+                            <td><strong>False Positive (FP)</strong></td>
+                            <td>Incorrect detection</td>
+                            <td>Legitimate app misidentified, noisy rule</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Classification Decision Tree</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CLASSIFICATION DECISION:
+
+Is activity actually malicious?
+├── YES → Was it authorized?
+│         ├── YES → Benign True Positive
+│         │         Determination: SecurityTesting, ConfirmedActivity
+│         └── NO → True Positive
+│                   Determination: Malware, Phishing, Compromised, etc.
+│                   ACTION: Contain, remediate, block IOCs
+│
+└── NO → False Positive
+          Determination: NotMalicious, InaccurateAlert
+          ACTION: Consider suppression rule, submit to Microsoft</code></pre>
+                </div>
+            </div>
+
+            <h2>Common Alert Types</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Alert Investigation Tips by Type</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SUSPICIOUS POWERSHELL EXECUTION:
+├── Decode any encoded commands
+├── Check what the command does
+├── Trace parent process (how was PS launched?)
+├── Check for network connections
+└── Common in both attacks AND legitimate admin
+
+MALWARE DETECTED:
+├── Usually clear-cut - AV identified known threat
+├── Verify file was quarantined
+├── Check how file arrived (email, download, USB)
+├── Look for other indicators of compromise
+└── Scan for similar files
+
+CREDENTIAL THEFT ATTEMPT:
+├── Check if LSASS was actually accessed
+├── Identify the tool used
+├── Assume credentials compromised if TP
+├── Check for use of stolen credentials
+└── CRITICAL - prioritize containment
+
+SUSPICIOUS NETWORK CONNECTION:
+├── Research the destination IP/domain
+├── Check what process made the connection
+├── Look for beaconing patterns
+├── Check if data was transferred
+└── Block IOC if confirmed malicious
+
+PERSISTENCE MECHANISM DETECTED:
+├── Check what was persisted (file path)
+├── Is it a known legitimate application?
+├── When was persistence created?
+├── Correlate with other suspicious activity
+└── Remove persistence as part of remediation</code></pre>
+                </div>
+            </div>
+
+            <h2>Investigation Tools</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Useful Resources</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXTERNAL RESEARCH TOOLS:
+
+HASH/FILE ANALYSIS:
+├── VirusTotal (virustotal.com)
+├── Hybrid Analysis (hybrid-analysis.com)
+├── Any.Run (any.run)
+└── Joe Sandbox (joesandbox.com)
+
+IP/DOMAIN REPUTATION:
+├── VirusTotal
+├── AbuseIPDB (abuseipdb.com)
+├── URLhaus (urlhaus.abuse.ch)
+├── Shodan (shodan.io)
+└── GreyNoise (greynoise.io)
+
+PROCESS/COMMAND LINE:
+├── LOLBAS (lolbas-project.github.io) - Living off the land
+├── GTFOBins (gtfobins.github.io) - Linux binaries
+├── MITRE ATT&CK (attack.mitre.org)
+└── Atomic Red Team (atomicredteam.io)
+
+DECODING:
+├── CyberChef (gchq.github.io/CyberChef)
+├── Base64 decode
+├── URL decode
+└── PowerShell decode</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Investigation Operations</h4>
+                <ul>
+                    <li>Triage incoming alerts by severity</li>
+                    <li>Analyze process trees and command lines</li>
+                    <li>Research unknown files and IPs</li>
+                    <li>Trace attack chains from root cause</li>
+                    <li>Scope incidents to find all affected assets</li>
+                    <li>Document findings and classify alerts</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"PowerShell alert on admin machine"</span>
+                    <span class="ticket-solution">→ Check if admin activity. Decode command. Verify task is legitimate IT work.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Unknown executable detected"</span>
+                    <span class="ticket-solution">→ Check hash on VT. Review signature. Trace how it arrived. Check behavior.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"C2 connection alert"</span>
+                    <span class="ticket-solution">→ High priority. Verify destination is malicious. Check data transferred. Consider isolation.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Investigation workflow</strong>: Triage → Analyze → Scope → Respond → Classify → Document</li>
+                    <li><strong>Process analysis</strong>: Check name, path, command line, parent, signature, hash</li>
+                    <li><strong>Red flags</strong>: Encoded commands, unusual parent processes, suspicious paths</li>
+                    <li><strong>Attack chain</strong>: Trace backward for root cause, forward for impact</li>
+                    <li><strong>Scoping</strong>: Search for same IOCs across environment to find all affected</li>
+                    <li><strong>Classification</strong>: True Positive, Benign TP (authorized), False Positive</li>
+                    <li><strong>Tools</strong>: VirusTotal, AbuseIPDB, CyberChef, MITRE ATT&CK</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-2-detection-sources.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Detection Sources</span>
+                </a>
+                <a href="4-4-device-timeline.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Device Timeline</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

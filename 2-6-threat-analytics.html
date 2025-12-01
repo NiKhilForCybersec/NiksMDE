@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Analytics | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Threat Analytics in Microsoft 365 Defender. Learn how to track emerging threats, understand threat reports, assess organizational exposure, and take recommended actions to protect your environment.</p>
+            </div>
+
+            <h1>Threat Analytics</h1>
+
+            <p>Threat Analytics is Microsoft's built-in threat intelligence solution that provides expert analysis of emerging threats, active campaigns, and prominent threat actors. It helps security teams understand threats and assess their organization's exposure.</p>
+
+            <h2>Accessing Threat Analytics</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PORTAL NAVIGATION:
+security.microsoft.com → Threat intelligence → Threat analytics
+
+DIRECT URL:
+https://security.microsoft.com/threatanalytics3
+
+WHAT YOU'LL FIND:
+├── Active threat campaigns
+├── Emerging vulnerabilities (zero-days)
+├── Threat actor profiles
+├── Attack technique analysis
+├── Mitigation recommendations
+└── Exposure assessment for your org</code></pre>
+                </div>
+            </div>
+
+            <h2>Threat Analytics Dashboard</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Threat Analytics Interface</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      THREAT ANALYTICS DASHBOARD                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  FILTER BAR                                                              │
+│  [All threats ▼] [Tag: Ransomware ▼] [Impacted ▼] [Date range ▼]       │
+│                                                                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  THREAT CARDS                                                            │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ 🔴 HIGH IMPACT                                                   │   │
+│  │ ┌─────────────────────┐ ┌─────────────────────┐                 │   │
+│  │ │ LockBit 3.0         │ │ CVE-2024-XXXXX      │                 │   │
+│  │ │ Ransomware Campaign │ │ Zero-Day Exploit    │                 │   │
+│  │ │                     │ │                     │                 │   │
+│  │ │ Impacted: 5 devices │ │ Impacted: 12 devices│                 │   │
+│  │ │ Mitigated: 45%      │ │ Mitigated: 23%      │                 │   │
+│  │ │ [View report →]     │ │ [View report →]     │                 │   │
+│  │ └─────────────────────┘ └─────────────────────┘                 │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ 🟡 MEDIUM IMPACT                                                 │   │
+│  │ ┌─────────────────────┐ ┌─────────────────────┐                 │   │
+│  │ │ Emotet Revival      │ │ APT29 Campaign      │                 │   │
+│  │ │ Malware Distribution│ │ Espionage Activity  │                 │   │
+│  │ └─────────────────────┘ └─────────────────────┘                 │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Threat Report Components</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Threat Report Sections</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>THREAT REPORT STRUCTURE:
+
+OVERVIEW TAB:
+├── Executive summary
+├── Threat description
+├── Attack chain visualization
+├── MITRE ATT&CK mapping
+├── Affected industries/regions
+└── Timeline of activity
+
+ANALYST REPORT TAB:
+├── Detailed technical analysis
+├── Malware behavior
+├── Command and control infrastructure
+├── Indicators of Compromise (IOCs)
+├── Detection opportunities
+└── Hunting queries (copy-paste ready)
+
+IMPACTED ASSETS TAB:
+├── Devices with exposure
+├── Devices with alerts related to threat
+├── Devices with confirmed activity
+├── Users potentially affected
+└── Mailboxes with related emails
+
+MITIGATIONS TAB:
+├── Recommended security configurations
+├── Current mitigation status (%)
+├── Action items with priority
+├── Links to enable protections
+└── Vulnerability patches needed
+
+RELATED INCIDENTS TAB:
+├── Incidents linked to this threat
+├── Alert correlation
+├── Investigation status
+└── Timeline of detections</code></pre>
+                </div>
+            </div>
+
+            <h2>Exposure Assessment</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Understanding Exposure</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXPOSURE CATEGORIES:
+
+DEVICES AT RISK:
+├── Devices missing required patches
+├── Devices with vulnerable software
+├── Devices without recommended configs
+└── Calculation: Vulnerable / Total devices
+
+DEVICES WITH ALERTS:
+├── Devices with alerts matching threat TTPs
+├── May indicate active compromise
+├── Requires immediate investigation
+└── Links to related alerts/incidents
+
+IMPACTED DEVICES:
+├── Confirmed threat activity detected
+├── Evidence of exploitation or infection
+├── Highest priority for response
+└── May already be compromised
+
+MITIGATION STATUS:
+├── Percentage of recommendations implemented
+├── Per-mitigation breakdown
+├── What's blocking full mitigation
+└── Prioritized action items
+
+EXAMPLE EXPOSURE SUMMARY:
+┌────────────────────────────────────┐
+│ Threat: Ransomware Campaign XYZ    │
+├────────────────────────────────────┤
+│ Devices at risk:     234 (23%)     │
+│ Devices with alerts:  12 (1.2%)    │
+│ Impacted devices:      3 (0.3%)    │
+│ Mitigation status:    67%          │
+└────────────────────────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h2>Threat Categories</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Examples</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Ransomware</strong></td>
+                            <td>Encryption-based extortion attacks</td>
+                            <td>LockBit, BlackCat, Cl0p, Play</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Threat Actor</strong></td>
+                            <td>Nation-state or criminal groups</td>
+                            <td>APT29, Lazarus, FIN7, Scattered Spider</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vulnerability</strong></td>
+                            <td>Actively exploited CVEs</td>
+                            <td>Log4Shell, ProxyShell, MOVEit</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Phishing</strong></td>
+                            <td>Credential theft campaigns</td>
+                            <td>QR code phishing, OAuth consent attacks</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Malware</strong></td>
+                            <td>Trojans, loaders, infostealers</td>
+                            <td>Emotet, QakBot, IcedID, Raccoon</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Technique</strong></td>
+                            <td>Attack methodology analysis</td>
+                            <td>Living-off-the-land, DLL sideloading</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Using Threat Analytics Effectively</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Operational Workflow</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DAILY THREAT REVIEW WORKFLOW:
+
+1. CHECK FOR NEW HIGH-IMPACT THREATS
+   └── Filter: Impact = High, Date = Last 7 days
+   └── Review any new ransomware or zero-days
+   └── Assess immediate exposure
+
+2. REVIEW IMPACTED ASSETS
+   └── Any devices showing confirmed activity?
+   └── Investigate immediately if found
+   └── Check for related alerts/incidents
+
+3. CHECK MITIGATION STATUS
+   └── What's preventing 100% mitigation?
+   └── Prioritize quick wins
+   └── Escalate blocked items
+
+4. HUNT FOR INDICATORS
+   └── Copy IOCs from analyst report
+   └── Run in Advanced Hunting
+   └── Check historical data (30 days)
+
+5. UPDATE STAKEHOLDERS
+   └── Brief leadership on relevant threats
+   └── Document actions taken
+   └── Track mitigation progress
+
+RESPONDING TO NEW THREAT REPORT:
+
+Step 1: Read Executive Summary
+└── Understand the threat quickly
+└── Determine relevance to your org
+
+Step 2: Check Impacted Assets
+└── Do you have exposure?
+└── Any active alerts?
+
+Step 3: Review Mitigations
+└── What protections are you missing?
+└── Can you enable them now?
+
+Step 4: Hunt for IOCs
+└── Search for indicators in your environment
+└── Check 30-day history
+
+Step 5: Implement Recommendations
+└── Enable missing protections
+└── Apply patches
+└── Update configurations</code></pre>
+                </div>
+            </div>
+
+            <h2>Hunting Queries from Threat Analytics</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Using Threat Report Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Threat reports include ready-to-use KQL queries</span>
+<span class="comment">// Example: Hunt for ransomware indicators</span>
+
+<span class="comment">// Look for file hashes from threat report</span>
+<span class="keyword">let</span> malwareHashes = <span class="function">dynamic</span>([
+    <span class="string">"hash1..."</span>,
+    <span class="string">"hash2..."</span>,
+    <span class="string">"hash3..."</span>
+]);
+<span class="variable">DeviceFileEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> SHA256 <span class="function">in</span> (malwareHashes)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, FolderPath, SHA256
+
+<span class="comment">// Look for C2 communication</span>
+<span class="keyword">let</span> c2Domains = <span class="function">dynamic</span>([
+    <span class="string">"bad-domain1.com"</span>,
+    <span class="string">"bad-domain2.com"</span>
+]);
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> RemoteUrl <span class="function">has_any</span> (c2Domains)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteUrl, InitiatingProcessFileName
+
+<span class="comment">// Look for specific attack technique</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"specific-tool"</span>,
+    <span class="string">"attack-indicator"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, ProcessCommandLine
+
+<span class="comment">// Check mitigation coverage</span>
+<span class="variable">DeviceTvmSecureConfigurationAssessment</span>
+<span class="operator">|</span> <span class="keyword">where</span> ConfigurationId <span class="operator">==</span> <span class="string">"specific-mitigation-id"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Compliant = <span class="function">countif</span>(IsCompliant == <span class="keyword">true</span>),
+    NonCompliant = <span class="function">countif</span>(IsCompliant == <span class="keyword">false</span>)
+<span class="operator">|</span> <span class="keyword">extend</span> ComplianceRate = Compliant * <span class="number">100.0</span> / (Compliant + NonCompliant)</code></pre>
+                </div>
+            </div>
+
+            <h2>Mitigation Actions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Mitigations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>TYPICAL MITIGATION RECOMMENDATIONS:
+
+PATCH MANAGEMENT:
+├── Install security updates
+├── Specific KB numbers provided
+├── Urgency level indicated
+└── Links to update guidance
+
+CONFIGURATION CHANGES:
+├── Enable ASR rules
+├── Enable Network Protection
+├── Configure Controlled Folder Access
+├── Enable cloud protection
+└── Specific settings with steps
+
+DETECTION IMPROVEMENTS:
+├── Enable specific detections
+├── Create custom detection rules
+├── Add IOC indicators
+└── Configure alert policies
+
+NETWORK CONTROLS:
+├── Block specific IPs/domains
+├── Implement network segmentation
+├── Enable firewall rules
+└── Configure web filtering
+
+ACCESS CONTROLS:
+├── Implement MFA
+├── Review privileged access
+├── Disable legacy protocols
+└── Apply conditional access
+
+TAKING ACTION:
+1. Click mitigation item
+2. Review current status
+3. Follow implementation steps
+4. Mark as addressed when complete
+5. Re-check exposure status</code></pre>
+                </div>
+            </div>
+
+            <h2>Integrating with Incident Response</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Threat Analytics + IR</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WHEN INVESTIGATING AN INCIDENT:
+
+1. CHECK IF RELATED TO KNOWN THREAT
+   └── Match TTPs to threat reports
+   └── Compare IOCs
+   └── Identify threat actor/campaign
+
+2. USE THREAT REPORT FOR CONTEXT
+   └── Understand full attack chain
+   └── Know what to look for next
+   └── Predict attacker's next moves
+
+3. APPLY RECOMMENDED MITIGATIONS
+   └── Prevent further spread
+   └── Block known IOCs
+   └── Enable missing protections
+
+4. SHARE INTELLIGENCE
+   └── Update team on threat
+   └── Coordinate response
+   └── Report to leadership
+
+CORRELATION EXAMPLE:
+Incident: Suspicious PowerShell activity
+    ↓
+Check Threat Analytics for matching TTPs
+    ↓
+Find: Matches "Threat Actor XYZ Campaign"
+    ↓
+Review full attack chain from report
+    ↓
+Hunt for other IOCs from report
+    ↓
+Find 2 more affected devices
+    ↓
+Apply all recommended mitigations
+    ↓
+Contain and remediate with full context</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Pro Tips</h5>
+                    <ul>
+                        <li><strong>Subscribe to email alerts</strong> for new high-impact threats</li>
+                        <li><strong>Save hunting queries</strong> from threat reports for future use</li>
+                        <li><strong>Track mitigation progress</strong> over time as a KPI</li>
+                        <li><strong>Brief stakeholders</strong> on threats relevant to your industry</li>
+                        <li><strong>Use exposure data</strong> to justify security investments</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Threat Analytics Operations</h4>
+                <ul>
+                    <li>Review new threat reports daily/weekly</li>
+                    <li>Assess organizational exposure to emerging threats</li>
+                    <li>Hunt for IOCs from threat reports</li>
+                    <li>Implement recommended mitigations</li>
+                    <li>Track mitigation progress as metrics</li>
+                    <li>Brief leadership on relevant threats</li>
+                    <li>Correlate incidents with known campaigns</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"New ransomware campaign reported"</span>
+                    <span class="ticket-solution">→ Check exposure, hunt for IOCs, implement mitigations, brief leadership.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Zero-day vulnerability announced"</span>
+                    <span class="ticket-solution">→ Check impacted devices, apply workarounds, prioritize patching.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Leadership asks about threat X"</span>
+                    <span class="ticket-solution">→ Pull threat report, show exposure status, explain mitigations in place.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Threat intelligence on emerging threats, campaigns, actors</li>
+                    <li><strong>Exposure types</strong>: At risk (vulnerable), With alerts (detected), Impacted (confirmed)</li>
+                    <li><strong>Report sections</strong>: Overview, Analyst report, Impacted assets, Mitigations</li>
+                    <li><strong>Hunting queries</strong>: Copy-paste KQL included in analyst reports</li>
+                    <li><strong>Mitigations</strong>: Patches, configurations, IOC blocks, detection rules</li>
+                    <li><strong>Integration</strong>: Links to incidents, alerts, TVM recommendations</li>
+                    <li><strong>Value</strong>: Proactive defense, exposure assessment, leadership reporting</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="2-5-action-center.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Action Center</span>
+                </a>
+                <a href="2-7-reports-dashboards.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Reports & Dashboards</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

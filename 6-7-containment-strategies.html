@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Containment Strategies | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to threat containment strategies with MDE. Learn when and how to isolate devices, block threats, and prevent lateral movement during active incidents.</p>
+            </div>
+
+            <h1>Containment Strategies</h1>
+
+            <p>Containment is the critical phase between detection and remediation. The goal is to stop the threat from spreading while preserving evidence and minimizing business impact.</p>
+
+            <h2>Containment Decision Framework</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Containment Decision Tree</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    CONTAINMENT DECISION FRAMEWORK                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  THREAT DETECTED                                                        │
+│        │                                                                │
+│        ▼                                                                │
+│  ┌─────────────────────────────────────────────────────────────┐       │
+│  │ Is the threat actively executing/spreading?                  │       │
+│  └──────────────────────────┬──────────────────────────────────┘       │
+│                             │                                           │
+│              ┌──────────────┴──────────────┐                           │
+│              ▼                             ▼                            │
+│         YES: ACTIVE                   NO: BLOCKED/DORMANT              │
+│              │                             │                            │
+│              ▼                             ▼                            │
+│  ┌─────────────────────┐        ┌─────────────────────┐                │
+│  │ IMMEDIATE ISOLATION │        │ INVESTIGATE FIRST   │                │
+│  │ • Full isolation    │        │ • Assess scope      │                │
+│  │ • Block org-wide    │        │ • Collect evidence  │                │
+│  │ • Disable accounts  │        │ • Selective contain │                │
+│  └─────────────────────┘        └─────────────────────┘                │
+│                                                                          │
+│  SEVERITY-BASED RESPONSE:                                               │
+│  ┌───────────────┬────────────────────────────────────────────────┐    │
+│  │ CRITICAL      │ Immediate full isolation, escalate, all hands  │    │
+│  ├───────────────┼────────────────────────────────────────────────┤    │
+│  │ HIGH          │ Rapid containment, investigate in parallel     │    │
+│  ├───────────────┼────────────────────────────────────────────────┤    │
+│  │ MEDIUM        │ Investigate, selective containment as needed   │    │
+│  ├───────────────┼────────────────────────────────────────────────┤    │
+│  │ LOW           │ Standard investigation, monitor for escalation │    │
+│  └───────────────┴────────────────────────────────────────────────┘    │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>MDE Containment Actions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Available Containment Actions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MDE CONTAINMENT ACTIONS:
+
+1. DEVICE ISOLATION
+   ├── Full Isolation: Blocks ALL network (except MDE)
+   ├── Selective Isolation: Allows O365 apps
+   ├── Speed: Takes effect in minutes
+   ├── Reversible: Yes, release from portal
+   └── Use: Compromised devices, active threats
+
+2. APP EXECUTION RESTRICTION
+   ├── Effect: Only Microsoft-signed apps can run
+   ├── Blocks: All third-party executables
+   ├── Speed: Takes effect in minutes
+   ├── Reversible: Yes, remove restriction
+   └── Use: Active malware, prevent execution
+
+3. FILE BLOCKING (INDICATORS)
+   ├── Block by: SHA256, SHA1, MD5 hash
+   ├── Scope: Organization-wide
+   ├── Effect: File quarantined if found
+   ├── Speed: Propagates within ~15 minutes
+   └── Use: Known malware, prevent spread
+
+4. NETWORK BLOCKING (INDICATORS)
+   ├── Block: IP addresses, URLs, domains
+   ├── Requires: Network Protection enabled
+   ├── Effect: Connection blocked + logged
+   ├── Speed: Propagates within ~15 minutes
+   └── Use: C2 servers, malicious sites
+
+5. ACCOUNT DISABLING (Azure AD)
+   ├── Location: Azure AD portal
+   ├── Effect: Prevents all authentication
+   ├── Related: Revoke active sessions
+   └── Use: Compromised accounts
+
+6. CONDITIONAL ACCESS BLOCK
+   ├── Block: Risky sign-ins
+   ├── Block: Specific devices/locations
+   ├── Effect: Immediate access denial
+   └── Use: Prevent account misuse</code></pre>
+                </div>
+            </div>
+
+            <h2>Containment Scenarios</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Scenario-Based Containment</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SCENARIO 1: ACTIVE RANSOMWARE
+─────────────────────────────
+Indicators:
+├── Mass file encryption in progress
+├── Shadow copy deletion commands
+├── Ransom note creation
+└── Lateral movement attempts
+
+Containment Actions:
+1. IMMEDIATE: Full isolate affected device(s)
+2. IMMEDIATE: Disable compromised account(s)
+3. URGENT: Block ransomware hash org-wide
+4. URGENT: Block any identified C2 IPs
+5. Consider: Network segmentation at firewall
+6. Consider: Disable file shares temporarily
+
+Timeline: Seconds to minutes - every second counts!
+
+SCENARIO 2: CREDENTIAL THEFT DETECTED
+─────────────────────────────────────
+Indicators:
+├── LSASS memory access
+├── Mimikatz or similar tool
+├── Credential dumping activity
+└── Suspicious authentication patterns
+
+Containment Actions:
+1. IMMEDIATE: Disable affected privileged accounts
+2. IMMEDIATE: Revoke active sessions
+3. If DC: Do NOT isolate (breaks AD)
+4. Reset KRBTGT (if domain compromise suspected)
+5. Block dumping tool hashes org-wide
+6. Force password reset for affected accounts
+
+Timeline: Minutes - assume credentials are stolen
+
+SCENARIO 3: MALWARE WITH C2 CONNECTION
+─────────────────────────────────────
+Indicators:
+├── Malware detected on endpoint
+├── Outbound connection to suspicious IP
+├── Beaconing pattern detected
+└── May have data exfiltration
+
+Containment Actions:
+1. Full isolate the device
+2. Block C2 IP/domain org-wide
+3. Block malware hash org-wide
+4. Search for C2 connections from other devices
+5. Check for lateral movement
+
+Timeline: Minutes - prevent command execution
+
+SCENARIO 4: PHISHING - FILE EXECUTED
+───────────────────────────────────
+Indicators:
+├── User opened malicious attachment
+├── Macro executed PowerShell
+├── Suspicious child processes
+└── May have persistence installed
+
+Containment Actions:
+1. Selective isolate (user can still work on O365)
+2. Block file hash org-wide
+3. Delete malicious email from other mailboxes
+4. Check for persistence mechanisms
+5. Run AV scan
+
+Timeline: Minutes to hours - depends on threat</code></pre>
+                </div>
+            </div>
+
+            <h2>Lateral Movement Prevention</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Preventing Spread</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>LATERAL MOVEMENT PREVENTION:
+
+IMMEDIATE ACTIONS:
+├── Isolate compromised devices
+├── Disable compromised accounts
+├── Block attacker tools (PsExec, Mimikatz hashes)
+├── Block known attacker IPs
+└── Increase monitoring on critical assets
+
+KQL - FIND LATERAL MOVEMENT:</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Lateral Movement Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find devices connected to by compromised device</span>
+<span class="keyword">let</span> CompromisedDevice = <span class="string">"WKSTN-HR-042"</span>;
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">==</span> CompromisedDevice
+<span class="operator">|</span> <span class="keyword">where</span> RemotePort <span class="function">in</span> (<span class="number">445</span>, <span class="number">135</span>, <span class="number">3389</span>, <span class="number">5985</span>, <span class="number">5986</span>)
+<span class="operator">|</span> <span class="keyword">summarize</span> Connections = <span class="function">count</span>() <span class="keyword">by</span> RemoteIP, RemotePort
+<span class="operator">|</span> <span class="keyword">order by</span> Connections <span class="keyword">desc</span>
+
+<span class="comment">// Find use of remote admin tools</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="function">in~</span> (
+    <span class="string">"psexec.exe"</span>, <span class="string">"psexec64.exe"</span>,
+    <span class="string">"wmic.exe"</span>, <span class="string">"mstsc.exe"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, ProcessCommandLine, AccountName
+
+<span class="comment">// Find suspicious logons from compromised account</span>
+<span class="keyword">let</span> CompromisedAccount = <span class="string">"john.smith"</span>;
+<span class="variable">DeviceLogonEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> AccountName <span class="operator">=~</span> CompromisedAccount
+<span class="operator">|</span> <span class="keyword">where</span> LogonType <span class="function">in</span> (<span class="string">"Network"</span>, <span class="string">"RemoteInteractive"</span>)
+<span class="operator">|</span> <span class="keyword">summarize</span> Logons = <span class="function">count</span>() <span class="keyword">by</span> DeviceName
+<span class="operator">|</span> <span class="keyword">order by</span> Logons <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Containment Playbook</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Standard Containment Procedure</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CONTAINMENT PLAYBOOK:
+
+PHASE 1: RAPID ASSESSMENT (1-5 minutes)
+├── What is the threat? (malware type, severity)
+├── Is it actively executing?
+├── How many devices affected?
+├── Are credentials compromised?
+└── Is data being exfiltrated?
+
+PHASE 2: IMMEDIATE CONTAINMENT (5-15 minutes)
+├── Isolate affected device(s)
+├── Block known malicious IOCs
+├── Disable compromised accounts
+├── Notify key stakeholders
+└── Begin evidence preservation
+
+PHASE 3: SCOPE ASSESSMENT (15-60 minutes)
+├── Search for IOCs across environment
+├── Identify all affected devices
+├── Identify all compromised accounts
+├── Map attacker's activity timeline
+└── Identify initial access vector
+
+PHASE 4: EXPANDED CONTAINMENT (as needed)
+├── Isolate additional devices
+├── Block additional IOCs
+├── Consider network segmentation
+├── Enhanced monitoring on critical assets
+└── Coordinate with network/IT teams
+
+PHASE 5: CONTAINMENT VERIFICATION
+├── Confirm all threats isolated
+├── Verify no active C2 connections
+├── Check for new infection attempts
+├── Monitor for re-infection
+└── Document containment actions
+
+COMMUNICATION CHECKLIST:
+├── IT leadership notified
+├── Business unit leadership notified
+├── Legal/compliance notified (if breach)
+├── Affected users notified
+└── Executive summary prepared</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Containment Pitfalls</h5>
+                    <ul>
+                        <li><strong>Never isolate Domain Controllers</strong>: This breaks Active Directory</li>
+                        <li><strong>Don't power off devices</strong>: You lose volatile memory evidence</li>
+                        <li><strong>Collect evidence first</strong>: Get investigation package before remediation</li>
+                        <li><strong>Document everything</strong>: Actions taken, times, who did what</li>
+                        <li><strong>Consider business impact</strong>: Balance security with operations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Speed matters</strong>: Active threats need immediate containment</li>
+                    <li><strong>Isolation types</strong>: Full (all network) vs Selective (allows O365)</li>
+                    <li><strong>Scope first</strong>: Know how many devices before deciding action</li>
+                    <li><strong>Preserve evidence</strong>: Collect package before remediation</li>
+                    <li><strong>DC exception</strong>: Never isolate Domain Controllers</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="6-6-forensics-evidence.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Forensics & Evidence</span>
+                </a>
+                <a href="6-8-recovery-procedures.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Recovery Procedures</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

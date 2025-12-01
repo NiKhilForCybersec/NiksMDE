@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Dashboards | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to MDE reporting and dashboards. Learn about built-in reports, custom reporting, Power BI integration, and creating executive-ready security dashboards.</p>
+            </div>
+
+            <h1>Reports & Dashboards</h1>
+
+            <p>MDE provides comprehensive reporting capabilities to track security posture, threat detection effectiveness, and operational metrics for stakeholders at all levels.</p>
+
+            <h2>Built-in Reports</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Report Categories</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       BUILT-IN REPORTS                                   │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  THREAT PROTECTION                 DEVICE HEALTH                        │
+│  ┌─────────────────────────────┐  ┌─────────────────────────────┐      │
+│  │ • Threat protection status  │  │ • Sensor health              │      │
+│  │ • Alert trends              │  │ • Antivirus status           │      │
+│  │ • Detection coverage        │  │ • OS platform distribution   │      │
+│  │ • MITRE ATT&CK coverage     │  │ • Onboarding status          │      │
+│  └─────────────────────────────┘  └─────────────────────────────┘      │
+│                                                                          │
+│  VULNERABILITY MANAGEMENT          WEB PROTECTION                       │
+│  ┌─────────────────────────────┐  ┌─────────────────────────────┐      │
+│  │ • Exposure score trend      │  │ • Web content filtering      │      │
+│  │ • Vulnerable devices        │  │ • Network protection blocks  │      │
+│  │ • Software inventory        │  │ • SmartScreen blocks         │      │
+│  │ • Security recommendations  │  │ • URL category stats         │      │
+│  └─────────────────────────────┘  └─────────────────────────────┘      │
+│                                                                          │
+│  DEVICE CONTROL                    FIREWALL                             │
+│  ┌─────────────────────────────┐  ┌─────────────────────────────┐      │
+│  │ • Removable storage events  │  │ • Firewall status            │      │
+│  │ • Printer events            │  │ • Blocked connections        │      │
+│  │ • Bluetooth events          │  │ • Rule hits                  │      │
+│  │ • Policy compliance         │  │ • Inbound/outbound stats     │      │
+│  └─────────────────────────────┘  └─────────────────────────────┘      │
+│                                                                          │
+│  LOCATION: Reports section in Microsoft Defender portal                 │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Key Dashboard Areas</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Dashboard Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SECURITY OPERATIONS DASHBOARD:
+Location: Home → Dashboard
+├── Active alerts by severity
+├── Devices at risk
+├── Users at risk
+├── Automated investigations status
+├── Recent incidents
+└── Threat analytics highlights
+
+DEVICE SECURITY DASHBOARD:
+Location: Endpoints → Device inventory → Summary
+├── Total devices by platform
+├── Onboarding status
+├── Sensor health breakdown
+├── Exposure score distribution
+├── Risk level distribution
+└── Antivirus status
+
+THREAT & VULNERABILITY MANAGEMENT:
+Location: Endpoints → Vulnerability management → Dashboard
+├── Organization exposure score
+├── Microsoft Secure Score for Devices
+├── Exposure distribution
+├── Top vulnerable software
+├── Top security recommendations
+├── Remediation activities
+└── Expiring recommendations
+
+REPORTS SECTION:
+Location: Reports → Endpoints
+├── Threat protection
+├── Device health and compliance
+├── Vulnerable devices
+├── Web protection
+└── Firewall</code></pre>
+                </div>
+            </div>
+
+            <h2>Threat Protection Report</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Threat Protection Metrics</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>THREAT PROTECTION REPORT CONTENTS:
+
+ALERT TRENDS:
+├── Alerts over time (daily/weekly/monthly)
+├── Breakdown by severity
+├── Breakdown by detection source
+├── Breakdown by category
+└── Resolution status
+
+DETECTION SOURCES:
+├── Microsoft Defender Antivirus
+├── EDR (Endpoint Detection and Response)
+├── Custom detections
+├── SmartScreen
+├── Network protection
+└── Attack surface reduction
+
+MITRE ATT&CK COVERAGE:
+├── Techniques detected
+├── Tactics distribution
+├── Coverage gaps
+└── Recommendations for improvement
+
+THREAT CATEGORIES:
+├── Malware
+├── Phishing
+├── Unwanted software
+├── Credential theft
+├── Ransomware
+├── Exploit
+└── Social engineering
+
+EXPORT OPTIONS:
+├── PDF report
+├── CSV data export
+└── API access for custom reporting</code></pre>
+                </div>
+            </div>
+
+            <h2>Custom Reporting with KQL</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Custom Report Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Weekly alert summary</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Total = <span class="function">count</span>(),
+    Critical = <span class="function">countif</span>(Severity <span class="operator">==</span> <span class="string">"Critical"</span>),
+    High = <span class="function">countif</span>(Severity <span class="operator">==</span> <span class="string">"High"</span>),
+    Medium = <span class="function">countif</span>(Severity <span class="operator">==</span> <span class="string">"Medium"</span>),
+    Low = <span class="function">countif</span>(Severity <span class="operator">==</span> <span class="string">"Low"</span>)
+
+<span class="comment">// Daily alert trend for charting</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> AlertCount = <span class="function">count</span>() <span class="keyword">by</span> <span class="function">bin</span>(Timestamp, <span class="number">1</span>d), Severity
+<span class="operator">|</span> <span class="keyword">render</span> timechart
+
+<span class="comment">// Top 10 alerting devices</span>
+<span class="variable">AlertEvidence</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> EntityType <span class="operator">==</span> <span class="string">"Machine"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> AlertCount = <span class="function">count</span>() <span class="keyword">by</span> DeviceName
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">10</span> <span class="keyword">by</span> AlertCount
+
+<span class="comment">// Detection source effectiveness</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> DetectionSource
+<span class="operator">|</span> <span class="keyword">render</span> piechart
+
+<span class="comment">// MITRE ATT&CK technique distribution</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">mv-expand</span> AttackTechniques
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> <span class="function">tostring</span>(AttackTechniques)
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">15</span> <span class="keyword">by</span> Count</code></pre>
+                </div>
+            </div>
+
+            <h2>Power BI Integration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Power BI Setup</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>POWER BI INTEGRATION OPTIONS:
+
+1. STREAMING API (REAL-TIME)
+   ├── Configure streaming dataset in Power BI
+   ├── Use MDE API to push data
+   ├── Real-time dashboard updates
+   └── Good for: Live SOC dashboards
+
+2. ADVANCED HUNTING EXPORT
+   ├── Run KQL query in Advanced Hunting
+   ├── Export results to CSV
+   ├── Import to Power BI
+   └── Good for: Ad-hoc analysis
+
+3. LOG ANALYTICS / SENTINEL
+   ├── Stream MDE data to Log Analytics
+   ├── Connect Power BI to Log Analytics
+   ├── Direct query or import mode
+   └── Good for: Historical analysis
+
+4. MDE API + POWER AUTOMATE
+   ├── Scheduled data extraction
+   ├── Push to SharePoint/OneDrive
+   ├── Power BI refreshes from file
+   └── Good for: Scheduled reports
+
+POWER BI CONNECTOR SETUP:
+1. Get Data → Azure → Log Analytics
+2. Enter Workspace ID
+3. Authenticate with AAD
+4. Select tables: AlertInfo, DeviceInfo, etc.
+5. Build visualizations
+
+SAMPLE DASHBOARD COMPONENTS:
+├── Alert trend line chart
+├── Severity pie chart
+├── Top 10 affected devices table
+├── MITRE coverage heatmap
+├── Exposure score gauge
+└── Incident resolution time KPI</code></pre>
+                </div>
+            </div>
+
+            <h2>Executive Reporting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Executive Report Template</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MONTHLY EXECUTIVE SECURITY REPORT
+
+1. SECURITY POSTURE SUMMARY
+   ├── Exposure Score: [Current] vs [Last Month]
+   ├── Secure Score: [Current] vs [Last Month]
+   ├── Trend: Improving / Stable / Declining
+   └── Key changes since last report
+
+2. THREAT LANDSCAPE
+   ├── Total alerts: [Count] (vs [Last Month])
+   ├── Critical/High incidents: [Count]
+   ├── Notable threats detected
+   └── Emerging threats relevant to organization
+
+3. INCIDENT METRICS
+   ├── Total incidents: [Count]
+   ├── Mean Time to Detect (MTTD): [Hours]
+   ├── Mean Time to Respond (MTTR): [Hours]
+   ├── Incidents by severity breakdown
+   └── Resolution status
+
+4. VULNERABILITY STATUS
+   ├── Critical vulnerabilities: [Count]
+   ├── Devices with critical vulns: [Count]
+   ├── Remediation progress: [%]
+   └── Top 5 vulnerabilities requiring attention
+
+5. COMPLIANCE & COVERAGE
+   ├── Devices onboarded: [%]
+   ├── Devices with healthy sensors: [%]
+   ├── Antivirus coverage: [%]
+   └── ASR rules enabled: [%]
+
+6. RECOMMENDATIONS
+   ├── Immediate actions required
+   ├── Strategic improvements
+   └── Resource requests
+
+7. APPENDIX
+   ├── Detailed metrics tables
+   ├── Trend charts
+   └── Technical notes</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Reporting Best Practices</h5>
+                    <ul>
+                        <li><strong>Know your audience</strong>: Executives want trends and risks, not raw data</li>
+                        <li><strong>Show comparisons</strong>: This month vs last, before/after changes</li>
+                        <li><strong>Highlight action items</strong>: What needs attention now</li>
+                        <li><strong>Automate where possible</strong>: Scheduled reports save time</li>
+                        <li><strong>Visualize trends</strong>: Charts are easier to understand than tables</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Built-in reports</strong>: Threat protection, device health, vulnerability, web protection</li>
+                    <li><strong>Custom reports</strong>: Use KQL in Advanced Hunting, export to CSV/Power BI</li>
+                    <li><strong>Executive reporting</strong>: Focus on trends, risks, and action items</li>
+                    <li><strong>Power BI</strong>: Connect via Log Analytics or API for advanced dashboards</li>
+                    <li><strong>Key metrics</strong>: Exposure score, MTTD, MTTR, alert trends</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="2-6-threat-analytics.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Threat Analytics</span>
+                </a>
+                <a href="2-8-settings-configuration.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Settings & Configuration</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

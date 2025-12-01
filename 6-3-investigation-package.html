@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investigation Package | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to MDE Investigation Package. Learn what's collected, how to initiate collection, analyze the contents, and use the data for forensic investigation.</p>
+            </div>
+
+            <h1>Investigation Package</h1>
+
+            <p>The Investigation Package is a forensic collection from an endpoint that contains artifacts useful for offline analysis. It captures point-in-time data about autoruns, processes, network connections, and more.</p>
+
+            <h2>Package Contents</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Investigation Package Structure</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    INVESTIGATION PACKAGE CONTENTS                        │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  InvestigationPackage_[DeviceName]_[DateTime].zip                       │
+│  │                                                                       │
+│  ├── Autoruns/                    ← Persistence mechanisms              │
+│  │   └── Autoruns.csv                                                   │
+│  │                                                                       │
+│  ├── InstalledPrograms/           ← Software inventory                  │
+│  │   └── InstalledPrograms.csv                                          │
+│  │                                                                       │
+│  ├── NetworkConnections/          ← Active connections                  │
+│  │   └── NetworkConnections.csv                                         │
+│  │                                                                       │
+│  ├── Prefetch/                    ← Program execution history           │
+│  │   └── [prefetch files]                                               │
+│  │                                                                       │
+│  ├── Processes/                   ← Running processes                   │
+│  │   └── Processes.csv                                                  │
+│  │                                                                       │
+│  ├── ScheduledTasks/              ← Scheduled tasks                     │
+│  │   └── ScheduledTasks.csv                                             │
+│  │                                                                       │
+│  ├── SecurityEventLog/            ← Security events                     │
+│  │   └── Security.evtx                                                  │
+│  │                                                                       │
+│  ├── Services/                    ← Installed services                  │
+│  │   └── Services.csv                                                   │
+│  │                                                                       │
+│  ├── SMBSessions/                 ← File share sessions                 │
+│  │   └── SMBSessions.csv                                                │
+│  │                                                                       │
+│  ├── TempFiles/                   ← Temp directory contents             │
+│  │   └── [file listings]                                                │
+│  │                                                                       │
+│  ├── UsersAndGroups/              ← Local accounts                      │
+│  │   └── UsersAndGroups.csv                                             │
+│  │                                                                       │
+│  └── WMI/                         ← WMI persistence                     │
+│      └── WMIPersistence.csv                                             │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Collecting the Package</h2>
+
+            <h3>Portal Method</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Collection Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>STEP-BY-STEP COLLECTION:
+
+1. Navigate to device page
+   security.microsoft.com → Assets → Devices → [Device]
+
+2. Click "Collect investigation package"
+   (under "..." More actions menu)
+
+3. Add comment
+   "Collecting for INC-2024-001 - Ransomware investigation"
+
+4. Confirm collection
+   Click "Confirm"
+
+5. Wait for collection
+   • Typically 5-15 minutes
+   • Status shown in Action Center
+   • Notification when ready
+
+6. Download package
+   • Device page → Action Center → Download
+   • Or Action Center → History → Find action → Download
+
+PACKAGE SIZE:
+• Typically 5-50 MB compressed
+• Varies based on event log size and temp files</code></pre>
+                </div>
+            </div>
+
+            <h3>API Method</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - API Collection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Initiate collection</span>
+<span class="variable">$machineId</span> = <span class="string">"device-guid"</span>
+<span class="variable">$body</span> = @{
+    Comment = <span class="string">"Forensic collection for incident investigation"</span>
+} <span class="operator">|</span> <span class="function">ConvertTo-Json</span>
+
+<span class="variable">$uri</span> = <span class="string">"https://api.securitycenter.microsoft.com/api/machines/$machineId/collectInvestigationPackage"</span>
+<span class="variable">$response</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Post <span class="variable">-Uri</span> <span class="variable">$uri</span> <span class="variable">-Headers</span> <span class="variable">$headers</span> <span class="variable">-Body</span> <span class="variable">$body</span>
+
+<span class="comment"># Check status</span>
+<span class="variable">$actionId</span> = <span class="variable">$response</span>.id
+<span class="variable">$statusUri</span> = <span class="string">"https://api.securitycenter.microsoft.com/api/machineactions/$actionId"</span>
+
+<span class="keyword">do</span> {
+    <span class="variable">$status</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Get <span class="variable">-Uri</span> <span class="variable">$statusUri</span> <span class="variable">-Headers</span> <span class="variable">$headers</span>
+    Write-Host <span class="string">"Status: $($status.status)"</span>
+    <span class="function">Start-Sleep</span> <span class="variable">-Seconds</span> <span class="number">30</span>
+} <span class="keyword">while</span> (<span class="variable">$status</span>.status <span class="operator">-notin</span> @(<span class="string">"Succeeded"</span>, <span class="string">"Failed"</span>))
+
+<span class="comment"># Get download URI</span>
+<span class="variable">$packageUri</span> = <span class="string">"https://api.securitycenter.microsoft.com/api/machines/$machineId/getPackageUri"</span>
+<span class="variable">$downloadInfo</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Get <span class="variable">-Uri</span> <span class="variable">$packageUri</span> <span class="variable">-Headers</span> <span class="variable">$headers</span>
+
+<span class="comment"># Download</span>
+<span class="function">Invoke-WebRequest</span> <span class="variable">-Uri</span> <span class="variable">$downloadInfo</span>.value <span class="variable">-OutFile</span> <span class="string">"investigation_package.zip"</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Analyzing Package Contents</h2>
+
+            <h3>Autoruns Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Autoruns Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>AUTORUNS.CSV - What to look for:
+
+COLUMNS:
+├── Entry Location (registry key, startup folder)
+├── Entry (name of autorun)
+├── Image Path (executable path)
+├── Launch String (command line)
+├── MD5 Hash
+├── SHA256 Hash
+├── Publisher (digital signature)
+└── Enabled (yes/no)
+
+SUSPICIOUS INDICATORS:
+├── Unsigned executables in Run keys
+├── Scripts in startup folders (.bat, .ps1, .vbs)
+├── Unknown executables in AppData paths
+├── Misspelled system process names
+├── Recently added entries (check file timestamps)
+└── Entries pointing to temp folders
+
+KEY LOCATIONS TO CHECK:
+├── HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+├── HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+├── C:\Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
+├── Services (check for unusual services)
+└── Scheduled Tasks (separate file)</code></pre>
+                </div>
+            </div>
+
+            <h3>Processes Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Process Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROCESSES.CSV - What to look for:
+
+COLUMNS:
+├── Process Name
+├── PID
+├── Parent PID
+├── Command Line
+├── Path
+├── User
+├── Start Time
+├── CPU / Memory usage
+└── Hash values
+
+INVESTIGATION STEPS:
+
+1. BUILD PROCESS TREE
+   └── Match PIDs to Parent PIDs
+   └── Visualize parent-child relationships
+
+2. IDENTIFY SUSPICIOUS PROCESSES
+   ├── Unknown executables
+   ├── Processes from temp/download folders
+   ├── Processes with encoded command lines
+   ├── Processes running as SYSTEM unexpectedly
+   └── Multiple instances of single-instance processes
+
+3. CHECK PARENT-CHILD RELATIONSHIPS
+   ├── cmd.exe spawned by WINWORD.EXE = Suspicious
+   ├── powershell.exe spawned by Excel = Suspicious
+   ├── Orphaned processes (parent terminated)
+   └── Services spawning user applications
+
+4. VERIFY SYSTEM PROCESSES
+   ├── svchost.exe should be in C:\Windows\System32
+   ├── Only one lsass.exe should run
+   ├── Check for typosquatting (svch0st.exe)
+   └── Verify signatures on critical processes</code></pre>
+                </div>
+            </div>
+
+            <h3>Network Connections Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Network Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>NETWORKCONNECTIONS.CSV - What to look for:
+
+COLUMNS:
+├── Protocol (TCP/UDP)
+├── Local Address / Port
+├── Remote Address / Port
+├── State (ESTABLISHED, LISTENING, etc.)
+├── Process ID
+├── Process Name
+└── Process Path
+
+INVESTIGATION STEPS:
+
+1. IDENTIFY EXTERNAL CONNECTIONS
+   └── Filter for public IP addresses
+   └── Check geolocation of remote IPs
+   └── Research unknown IPs
+
+2. CORRELATE WITH PROCESSES
+   └── What process made the connection?
+   └── Is it expected for that process?
+   └── Example: notepad.exe with external connection = BAD
+
+3. CHECK FOR C2 INDICATORS
+   ├── Connections to unusual ports
+   ├── Connections to known bad IPs
+   ├── Multiple connections to same IP
+   ├── Connections from suspicious processes
+   └── LISTENING on unusual ports (backdoor)
+
+4. LOOK FOR DATA EXFILTRATION
+   ├── Large data transfers
+   ├── Connections to file sharing sites
+   ├── Connections to cloud storage
+   └── DNS tunneling indicators</code></pre>
+                </div>
+            </div>
+
+            <h3>Security Event Log Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Event Log Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SECURITY.EVTX - Key Event IDs:
+
+LOGON EVENTS:
+├── 4624 - Successful logon
+│   └── Check LogonType: 2=Interactive, 3=Network, 10=Remote
+├── 4625 - Failed logon
+│   └── Multiple failures = brute force
+├── 4648 - Explicit credential logon
+│   └── Pass-the-hash indicator
+└── 4672 - Special privileges assigned
+    └── Admin logon
+
+PROCESS EVENTS:
+├── 4688 - Process creation
+│   └── With command line auditing enabled
+└── 4689 - Process termination
+
+ACCOUNT EVENTS:
+├── 4720 - Account created
+├── 4722 - Account enabled
+├── 4724 - Password reset attempt
+├── 4728 - Member added to security group
+└── 4732 - Member added to local group
+
+SERVICE EVENTS:
+├── 7045 - Service installed
+│   └── Check for unusual services
+└── 7034 - Service crashed
+
+ANALYSIS APPROACH:
+1. Filter by time window of incident
+2. Look for anomalous logons
+3. Check for privilege escalation
+4. Review service installations
+5. Correlate with process events</code></pre>
+                </div>
+            </div>
+
+            <h3>Prefetch Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Prefetch Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PREFETCH FILES - Program Execution Evidence:
+
+LOCATION: C:\Windows\Prefetch\
+
+FILE FORMAT:
+[EXECUTABLE]-[HASH].pf
+
+INFORMATION CONTAINED:
+├── Executable name
+├── Run count (how many times executed)
+├── Last run time
+├── Files and directories accessed
+└── Volume information
+
+WHY IT'S VALUABLE:
+├── Proves program was executed
+├── Shows execution frequency
+├── Timestamps of execution
+├── Even if executable deleted, prefetch remains
+└── Forensic evidence of attacker tools
+
+TOOLS FOR ANALYSIS:
+├── PECmd (Eric Zimmerman's tools)
+├── WinPrefetchView (NirSoft)
+└── Prefetch Parser scripts
+
+SUSPICIOUS PREFETCH FILES:
+├── Hacking tools (mimikatz, psexec)
+├── Reconnaissance tools (nmap, etc.)
+├── Unknown executables from temp folders
+├── Recently created prefetch for old tools
+└── Prefetch for deleted executables</code></pre>
+                </div>
+            </div>
+
+            <h2>Automated Analysis Script</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Quick Analysis</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Quick investigation package analysis</span>
+<span class="variable">$packagePath</span> = <span class="string">"C:\Forensics\InvestigationPackage"</span>
+
+<span class="comment"># Check autoruns for unsigned entries</span>
+<span class="function">Import-Csv</span> <span class="string">"$packagePath\Autoruns\Autoruns.csv"</span> <span class="operator">|</span>
+    <span class="function">Where-Object</span> { <span class="variable">$_</span>.Publisher <span class="operator">-eq</span> <span class="string">""</span> <span class="operator">-or</span> <span class="variable">$_</span>.Publisher <span class="operator">-eq</span> <span class="string">"(Not verified)"</span> } <span class="operator">|</span>
+    <span class="function">Select-Object</span> <span class="string">"Entry Location"</span>, Entry, <span class="string">"Image Path"</span>
+
+<span class="comment"># Check processes from unusual locations</span>
+<span class="function">Import-Csv</span> <span class="string">"$packagePath\Processes\Processes.csv"</span> <span class="operator">|</span>
+    <span class="function">Where-Object</span> { 
+        <span class="variable">$_</span>.Path <span class="operator">-like</span> <span class="string">"*\Temp\*"</span> <span class="operator">-or</span> 
+        <span class="variable">$_</span>.Path <span class="operator">-like</span> <span class="string">"*\Downloads\*"</span> <span class="operator">-or</span>
+        <span class="variable">$_</span>.Path <span class="operator">-like</span> <span class="string">"*\Public\*"</span>
+    } <span class="operator">|</span>
+    <span class="function">Select-Object</span> <span class="string">"Process Name"</span>, Path, <span class="string">"Command Line"</span>
+
+<span class="comment"># Check external network connections</span>
+<span class="function">Import-Csv</span> <span class="string">"$packagePath\NetworkConnections\NetworkConnections.csv"</span> <span class="operator">|</span>
+    <span class="function">Where-Object</span> { 
+        <span class="variable">$_</span>.<span class="string">"Remote Address"</span> <span class="operator">-notlike</span> <span class="string">"10.*"</span> <span class="operator">-and</span>
+        <span class="variable">$_</span>.<span class="string">"Remote Address"</span> <span class="operator">-notlike</span> <span class="string">"192.168.*"</span> <span class="operator">-and</span>
+        <span class="variable">$_</span>.<span class="string">"Remote Address"</span> <span class="operator">-notlike</span> <span class="string">"172.16.*"</span> <span class="operator">-and</span>
+        <span class="variable">$_</span>.State <span class="operator">-eq</span> <span class="string">"ESTABLISHED"</span>
+    } <span class="operator">|</span>
+    <span class="function">Select-Object</span> <span class="string">"Process Name"</span>, <span class="string">"Remote Address"</span>, <span class="string">"Remote Port"</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Package Collection & Analysis</h4>
+                <ul>
+                    <li>Collect packages for major incident investigations</li>
+                    <li>Analyze autoruns for persistence mechanisms</li>
+                    <li>Review processes for malicious activity</li>
+                    <li>Check network connections for C2</li>
+                    <li>Parse event logs for attack timeline</li>
+                    <li>Document findings from forensic analysis</li>
+                </ul>
+
+                <h4>Common Findings</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Unknown entry in Autoruns"</span>
+                    <span class="ticket-solution">→ Check signature, research hash, trace when added, verify file location.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Process running from Temp folder"</span>
+                    <span class="ticket-solution">→ Suspicious. Check hash, command line, what spawned it, network activity.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"External connections from unknown process"</span>
+                    <span class="ticket-solution">→ Research destination IP. Check if C2. Block if malicious.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Contents</strong>: Autoruns, processes, network, services, scheduled tasks, event logs, prefetch</li>
+                    <li><strong>Collection</strong>: Device page → Collect investigation package (5-15 min)</li>
+                    <li><strong>Autoruns</strong>: Shows persistence - check for unsigned, unusual paths</li>
+                    <li><strong>Processes</strong>: Point-in-time snapshot - build process tree, check relationships</li>
+                    <li><strong>Network</strong>: Active connections - look for external C2, unusual ports</li>
+                    <li><strong>Prefetch</strong>: Execution evidence - proves program ran even if deleted</li>
+                    <li><strong>Event logs</strong>: Security events - logons, process creation, service installs</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="6-2-device-isolation.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Device Isolation</span>
+                </a>
+                <a href="6-4-indicators.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Indicators</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

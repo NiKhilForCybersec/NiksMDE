@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Health | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to monitoring and troubleshooting MDE sensor health. Learn sensor health states, diagnostic commands, common issues, and resolution procedures for unhealthy endpoints.</p>
+            </div>
+
+            <h1>Sensor Health Monitoring & Troubleshooting</h1>
+
+            <p>Maintaining healthy MDE sensors across your fleet is critical for continuous protection. This guide covers how to monitor sensor health, interpret health states, and troubleshoot common sensor issues.</p>
+
+            <h2>Sensor Health States</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Health State</th>
+                            <th>Description</th>
+                            <th>Action Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="text-green">● Active</span></td>
+                            <td>Sensor is running and communicating normally</td>
+                            <td>None - healthy state</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-yellow">● Inactive</span></td>
+                            <td>Device hasn't sent signals for 7+ days</td>
+                            <td>Verify device is powered on and connected</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-red">● Misconfigured</span></td>
+                            <td>Sensor running but configuration issues detected</td>
+                            <td>Check policy assignment and settings</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-red">● Impaired Communication</span></td>
+                            <td>Partial communication with cloud services</td>
+                            <td>Check network connectivity to MDE URLs</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-red">● No Sensor Data</span></td>
+                            <td>Device onboarded but no telemetry received</td>
+                            <td>Verify sensor service is running</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Quick Health Check Commands</h2>
+
+            <h3>Windows - PowerShell Commands</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check MDE sensor service status</span>
+<span class="function">Get-Service</span> Sense
+
+<span class="comment"># Check Defender AV service</span>
+<span class="function">Get-Service</span> WinDefend
+
+<span class="comment"># Get comprehensive MDE status</span>
+<span class="function">Get-MpComputerStatus</span>
+
+<span class="comment"># Key properties to check:</span>
+<span class="comment"># AMRunningMode         : Normal (Active) / Passive / EDR Block Mode</span>
+<span class="comment"># AntivirusEnabled      : True</span>
+<span class="comment"># RealTimeProtectionEnabled : True</span>
+<span class="comment"># IoavProtectionEnabled : True  (Cloud-delivered protection)</span>
+<span class="comment"># AntispywareEnabled    : True</span>
+
+<span class="comment"># Check onboarding status</span>
+<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span>
+
+<span class="comment"># Key registry values:</span>
+<span class="comment"># OnboardingState       : 1 (Onboarded)</span>
+<span class="comment"># OrgId                 : Your tenant ID</span>
+
+<span class="comment"># Check last communication time</span>
+<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span> <span class="operator">|</span> 
+    <span class="function">Select-Object</span> LastConnected</code></pre>
+                </div>
+            </div>
+
+            <h3>Expected Healthy Output</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Output</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PS C:\> Get-Service Sense
+
+Status   Name     DisplayName
+------   ----     -----------
+Running  Sense    Windows Defender Advanced Threat Protection Service
+
+PS C:\> Get-MpComputerStatus | Select AMRunningMode, RealTimeProtectionEnabled, AntivirusEnabled
+
+AMRunningMode              : Normal
+RealTimeProtectionEnabled  : True
+AntivirusEnabled           : True
+
+PS C:\> (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status").OnboardingState
+1</code></pre>
+                </div>
+            </div>
+
+            <h2>Troubleshooting Workflow</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Sensor Troubleshooting Decision Tree</div>
+<pre>
+                          Device Not Healthy?
+                                 │
+                                 ▼
+                    ┌────────────────────────┐
+                    │  Is Sense service      │
+                    │  running?              │
+                    └───────────┬────────────┘
+                                │
+               ┌────────────────┴────────────────┐
+               │ NO                              │ YES
+               ▼                                 ▼
+    ┌─────────────────────┐         ┌─────────────────────┐
+    │ Start Sense service │         │ Check OnboardingState│
+    │ Check dependencies  │         │ registry value      │
+    └─────────┬───────────┘         └───────────┬─────────┘
+              │                                  │
+              │                     ┌────────────┴────────────┐
+              │                     │ = 0 (Not onboarded)    │ = 1 (Onboarded)
+              │                     ▼                         ▼
+              │         ┌─────────────────────┐   ┌─────────────────────┐
+              │         │ Re-run onboarding   │   │ Check connectivity  │
+              │         │ package/script      │   │ to MDE URLs         │
+              │         └─────────────────────┘   └───────────┬─────────┘
+              │                                               │
+              │                                  ┌────────────┴────────────┐
+              │                                  │ FAILED                  │ SUCCESS
+              │                                  ▼                         ▼
+              │                      ┌─────────────────────┐   ┌─────────────────────┐
+              │                      │ Check proxy/firewall│   │ Run Client Analyzer │
+              │                      │ Check SSL inspection│   │ for diagnostics     │
+              └──────────────────────┴─────────────────────┴───┴─────────────────────┘
+</pre>
+            </div>
+
+            <h2>Common Issues and Solutions</h2>
+
+            <h3>Issue 1: Sense Service Not Running</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check service status</span>
+<span class="function">Get-Service</span> Sense
+
+<span class="comment"># If stopped, check dependencies</span>
+<span class="function">Get-Service</span> Sense <span class="operator">|</span> <span class="function">Select-Object</span> <span class="variable">-ExpandProperty</span> DependentServices
+
+<span class="comment"># Try to start the service</span>
+<span class="function">Start-Service</span> Sense
+
+<span class="comment"># If fails, check Event Log for errors</span>
+<span class="function">Get-WinEvent</span> <span class="variable">-LogName</span> <span class="string">"Microsoft-Windows-SENSE/Operational"</span> <span class="variable">-MaxEvents</span> <span class="number">20</span>
+
+<span class="comment"># Common fix: Re-register the service</span>
+& <span class="string">"C:\Program Files\Windows Defender Advanced Threat Protection\MsSense.exe"</span> <span class="variable">-reinstall</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Issue 2: Device Not Onboarded</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check onboarding state</span>
+<span class="variable">$status</span> = <span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span> <span class="variable">-ErrorAction</span> SilentlyContinue
+<span class="keyword">if</span> (<span class="variable">$status</span>.OnboardingState <span class="operator">-ne</span> <span class="number">1</span>) {
+    <span class="function">Write-Host</span> <span class="string">"Device is NOT onboarded"</span> <span class="variable">-ForegroundColor</span> Red
+}
+
+<span class="comment"># Re-run onboarding script</span>
+<span class="comment"># Download from MDE portal: Settings > Endpoints > Onboarding</span>
+& <span class="string">"C:\path\to\WindowsDefenderATPOnboardingScript.cmd"</span>
+
+<span class="comment"># Verify after onboarding</span>
+<span class="function">Start-Sleep</span> <span class="variable">-Seconds</span> <span class="number">60</span>
+(<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span>).OnboardingState</code></pre>
+                </div>
+            </div>
+
+            <h3>Issue 3: Connectivity Problems</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Test connectivity to MDE cloud services</span>
+<span class="variable">$urls</span> = @(
+    <span class="string">"https://winatp-gw-cus.microsoft.com"</span>,
+    <span class="string">"https://winatp-gw-eus.microsoft.com"</span>,
+    <span class="string">"https://winatp-gw-weu.microsoft.com"</span>,
+    <span class="string">"https://us.vortex-win.data.microsoft.com"</span>,
+    <span class="string">"https://settings-win.data.microsoft.com"</span>
+)
+
+<span class="keyword">foreach</span> (<span class="variable">$url</span> <span class="keyword">in</span> <span class="variable">$urls</span>) {
+    <span class="keyword">try</span> {
+        <span class="variable">$response</span> = <span class="function">Invoke-WebRequest</span> <span class="variable">-Uri</span> <span class="variable">$url</span> <span class="variable">-UseBasicParsing</span> <span class="variable">-TimeoutSec</span> <span class="number">10</span>
+        <span class="function">Write-Host</span> <span class="string">"✓ $url - OK"</span> <span class="variable">-ForegroundColor</span> Green
+    } <span class="keyword">catch</span> {
+        <span class="function">Write-Host</span> <span class="string">"✗ $url - FAILED"</span> <span class="variable">-ForegroundColor</span> Red
+    }
+}
+
+<span class="comment"># If using proxy, check proxy settings</span>
+<span class="function">netsh</span> winhttp show proxy
+
+<span class="comment"># Set proxy for MDE if needed</span>
+<span class="function">netsh</span> winhttp set proxy proxy-server=<span class="string">"http://proxy.company.com:8080"</span> bypass-list=<span class="string">"*.local"</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Issue 4: SSL Inspection Breaking Connectivity</h3>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Certificate Pinning</h5>
+                    <p>MDE uses certificate pinning for security. SSL/TLS inspection will break MDE connectivity. You must bypass MDE URLs from SSL inspection.</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">URLs to Bypass from SSL Inspection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code># Core MDE services - MUST bypass SSL inspection
+*.securitycenter.windows.com
+*.security.microsoft.com
+winatp-gw-*.microsoft.com
+us.vortex-win.data.microsoft.com
+eu.vortex-win.data.microsoft.com
+settings-win.data.microsoft.com
+definitionupdates.microsoft.com
+*.wdcp.microsoft.com
+*.wdcpalt.microsoft.com</code></pre>
+                </div>
+            </div>
+
+            <h2>MDE Client Analyzer Tool</h2>
+
+            <p>The MDE Client Analyzer is Microsoft's official diagnostic tool for troubleshooting sensor issues:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Download MDEClientAnalyzer</span>
+<span class="comment"># URL: https://aka.ms/MDEClientAnalyzer</span>
+
+<span class="comment"># Extract and run</span>
+<span class="function">Expand-Archive</span> <span class="string">"MDEClientAnalyzer.zip"</span> <span class="variable">-DestinationPath</span> <span class="string">"C:\MDEAnalyzer"</span>
+<span class="function">Set-Location</span> <span class="string">"C:\MDEAnalyzer"</span>
+
+<span class="comment"># Run the analyzer (requires elevation)</span>
+.\MDEClientAnalyzer.cmd
+
+<span class="comment"># Output: MDEClientAnalyzerResult folder with:</span>
+<span class="comment"># - Connectivity test results</span>
+<span class="comment"># - Service status</span>
+<span class="comment"># - Event logs</span>
+<span class="comment"># - Configuration dump</span>
+<span class="comment"># - Recommendations</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Monitoring Sensor Health at Scale</h2>
+
+            <h3>KQL Query for Unhealthy Devices</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find devices that haven't reported in 24+ hours</span>
+<span class="variable">DeviceInfo</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> LastSeen <span class="operator">=</span> <span class="function">arg_max</span>(Timestamp, *) <span class="keyword">by</span> DeviceId
+<span class="operator">|</span> <span class="keyword">where</span> LastSeen <span class="operator"><</span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">project</span> DeviceName, LastSeen, OSPlatform, SensorHealthState
+<span class="operator">|</span> <span class="keyword">order by</span> LastSeen <span class="keyword">asc</span>
+
+<span class="comment">// Devices with specific health issues</span>
+<span class="variable">DeviceInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> <span class="function">arg_max</span>(Timestamp, *) <span class="keyword">by</span> DeviceId
+<span class="operator">|</span> <span class="keyword">where</span> SensorHealthState <span class="operator">!=</span> <span class="string">"Active"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> SensorHealthState
+
+<span class="comment">// Onboarding status summary</span>
+<span class="variable">DeviceInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> <span class="function">arg_max</span>(Timestamp, *) <span class="keyword">by</span> DeviceId
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    TotalDevices <span class="operator">=</span> <span class="function">count</span>(),
+    HealthyDevices <span class="operator">=</span> <span class="function">countif</span>(SensorHealthState <span class="operator">==</span> <span class="string">"Active"</span>),
+    UnhealthyDevices <span class="operator">=</span> <span class="function">countif</span>(SensorHealthState <span class="operator">!=</span> <span class="string">"Active"</span>)</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Sensor Health Monitoring</h4>
+                <ul>
+                    <li>Review device health dashboard daily</li>
+                    <li>Investigate inactive/misconfigured devices</li>
+                    <li>Run Client Analyzer on problem endpoints</li>
+                    <li>Coordinate with IT for remediation</li>
+                    <li>Track sensor health metrics over time</li>
+                </ul>
+
+                <h4>Common Tickets</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Device not in MDE portal"</span>
+                    <span class="ticket-solution">→ Check onboarding, verify Sense service, run connectivity test, check licensing</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Device shows Inactive"</span>
+                    <span class="ticket-solution">→ Verify device powered on, check network, may be offline/decommissioned</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Sensor impaired communication"</span>
+                    <span class="ticket-solution">→ Check firewall rules, verify MDE URLs accessible, check SSL inspection bypass</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Key service</strong>: <code>Sense</code> (Windows Defender ATP Service) - check this first</li>
+                    <li><strong>Onboarding registry</strong>: <code>HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status</code></li>
+                    <li><strong>OnboardingState</strong>: 1 = onboarded, 0 = not onboarded</li>
+                    <li><strong>SSL inspection</strong>: MDE uses cert pinning; must bypass MDE URLs</li>
+                    <li><strong>Diagnostic tool</strong>: MDEClientAnalyzer.cmd from Microsoft</li>
+                    <li><strong>Health states</strong>: Active, Inactive, Misconfigured, Impaired Communication</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="8-8-siem-integration.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">SIEM Integration</span>
+                </a>
+                <a href="9-2-connectivity-troubleshooting.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Connectivity Troubleshooting</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

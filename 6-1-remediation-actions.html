@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remediation Actions | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to remediation actions in MDE. Learn all available response actions, when to use each, how to execute them via portal/API/Live Response, and how to track action status and results.</p>
+            </div>
+
+            <h1>Remediation Actions</h1>
+
+            <p>Remediation actions are the response capabilities in MDE that allow security teams to contain, investigate, and eradicate threats. Understanding when and how to use each action is critical for effective incident response.</p>
+
+            <h2>Available Remediation Actions</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Remediation Actions by Scope</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     MDE REMEDIATION ACTIONS                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  DEVICE-LEVEL ACTIONS                                                    │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ • Isolate device         • Release from isolation              │   │
+│  │ • Restrict app execution • Remove app restriction              │   │
+│  │ • Run antivirus scan     • Collect investigation package       │   │
+│  │ • Initiate Live Response • Offboard device                     │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  FILE-LEVEL ACTIONS                                                      │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ • Quarantine file        • Stop and quarantine file            │   │
+│  │ • Block file (indicator) • Allow file (indicator)              │   │
+│  │ • Deep analysis          • Download file (Live Response)       │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  NETWORK-LEVEL ACTIONS                                                   │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ • Block IP address       • Block domain/URL                    │   │
+│  │ • Allow IP address       • Allow domain/URL                    │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  USER-LEVEL ACTIONS (via integration)                                   │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ • Disable account (Azure AD)  • Reset password (Azure AD)      │   │
+│  │ • Require re-authentication   • Revoke sessions                │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Device Isolation</h2>
+
+            <p>Device isolation is the most powerful containment action, severing all network connections except to MDE cloud services.</p>
+
+            <h3>Isolation Types</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>What's Blocked</th>
+                            <th>What's Allowed</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Full Isolation</strong></td>
+                            <td>All network traffic</td>
+                            <td>MDE cloud services only</td>
+                            <td>Active breach, ransomware</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Selective Isolation</strong></td>
+                            <td>Most traffic</td>
+                            <td>MDE + Outlook + Teams + SharePoint</td>
+                            <td>Contain while maintaining communication</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>How to Isolate a Device</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Isolation Methods</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>METHOD 1: Portal
+───────────────────
+1. Navigate to device page
+2. Click "..." (More actions) or "Isolate device"
+3. Select isolation type (Full or Selective)
+4. Add comment (required for audit trail)
+5. Confirm action
+
+METHOD 2: API
+───────────────────
+POST https://api.securitycenter.microsoft.com/api/machines/{id}/isolate
+Body: {
+    "Comment": "Ransomware detected - INC-2024-001",
+    "IsolationType": "Full"
+}
+
+METHOD 3: From Incident/Alert
+───────────────────
+1. Open incident or alert
+2. Go to affected device
+3. Use quick actions menu → Isolate device
+
+RELEASE FROM ISOLATION:
+───────────────────
+• Portal: Device page → Release from isolation
+• API: POST /api/machines/{id}/unisolate</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Isolation Considerations</h5>
+                    <ul>
+                        <li>User loses network access immediately (except MDE)</li>
+                        <li>VPN connections will be severed</li>
+                        <li>Local network resources become inaccessible</li>
+                        <li>Live Response remains available for investigation</li>
+                        <li>Ensure you have alternative communication with user</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Restrict App Execution</h2>
+
+            <p>Prevents execution of any application that isn't signed by Microsoft. Use when you suspect malware but need the device operational for investigation.</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">App Restriction Details</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WHAT APP RESTRICTION DOES:
+├── Blocks execution of non-Microsoft-signed executables
+├── Allows Windows and Microsoft 365 apps
+├── Allows Microsoft Store apps
+├── Prevents unknown malware execution
+└── User can still browse, use Office, etc.
+
+WHAT IT BLOCKS:
+├── Third-party applications
+├── Custom/internal applications
+├── Scripts (unless signed)
+├── Unknown executables
+└── Malware (primary purpose)
+
+HOW TO ENABLE:
+Portal: Device → More actions → Restrict app execution
+API: POST /api/machines/{id}/restrictCodeExecution
+     Body: { "Comment": "Investigating suspicious activity" }
+
+HOW TO REMOVE:
+Portal: Device → Remove app restrictions
+API: POST /api/machines/{id}/unrestrictCodeExecution
+
+USE CASES:
+• Device shows malware indicators but needs to stay operational
+• Containing threat while user completes critical work
+• Alternative to full isolation when network needed</code></pre>
+                </div>
+            </div>
+
+            <h2>Run Antivirus Scan</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Remote Scan Options</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SCAN TYPES:
+├── Quick Scan: Common malware locations (~5-10 min)
+└── Full Scan: Entire file system (1-4+ hours)
+
+INITIATE VIA PORTAL:
+1. Navigate to device page
+2. Click "Run antivirus scan"
+3. Select Quick or Full
+4. Add comment
+5. Confirm
+
+INITIATE VIA API:
+POST https://api.securitycenter.microsoft.com/api/machines/{id}/runAntiVirusScan
+Body: {
+    "Comment": "Post-incident verification scan",
+    "ScanType": "Full"  // or "Quick"
+}
+
+CHECK SCAN STATUS:
+• Device page → Scan status shown
+• Action center → View action completion
+• API: GET /api/machineactions/{actionId}
+
+WHEN TO USE:
+• After incident remediation to verify cleanup
+• When device shows suspicious activity
+• As part of regular security verification
+• After releasing device from isolation</code></pre>
+                </div>
+            </div>
+
+            <h2>Collect Investigation Package</h2>
+
+            <p>Collects forensic artifacts from the device for offline analysis.</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Investigation Package Contents</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INVESTIGATION PACKAGE INCLUDES:
+
+1. AUTORUNS
+   └── All auto-start locations (registry, scheduled tasks, services)
+
+2. INSTALLED PROGRAMS
+   └── List of installed software
+
+3. NETWORK CONNECTIONS
+   └── Active connections at time of collection
+
+4. PREFETCH
+   └── Evidence of program execution (what ran and when)
+
+5. PROCESSES
+   └── Running processes with command lines
+
+6. SCHEDULED TASKS
+   └── All configured scheduled tasks
+
+7. SECURITY EVENT LOG
+   └── Windows Security event log
+
+8. SERVICES
+   └── Installed services and their status
+
+9. SMB SESSIONS
+   └── Active file sharing sessions
+
+10. TEMP DIRECTORIES
+    └── Contents of temp folders
+
+11. USERS AND GROUPS
+    └── Local users and group memberships
+
+12. WMI PERSISTENCE
+    └── WMI subscriptions and scripts
+
+13. COLLECTION METADATA
+    └── Device info, collection time, etc.
+
+DOWNLOAD PACKAGE:
+• Portal: Device → Collect investigation package → Download when ready
+• API: GET /api/machines/{id}/getPackageUri
+
+PACKAGE SIZE: Typically 5-50 MB compressed
+COLLECTION TIME: 5-15 minutes typically</code></pre>
+                </div>
+            </div>
+
+            <h2>File Actions</h2>
+
+            <h3>Quarantine File</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">File Quarantine Methods</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>METHOD 1: From File Evidence in Alert/Incident
+1. Open alert → Evidence tab
+2. Find malicious file
+3. Click "Quarantine file"
+4. File is moved to quarantine on device
+
+METHOD 2: Stop and Quarantine (Recommended)
+1. Open alert → Evidence tab
+2. Select "Stop and quarantine"
+3. This action:
+   - Kills the running process
+   - Quarantines the file
+   - Prevents re-execution
+
+METHOD 3: Via Indicator
+1. Add file hash as indicator
+2. Action: Block and remediate
+3. File automatically quarantined org-wide
+
+METHOD 4: Via Live Response
+> remediate file C:\path\to\malware.exe
+
+VIEW QUARANTINED FILES:
+• Device timeline → Filter by quarantine events
+• PowerShell on device: Get-MpThreat</code></pre>
+                </div>
+            </div>
+
+            <h3>Block File (Indicators)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Creating File Indicators</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ADD FILE INDICATOR:
+
+Portal:
+Settings → Endpoints → Indicators → Add indicator
+
+Indicator Value: [SHA256 hash]
+Indicator Type: File hash (SHA256)
+Action: 
+  • Alert only - Generate alert but allow
+  • Alert and block - Alert and prevent execution
+  • Block and remediate - Block + quarantine existing copies
+
+Title: Descriptive name
+Description: Context for the IOC
+Severity: Low / Medium / High
+Recommended Actions: What analysts should do
+
+SCOPE:
+• All devices in organization
+• Specific device groups (if configured)
+
+EXPIRATION:
+• Never
+• Specific date
+• After X days
+
+API METHOD:
+POST /api/indicators
+Body: {
+    "indicatorValue": "a1b2c3d4...",
+    "indicatorType": "FileSha256",
+    "action": "AlertAndBlock",
+    "title": "Malware - Emotet dropper",
+    "severity": "High"
+}</code></pre>
+                </div>
+            </div>
+
+            <h2>Network Indicators</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Network Blocking Options</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INDICATOR TYPES:
+
+IP ADDRESS:
+• Block specific IP (e.g., 185.123.45.67)
+• Blocks all traffic to/from this IP
+• Works for C2 servers, known bad infrastructure
+
+DOMAIN NAME:
+• Block domain (e.g., malicious-domain.com)
+• Includes all subdomains
+• Works for phishing, C2, malicious downloads
+
+URL:
+• Block specific URL path
+• More granular than domain
+• Example: legitimate-site.com/malicious-path
+
+ACTIONS:
+• Alert only: Log but allow connection
+• Alert and block: Prevent connection
+• Allow: Override block (whitelist)
+
+REQUIREMENTS:
+• Network Protection must be enabled
+• SmartScreen must be enabled for web browsers
+• Works with any browser (for URL/domain)</code></pre>
+                </div>
+            </div>
+
+            <h2>Deep Analysis</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Deep Analysis Capabilities</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WHAT DEEP ANALYSIS PROVIDES:
+
+STATIC ANALYSIS:
+├── File metadata (size, type, timestamps)
+├── PE header analysis (for executables)
+├── Import/export functions
+├── Embedded strings
+├── Digital signature verification
+└── Packer detection
+
+DYNAMIC ANALYSIS (Sandbox):
+├── Behavioral indicators
+├── Process activity
+├── File system changes
+├── Registry modifications
+├── Network connections attempted
+├── Dropped files
+└── Persistence mechanisms
+
+SUBMIT FOR DEEP ANALYSIS:
+1. From alert evidence → Click file → Submit for deep analysis
+2. From file entity page → Deep analysis
+3. Wait 15-30 minutes for results
+
+VIEW RESULTS:
+• File entity page → Deep analysis tab
+• Behavioral graph
+• Observations and verdicts
+
+USE CASES:
+• Unknown file needs classification
+• Suspicious file for threat intelligence
+• Verify if file is malicious before blocking</code></pre>
+                </div>
+            </div>
+
+            <h2>Action Center</h2>
+
+            <p>The Action Center tracks all remediation actions and their status:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Action Center Overview</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ACCESS:
+security.microsoft.com → Actions & submissions → Action center
+
+ACTION CENTER TABS:
+├── Pending: Actions awaiting approval
+├── History: Completed actions
+└── Submissions: File submissions
+
+ACTION STATUSES:
+├── Pending: Waiting to execute or awaiting approval
+├── InProgress: Currently executing
+├── Succeeded: Completed successfully
+├── Failed: Action failed (check details)
+├── Cancelled: Manually cancelled
+└── TimeOut: Action timed out
+
+INFORMATION SHOWN:
+├── Action type
+├── Target (device, file, user)
+├── Requested by (analyst or automated)
+├── Date/time
+├── Status
+└── Details/errors
+
+FILTERS:
+├── Action type
+├── Status
+├── Date range
+├── Target entity type
+└── Source (manual vs automated)</code></pre>
+                </div>
+            </div>
+
+            <h2>Action Permissions</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Required Permission</th>
+                            <th>RBAC Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Isolate device</td>
+                            <td>Active remediation actions</td>
+                            <td>Security Operator, Security Admin</td>
+                        </tr>
+                        <tr>
+                            <td>Run AV scan</td>
+                            <td>Active remediation actions</td>
+                            <td>Security Operator, Security Admin</td>
+                        </tr>
+                        <tr>
+                            <td>Collect investigation package</td>
+                            <td>Active remediation actions</td>
+                            <td>Security Operator, Security Admin</td>
+                        </tr>
+                        <tr>
+                            <td>Live Response (basic)</td>
+                            <td>Basic Live Response</td>
+                            <td>Security Operator, Security Admin</td>
+                        </tr>
+                        <tr>
+                            <td>Live Response (advanced)</td>
+                            <td>Advanced Live Response</td>
+                            <td>Security Admin</td>
+                        </tr>
+                        <tr>
+                            <td>Manage indicators</td>
+                            <td>Manage indicators</td>
+                            <td>Security Admin</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>KQL for Tracking Actions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Remediation Action Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// All device isolations in last 30 days</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"DeviceIsolated"</span> <span class="keyword">or</span> ActionType <span class="operator">==</span> <span class="string">"DeviceUnisolated"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ActionType, InitiatingProcessAccountName
+
+<span class="comment">// Files quarantined</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"AntivirusDetection"</span>
+<span class="operator">|</span> <span class="keyword">extend</span> Fields <span class="operator">=</span> <span class="function">parse_json</span>(AdditionalFields)
+<span class="operator">|</span> <span class="keyword">where</span> Fields.Action <span class="operator">==</span> <span class="string">"Quarantine"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, Fields.ThreatName
+
+<span class="comment">// Network indicators triggered</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ConnectionBlocked"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteIP, RemoteUrl</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Response Operations</h4>
+                <ul>
+                    <li>Execute containment actions during active incidents</li>
+                    <li>Approve/reject pending automated actions</li>
+                    <li>Collect investigation packages for forensics</li>
+                    <li>Manage indicators of compromise</li>
+                    <li>Track action completion in Action Center</li>
+                    <li>Document actions taken during incidents</li>
+                </ul>
+
+                <h4>Decision Framework</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Active ransomware detected"</span>
+                    <span class="ticket-solution">→ IMMEDIATELY: Isolate device (full), block IOCs, collect package after isolation</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Suspicious but uncertain activity"</span>
+                    <span class="ticket-solution">→ Restrict app execution, run scan, collect package, investigate before isolation</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Malware cleaned, verify"</span>
+                    <span class="ticket-solution">→ Run full AV scan, check indicators still blocked, release isolation if clean</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Isolation types</strong>: Full (MDE only) vs Selective (MDE + Office 365 apps)</li>
+                    <li><strong>App restriction</strong>: Only Microsoft-signed apps can run; alternative to isolation</li>
+                    <li><strong>Stop and quarantine</strong>: Kills process AND quarantines file (preferred over just quarantine)</li>
+                    <li><strong>Indicators</strong>: File hash, IP, domain, URL - can Alert, Block, or Allow</li>
+                    <li><strong>Investigation package</strong>: Forensic collection including autoruns, processes, event logs</li>
+                    <li><strong>Action Center</strong>: Central location to track all remediation action status</li>
+                    <li><strong>Permissions</strong>: Security Operator for most actions, Security Admin for Live Response advanced</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="5-10-hunting-persistence.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Hunting: Persistence</span>
+                </a>
+                <a href="6-2-device-isolation.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Device Isolation</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerShell Reference | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete PowerShell reference for Microsoft Defender for Endpoint. Copy-paste ready commands for configuration, troubleshooting, and automation.</p>
+            </div>
+
+            <h1>PowerShell Reference</h1>
+
+            <p>PowerShell is essential for managing and troubleshooting Microsoft Defender. This reference provides commonly used commands organized by task.</p>
+
+            <h2>Status and Health Check</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Health Commands</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Get overall Defender status</span>
+<span class="function">Get-MpComputerStatus</span>
+
+<span class="comment"># Check specific status properties</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    AntivirusEnabled, `
+    RealTimeProtectionEnabled, `
+    IoavProtectionEnabled, `
+    AntispywareEnabled, `
+    BehaviorMonitorEnabled, `
+    OnAccessProtectionEnabled, `
+    NISEnabled
+
+<span class="comment"># Check signature versions and dates</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    AntivirusSignatureVersion, `
+    AntivirusSignatureLastUpdated, `
+    AntispywareSignatureVersion, `
+    AntispywareSignatureLastUpdated
+
+<span class="comment"># Check if tamper protection is enabled</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> IsTamperProtected
+
+<span class="comment"># Check onboarding status</span>
+<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span>
+
+<span class="comment"># Check Sense service</span>
+<span class="function">Get-Service</span> <span class="variable">-Name</span> Sense <span class="operator">|</span> <span class="function">Select-Object</span> Status, StartType</code></pre>
+                </div>
+            </div>
+
+            <h2>Configuration Management</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># View all Defender preferences</span>
+<span class="function">Get-MpPreference</span>
+
+<span class="comment"># Enable real-time protection</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-DisableRealtimeMonitoring</span> <span class="variable">$false</span>
+
+<span class="comment"># Enable cloud protection</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-MAPSReporting</span> Advanced
+<span class="function">Set-MpPreference</span> <span class="variable">-SubmitSamplesConsent</span> SendAllSamples
+
+<span class="comment"># Enable behavior monitoring</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-DisableBehaviorMonitoring</span> <span class="variable">$false</span>
+
+<span class="comment"># Enable Network Protection</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableNetworkProtection</span> Enabled
+
+<span class="comment"># Enable Controlled Folder Access</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableControlledFolderAccess</span> Enabled
+
+<span class="comment"># Set cloud block timeout</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-CloudBlockLevel</span> High
+<span class="function">Set-MpPreference</span> <span class="variable">-CloudExtendedTimeout</span> <span class="number">50</span>
+
+<span class="comment"># Enable PUA protection</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-PUAProtection</span> Enabled</code></pre>
+                </div>
+            </div>
+
+            <h2>Exclusion Management</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Exclusions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># View current exclusions</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    ExclusionPath, `
+    ExclusionExtension, `
+    ExclusionProcess
+
+<span class="comment"># Add path exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionPath</span> <span class="string">"C:\CustomApp"</span>
+
+<span class="comment"># Add extension exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionExtension</span> <span class="string">".mdf"</span>
+
+<span class="comment"># Add process exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionProcess</span> <span class="string">"C:\App\myapp.exe"</span>
+
+<span class="comment"># Remove exclusion</span>
+<span class="function">Remove-MpPreference</span> <span class="variable">-ExclusionPath</span> <span class="string">"C:\CustomApp"</span>
+
+<span class="comment"># Clear all exclusions (use carefully!)</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-ExclusionPath</span> @()
+<span class="function">Set-MpPreference</span> <span class="variable">-ExclusionExtension</span> @()
+<span class="function">Set-MpPreference</span> <span class="variable">-ExclusionProcess</span> @()</code></pre>
+                </div>
+            </div>
+
+            <h2>Scanning Operations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Scans</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Quick scan</span>
+<span class="function">Start-MpScan</span> <span class="variable">-ScanType</span> QuickScan
+
+<span class="comment"># Full scan</span>
+<span class="function">Start-MpScan</span> <span class="variable">-ScanType</span> FullScan
+
+<span class="comment"># Custom scan (specific path)</span>
+<span class="function">Start-MpScan</span> <span class="variable">-ScanType</span> CustomScan <span class="variable">-ScanPath</span> <span class="string">"C:\Suspicious"</span>
+
+<span class="comment"># Update signatures</span>
+<span class="function">Update-MpSignature</span>
+
+<span class="comment"># Update signatures from specific source</span>
+<span class="function">Update-MpSignature</span> <span class="variable">-UpdateSource</span> MicrosoftUpdateServer
+
+<span class="comment"># Check last scan time</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    QuickScanStartTime, `
+    QuickScanEndTime, `
+    FullScanStartTime, `
+    FullScanEndTime</code></pre>
+                </div>
+            </div>
+
+            <h2>Threat Management</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Threats</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># View detected threats</span>
+<span class="function">Get-MpThreat</span>
+
+<span class="comment"># View threat detection history</span>
+<span class="function">Get-MpThreatDetection</span>
+
+<span class="comment"># View quarantined items</span>
+<span class="function">Get-MpThreat</span> <span class="operator">|</span> <span class="function">Where-Object</span> { <span class="variable">$_</span>.IsActive <span class="operator">-eq</span> <span class="variable">$false</span> }
+
+<span class="comment"># Remove specific threat</span>
+<span class="function">Remove-MpThreat</span> <span class="variable">-ThreatID</span> <span class="number">12345</span>
+
+<span class="comment"># Get threat catalog</span>
+<span class="function">Get-MpThreatCatalog</span>
+
+<span class="comment"># Restore quarantined file (use carefully)</span>
+<span class="comment"># Note: Usually done from Windows Security UI</span></code></pre>
+                </div>
+            </div>
+
+            <h2>ASR Rules Management</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - ASR Rules</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># View ASR rule status</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> AttackSurfaceReductionRules_Ids, AttackSurfaceReductionRules_Actions
+
+<span class="comment"># Enable ASR rule (example: Block Office child processes)</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-AttackSurfaceReductionRules_Ids</span> <span class="string">"D4F940AB-401B-4EFC-AADC-AD5F3C50688A"</span> `
+    <span class="variable">-AttackSurfaceReductionRules_Actions</span> Enabled
+
+<span class="comment"># Set ASR rule to Audit mode</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-AttackSurfaceReductionRules_Ids</span> <span class="string">"D4F940AB-401B-4EFC-AADC-AD5F3C50688A"</span> `
+    <span class="variable">-AttackSurfaceReductionRules_Actions</span> AuditMode
+
+<span class="comment"># Disable ASR rule</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-AttackSurfaceReductionRules_Ids</span> <span class="string">"D4F940AB-401B-4EFC-AADC-AD5F3C50688A"</span> `
+    <span class="variable">-AttackSurfaceReductionRules_Actions</span> Disabled
+
+<span class="comment"># Add ASR exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-AttackSurfaceReductionOnlyExclusions</span> <span class="string">"C:\AllowedApp\app.exe"</span>
+
+<span class="comment"># Common ASR Rule GUIDs:</span>
+<span class="comment"># Block Office apps from creating child processes: D4F940AB-401B-4EFC-AADC-AD5F3C50688A</span>
+<span class="comment"># Block credential stealing from LSASS: 9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2</span>
+<span class="comment"># Block executable content from email: BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Controlled Folder Access</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - CFA</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check CFA status</span>
+(<span class="function">Get-MpPreference</span>).EnableControlledFolderAccess
+
+<span class="comment"># Enable CFA</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableControlledFolderAccess</span> Enabled
+
+<span class="comment"># Set CFA to Audit mode</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableControlledFolderAccess</span> AuditMode
+
+<span class="comment"># View protected folders</span>
+(<span class="function">Get-MpPreference</span>).ControlledFolderAccessProtectedFolders
+
+<span class="comment"># Add protected folder</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ControlledFolderAccessProtectedFolders</span> <span class="string">"D:\ImportantData"</span>
+
+<span class="comment"># View allowed applications</span>
+(<span class="function">Get-MpPreference</span>).ControlledFolderAccessAllowedApplications
+
+<span class="comment"># Allow an application through CFA</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ControlledFolderAccessAllowedApplications</span> <span class="string">"C:\App\trusted.exe"</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Network Protection</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Network Protection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check Network Protection status</span>
+(<span class="function">Get-MpPreference</span>).EnableNetworkProtection
+<span class="comment"># 0 = Disabled, 1 = Enabled, 2 = Audit</span>
+
+<span class="comment"># Enable Network Protection</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableNetworkProtection</span> Enabled
+
+<span class="comment"># Set to Audit mode</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableNetworkProtection</span> AuditMode
+
+<span class="comment"># Disable Network Protection</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableNetworkProtection</span> Disabled</code></pre>
+                </div>
+            </div>
+
+            <h2>Troubleshooting Commands</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Troubleshooting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># View Defender event logs</span>
+<span class="function">Get-WinEvent</span> <span class="variable">-LogName</span> <span class="string">"Microsoft-Windows-Windows Defender/Operational"</span> <span class="operator">|</span> 
+    <span class="function">Select-Object</span> <span class="variable">-First</span> <span class="number">20</span> TimeCreated, Id, Message
+
+<span class="comment"># View SENSE (MDE) event logs</span>
+<span class="function">Get-WinEvent</span> <span class="variable">-LogName</span> <span class="string">"Microsoft-Windows-SENSE/Operational"</span> <span class="operator">|</span>
+    <span class="function">Select-Object</span> <span class="variable">-First</span> <span class="number">20</span> TimeCreated, Id, Message
+
+<span class="comment"># Check if Defender is the active AV</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> AMProductVersion, AMServiceEnabled
+
+<span class="comment"># Test cloud connectivity</span>
+<span class="function">Invoke-WebRequest</span> <span class="string">"https://x.cp.wd.microsoft.com/api/report"</span> <span class="variable">-UseBasicParsing</span>
+
+<span class="comment"># Restart Defender service</span>
+<span class="function">Restart-Service</span> <span class="variable">-Name</span> WinDefend
+
+<span class="comment"># Restart MDE sensor</span>
+<span class="function">Restart-Service</span> <span class="variable">-Name</span> Sense
+
+<span class="comment"># Check for policy conflicts</span>
+<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender"</span></code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>PowerShell Tips</h5>
+                    <ul>
+                        <li><strong>Run as Administrator</strong> for most commands</li>
+                        <li><strong>Tamper Protection</strong> may block some Set-MpPreference commands</li>
+                        <li><strong>Use Intune/GPO</strong> for persistent configuration changes</li>
+                        <li><strong>Check event logs</strong> if commands fail silently</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Get-MpComputerStatus</strong>: Check overall Defender health</li>
+                    <li><strong>Get-MpPreference</strong>: View all configuration settings</li>
+                    <li><strong>Update-MpSignature</strong>: Force signature update</li>
+                    <li><strong>Start-MpScan</strong>: Initiate scans (Quick, Full, Custom)</li>
+                    <li><strong>Add/Remove-MpPreference</strong>: Manage exclusions and settings</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="12-4-kql-cheat-sheet.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">KQL Cheat Sheet</span>
+                </a>
+                <a href="12-6-comparison-tables.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Comparison Tables</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

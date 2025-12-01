@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison Tables | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo"><div class="logo-icon">MDE</div><div class="logo-text"><span>MDE</span> Ultimate Guide</div></a>
+        </div>
+        <div class="search-container"><button class="search-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg><span>Search...</span></button></div>
+        <div class="header-right"><a href="12-2-interview-questions.html" class="header-link">Interview Prep</a></div>
+    </header>
+    <div class="sidebar-overlay"></div><aside class="sidebar"></aside>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box"><h4>🎯 What This Page Covers</h4><p>Quick reference comparison tables for MDE features, licensing, and capabilities. Perfect for interview prep and daily reference.</p></div>
+            <h1>Comparison Tables</h1>
+            <p>Quick reference comparisons to understand MDE capabilities, licensing, and feature differences.</p>
+            
+            <h2>MDE Plan 1 vs Plan 2</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Plan Comparison</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>MDE PLAN 1 vs PLAN 2:
+
+PLAN 1 (Prevention Focus):
+├── Next-generation protection (AV)
+├── Attack surface reduction rules
+├── Device control
+├── Endpoint firewall management
+├── Network protection
+├── Web content filtering
+├── Centralized management
+├── APIs for integration
+└── Unified security management
+
+PLAN 2 (Full EDR):
+├── Everything in Plan 1, PLUS:
+├── Endpoint detection and response (EDR)
+├── Device timeline
+├── Advanced hunting (KQL)
+├── Automated investigation and remediation
+├── Threat and vulnerability management
+├── Sandbox detonation (deep analysis)
+├── Live Response
+├── Microsoft Threat Experts (eligible)
+├── 180-day raw data retention
+└── Custom detections
+
+LICENSING OPTIONS:
+├── Standalone MDE P1 or P2
+├── Microsoft 365 E3 → Includes MDE P1
+├── Microsoft 365 E5 → Includes MDE P2
+├── Microsoft 365 E5 Security → Includes MDE P2
+└── Business Premium → Includes MDE P1
+
+KEY DIFFERENCE:
+P1 = Prevention (protect the endpoint)
+P2 = Prevention + Detection + Response (full EDR)</code></pre></div></div>
+
+            <h2>Alert Severity Comparison</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Severity Levels</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>ALERT SEVERITY REFERENCE:
+
+CRITICAL:
+├── Impact: Immediate threat, active attack
+├── Examples: Ransomware execution, active breach
+├── Response: Drop everything, all hands
+├── SLA: Minutes (15-30 min)
+└── Automation: Full auto-remediate if possible
+
+HIGH:
+├── Impact: Likely malicious, significant risk
+├── Examples: Credential theft, lateral movement
+├── Response: Urgent investigation
+├── SLA: 1-4 hours
+└── Automation: Semi or full
+
+MEDIUM:
+├── Impact: Suspicious, potential threat
+├── Examples: Unusual behavior, policy violation
+├── Response: Same-day investigation
+├── SLA: 4-24 hours
+└── Automation: Semi-automation
+
+LOW:
+├── Impact: Minor concern, informational
+├── Examples: PUA, minor policy issue
+├── Response: Review when time permits
+├── SLA: 24-72 hours
+└── Automation: May auto-resolve
+
+INFORMATIONAL:
+├── Impact: For awareness only
+├── Examples: Baseline events, tracking
+├── Response: Periodic review
+├── SLA: None required
+└── Automation: N/A</code></pre></div></div>
+
+            <h2>Response Actions Comparison</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Action Reference</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>RESPONSE ACTIONS COMPARISON:
+
+DEVICE ISOLATION:
+├── Full Isolation:
+│   ├── Blocks ALL network traffic
+│   ├── Except: MDE cloud communication
+│   ├── Use: Active compromise, C2 detected
+│   └── Impact: User cannot work
+└── Selective Isolation:
+    ├── Blocks most traffic
+    ├── Allows: O365, Teams, OneDrive
+    ├── Use: Investigation, less disruption
+    └── Impact: User has limited access
+
+ANTIVIRUS SCANS:
+├── Quick Scan:
+│   ├── Common malware locations
+│   ├── Time: 5-15 minutes
+│   └── Use: Routine check, post-remediation
+└── Full Scan:
+    ├── Entire disk
+    ├── Time: 1-4+ hours
+    └── Use: Comprehensive check, suspected infection
+
+APP RESTRICTION:
+├── What it does:
+│   ├── Only Microsoft-signed executables run
+│   └── All other apps blocked
+├── Use: Prevent unknown code execution
+└── Impact: Significant - most apps blocked
+
+INVESTIGATION PACKAGE:
+├── Contents: Autoruns, processes, network, logs
+├── Time: 10-30 minutes to collect
+├── Output: ZIP file (~50-200MB)
+└── Use: Forensic analysis, evidence collection
+
+LIVE RESPONSE:
+├── Basic: Predefined commands only
+├── Advanced: Any command, script upload
+├── Use: Deep investigation, custom collection
+└── Requires: Live Response enabled in settings</code></pre></div></div>
+
+            <h2>ASR Rules Mode Comparison</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">ASR Modes</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>ASR RULE MODES:
+
+DISABLED (0):
+├── Rule is off
+├── No protection
+├── No logging
+└── Use: Incompatible applications
+
+AUDIT (2):
+├── Rule logs events
+├── Does NOT block
+├── Events in event log
+├── Use: Testing before enforcement
+
+WARN (6):
+├── User sees warning
+├── Can choose to proceed
+├── Event logged either way
+└── Use: Education, soft enforcement
+
+BLOCK (1):
+├── Rule enforced
+├── Action blocked
+├── Event logged
+├── User cannot bypass
+└── Use: Production enforcement
+
+DEPLOYMENT ORDER:
+1. Start all rules in Audit (2)
+2. Monitor for 2-4 weeks
+3. Add exclusions as needed
+4. Move low-impact rules to Block (1)
+5. Gradually enable remaining rules
+6. Consider Warn (6) for user education</code></pre></div></div>
+
+            <h2>Platform Support Comparison</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Platform Features</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>PLATFORM FEATURE COMPARISON:
+
+                    Windows   macOS   Linux   iOS   Android
+Next-Gen AV            ✓        ✓       ✓      -       ✓
+EDR                    ✓        ✓       ✓      -       -
+ASR Rules              ✓        -       -      -       -
+Network Protection     ✓        ✓       ✓      ✓       ✓
+Device Control         ✓        ✓       -      -       -
+Live Response          ✓        ✓       ✓      -       -
+TVM                    ✓        ✓       ✓      ✓       ✓
+Web Protection         ✓        ✓       ✓      ✓       ✓
+Tamper Protection      ✓        ✓       ✓      -       -
+
+NOTES:
+├── Windows: Full feature set
+├── macOS: Most features, no ASR
+├── Linux: EDR + AV, limited features
+├── iOS: Web protection, app vulnerability
+└── Android: Web + malware protection</code></pre></div></div>
+
+            <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-content"><h5>Quick Reference Tips</h5><ul>
+                <li><strong>P1 vs P2</strong>: P1 = prevention, P2 = full EDR + hunting</li>
+                <li><strong>E5 = P2</strong>: Microsoft 365 E5 includes MDE P2</li>
+                <li><strong>Severity SLAs</strong>: Critical=minutes, High=hours, Medium=same day</li>
+                <li><strong>Windows = Full features</strong>: Other platforms have subset</li>
+            </ul></div></div>
+
+            <div class="interview-tips"><h3>💡 Key Interview Points</h3><ul>
+                <li><strong>P1 vs P2</strong>: P1 = prevention only, P2 = full EDR capabilities</li>
+                <li><strong>E5 licensing</strong>: M365 E5 includes MDE P2</li>
+                <li><strong>Severity SLAs</strong>: Know response times for each level</li>
+                <li><strong>Isolation types</strong>: Full (all blocked) vs Selective (O365 allowed)</li>
+                <li><strong>ASR modes</strong>: Disabled (0), Block (1), Audit (2), Warn (6)</li>
+            </ul></div>
+
+            <nav class="page-nav"><a href="12-5-powershell-reference.html" class="page-nav-link prev"><span class="page-nav-label">← Previous</span></a><a href="index.html" class="page-nav-link next"><span class="page-nav-label">Home →</span></a></nav>
+        </div>
+    </main>
+    <script src="main.js"></script>
+</body>
+</html>

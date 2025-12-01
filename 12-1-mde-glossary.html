@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDE Glossary | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete glossary of Microsoft Defender for Endpoint terms, acronyms, and concepts. Essential reference for understanding MDE documentation and interviews.</p>
+            </div>
+
+            <h1>MDE Glossary</h1>
+
+            <p>This glossary covers key terms, acronyms, and concepts used in Microsoft Defender for Endpoint and related security technologies.</p>
+
+            <h2>A</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terms A</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><strong>AIR (Automated Investigation and Response)</strong>
+Automatically investigates alerts and can remediate threats without 
+analyst intervention. Reduces manual workload and speeds response.
+
+<strong>Alert</strong>
+Notification of potentially malicious activity detected on an endpoint. 
+Alerts have severity levels: Critical, High, Medium, Low, Informational.
+
+<strong>AMSI (Antimalware Scan Interface)</strong>
+Windows interface allowing applications to request malware scans of 
+content. Used to detect fileless malware and malicious scripts.
+
+<strong>ASR (Attack Surface Reduction)</strong>
+Set of rules that block common attack techniques like Office macros 
+spawning processes, executable email content, and script obfuscation.
+
+<strong>ATP (Advanced Threat Protection)</strong>
+Legacy name for Microsoft Defender for Endpoint. Still seen in some 
+documentation and registry keys.
+
+<strong>Advanced Hunting</strong>
+Query-based threat hunting using KQL to search raw telemetry data. 
+Allows proactive threat detection and investigation.</code></pre>
+                </div>
+            </div>
+
+            <h2>B-C</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terms B-C</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><strong>Behavioral Blocking</strong>
+Detection based on process behavior rather than signatures. Identifies 
+malicious actions regardless of file hash or reputation.
+
+<strong>Block Mode (EDR)</strong>
+EDR capability to block malicious artifacts even when third-party AV 
+is primary. Acts as safety net for missed detections.
+
+<strong>C2 (Command and Control)</strong>
+Server infrastructure used by attackers to communicate with and control 
+compromised endpoints. Key indicator of active compromise.
+
+<strong>CFA (Controlled Folder Access)</strong>
+Ransomware protection feature that blocks untrusted apps from modifying 
+files in protected folders (Documents, Pictures, etc.).
+
+<strong>Cloud Protection</strong>
+Real-time cloud lookup for file reputation. Provides faster detection 
+of new threats using Microsoft's threat intelligence.
+
+<strong>Custom Detection</strong>
+User-created detection rules using KQL queries. Runs on schedule and 
+generates alerts when matches found.</code></pre>
+                </div>
+            </div>
+
+            <h2>D-E</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terms D-E</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><strong>Device Control</strong>
+USB and removable media management. Can block, allow, or audit 
+removable storage devices based on policy.
+
+<strong>Device Isolation</strong>
+Response action that cuts network connectivity except to MDE cloud. 
+Contains threats while maintaining remote investigation capability.
+
+<strong>EDR (Endpoint Detection and Response)</strong>
+Technology that monitors endpoints for threats and provides 
+investigation and response capabilities. Core MDE feature.
+
+<strong>EPP (Endpoint Protection Platform)</strong>
+Traditional antivirus and endpoint protection. MDE includes EPP 
+(Microsoft Defender Antivirus) plus EDR capabilities.
+
+<strong>Exploit Guard</strong>
+Collection of features including ASR, Network Protection, CFA, and 
+Exploit Protection. Successor to EMET.
+
+<strong>Exploit Protection</strong>
+System and application-level mitigations against memory corruption 
+attacks. Includes DEP, ASLR, CFG protections.
+
+<strong>Exposure Score</strong>
+TVM metric (0-100) indicating organizational vulnerability. Lower 
+scores indicate better security posture.</code></pre>
+                </div>
+            </div>
+
+            <h2>F-I</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terms F-I</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><strong>False Positive (FP)</strong>
+Legitimate activity incorrectly flagged as malicious. Requires 
+investigation to confirm and may need rule tuning.
+
+<strong>Incident</strong>
+Collection of related alerts representing a single attack. Groups 
+alerts for coordinated investigation and response.
+
+<strong>Indicator (IOC)</strong>
+Indicator of Compromise - file hash, IP, domain, or URL known to be 
+malicious. Can be used to block or alert on matches.
+
+<strong>Investigation Package</strong>
+Forensic data collection from endpoint. Includes autoruns, processes, 
+network connections, event logs, and more.
+
+<strong>Intune</strong>
+Microsoft's cloud-based endpoint management. Primary method for 
+deploying MDE policies to managed devices.</code></pre>
+                </div>
+            </div>
+
+            <h2>K-L</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terms K-L</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><strong>KQL (Kusto Query Language)</strong>
+Query language used for Advanced Hunting. Similar to SQL but optimized 
+for log analytics and time-series data.
+
+<strong>Live Response</strong>
+Remote shell access to endpoints for investigation and remediation. 
+Allows running commands, collecting files, and taking action.
+
+<strong>LOLBAS (Living Off the Land Binaries and Scripts)</strong>
+Legitimate system tools used maliciously. Examples: PowerShell, 
+certutil, mshta. Common technique to evade detection.</code></pre>
+                </div>
+            </div>
+
+            <h2>M-N</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terms M-N</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><strong>MAPS (Microsoft Active Protection Service)</strong>
+Cloud-based protection service for real-time threat intelligence. 
+Provides sample submission and reputation lookup.
+
+<strong>MDE (Microsoft Defender for Endpoint)</strong>
+Enterprise endpoint security platform. Includes EPP, EDR, TVM, and 
+automated investigation capabilities.
+
+<strong>MDI (Microsoft Defender for Identity)</strong>
+Identity threat detection for Active Directory. Detects credential 
+theft, lateral movement, and reconnaissance.
+
+<strong>MDO (Microsoft Defender for Office 365)</strong>
+Email and collaboration security. Protects against phishing, malware 
+in attachments, and malicious links.
+
+<strong>MDCA (Microsoft Defender for Cloud Apps)</strong>
+Cloud access security broker (CASB). Monitors and controls cloud 
+application usage and data.
+
+<strong>Microsoft 365 Defender</strong>
+Unified XDR platform combining MDE, MDI, MDO, and MDCA. Single 
+portal for cross-domain detection and response.
+
+<strong>MITRE ATT&CK</strong>
+Framework of adversary tactics and techniques. Used to map and 
+categorize threat behaviors.
+
+<strong>MsSense.exe</strong>
+MDE sensor service executable. Core process for EDR telemetry 
+collection and reporting.
+
+<strong>Network Protection</strong>
+Blocks outbound connections to malicious sites. Extends SmartScreen 
+protection to all applications.</code></pre>
+                </div>
+            </div>
+
+            <h2>O-R</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terms O-R</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><strong>Onboarding</strong>
+Process of enrolling devices into MDE. Installs sensor and begins 
+telemetry collection.
+
+<strong>Offboarding</strong>
+Process of removing devices from MDE. Stops sensor and clears 
+local data.
+
+<strong>P1/P2 (Plan 1/Plan 2)</strong>
+MDE licensing tiers. P1 includes prevention only. P2 adds EDR, 
+hunting, TVM, and automated investigation.
+
+<strong>PUA (Potentially Unwanted Application)</strong>
+Software that may be unwanted but isn't strictly malicious. 
+Examples: adware, bundled software, crypto miners.
+
+<strong>Quarantine</strong>
+Isolation of malicious files. Prevents execution while preserving 
+evidence for analysis.
+
+<strong>Real-time Protection</strong>
+Continuous scanning of files and processes as they execute. Core 
+antivirus functionality.</code></pre>
+                </div>
+            </div>
+
+            <h2>S-T</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terms S-T</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><strong>Secure Score</strong>
+Microsoft security posture metric. Measures implementation of 
+security recommendations across Microsoft 365.
+
+<strong>Sensor</strong>
+MDE component on endpoints that collects telemetry. Runs as 
+MsSense.exe service.
+
+<strong>SmartScreen</strong>
+URL and download reputation service. Blocks known malicious 
+sites and files.
+
+<strong>Suppression Rule</strong>
+Rule to hide specific alerts from view. Used to reduce noise 
+from known benign activity.
+
+<strong>Tamper Protection</strong>
+Prevents local changes to security settings. Blocks attempts 
+to disable Defender via registry or PowerShell.
+
+<strong>Threat Analytics</strong>
+Threat intelligence reports on emerging threats. Includes 
+exposure assessment and recommended mitigations.
+
+<strong>Timeline</strong>
+Chronological view of device activity. Shows processes, files, 
+network, registry events for investigation.
+
+<strong>True Positive (TP)</strong>
+Legitimate detection of actual malicious activity. Confirms 
+detection accuracy.
+
+<strong>TVM (Threat and Vulnerability Management)</strong>
+Vulnerability assessment and remediation tracking. Agentless 
+discovery using MDE sensor data.</code></pre>
+                </div>
+            </div>
+
+            <h2>U-Z</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terms U-Z</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><strong>WdFilter.sys</strong>
+Windows Defender file system filter driver. Intercepts file 
+operations for real-time scanning.
+
+<strong>Web Content Filtering</strong>
+Category-based web blocking. Blocks access to sites by category 
+(adult, gambling, etc.).
+
+<strong>XDR (Extended Detection and Response)</strong>
+Cross-domain detection and response. Microsoft 365 Defender 
+provides XDR across endpoints, identity, email, and cloud apps.
+
+<strong>Zero-Day</strong>
+Previously unknown vulnerability with no available patch. 
+Requires workarounds or mitigations until patched.</code></pre>
+                </div>
+            </div>
+
+            <h2>Common Acronyms Quick Reference</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Acronym</th>
+                            <th>Full Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>AIR</td><td>Automated Investigation and Response</td></tr>
+                        <tr><td>ASR</td><td>Attack Surface Reduction</td></tr>
+                        <tr><td>CFA</td><td>Controlled Folder Access</td></tr>
+                        <tr><td>EDR</td><td>Endpoint Detection and Response</td></tr>
+                        <tr><td>EPP</td><td>Endpoint Protection Platform</td></tr>
+                        <tr><td>IOC</td><td>Indicator of Compromise</td></tr>
+                        <tr><td>KQL</td><td>Kusto Query Language</td></tr>
+                        <tr><td>MTTD</td><td>Mean Time to Detect</td></tr>
+                        <tr><td>MTTR</td><td>Mean Time to Respond</td></tr>
+                        <tr><td>TVM</td><td>Threat and Vulnerability Management</td></tr>
+                        <tr><td>XDR</td><td>Extended Detection and Response</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Terms</h3>
+                <ul>
+                    <li><strong>EDR vs EPP</strong>: EPP = prevention (AV), EDR = detection + response</li>
+                    <li><strong>XDR</strong>: Cross-domain detection (endpoints + identity + email + cloud)</li>
+                    <li><strong>ASR</strong>: Attack Surface Reduction rules - block common attack techniques</li>
+                    <li><strong>TVM</strong>: Vulnerability management without additional scanning</li>
+                    <li><strong>AIR</strong>: Automated investigation - virtual analyst capability</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="11-5-managed-services.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Managed Services</span>
+                </a>
+                <a href="12-2-interview-questions.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Interview Questions</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel Integration | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to integrating Microsoft Defender for Endpoint with Microsoft Sentinel. Learn data connector setup, table mappings, analytics rules, hunting queries across MDE data in Sentinel, and incident synchronization.</p>
+            </div>
+
+            <h1>Microsoft Sentinel Integration</h1>
+
+            <p>Microsoft Sentinel is Microsoft's cloud-native SIEM/SOAR platform. Integrating MDE with Sentinel provides centralized security monitoring, advanced analytics, and automated response capabilities across your entire security ecosystem.</p>
+
+            <h2>Integration Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE to Sentinel Data Flow</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     MICROSOFT DEFENDER FOR ENDPOINT                      │
+│                                                                          │
+│   Endpoints ──► MDE Backend ──► Raw Telemetry & Alerts                  │
+│                                        │                                 │
+└────────────────────────────────────────┼─────────────────────────────────┘
+                                         │
+                                         │  Data Connector
+                                         │  (Streaming API)
+                                         ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        MICROSOFT SENTINEL                                │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                     LOG ANALYTICS WORKSPACE                      │   │
+│  │                                                                  │   │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │   │
+│  │  │ Device*      │  │ SecurityAlert│  │ Security     │          │   │
+│  │  │ Tables       │  │              │  │ Incident     │          │   │
+│  │  │              │  │ (MDE Alerts) │  │              │          │   │
+│  │  │ • Process    │  │              │  │ (Synced from │          │   │
+│  │  │ • Network    │  └──────────────┘  │  M365D)      │          │   │
+│  │  │ • File       │                    └──────────────┘          │   │
+│  │  │ • Registry   │                                               │   │
+│  │  │ • Logon      │                                               │   │
+│  │  └──────────────┘                                               │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              │                                          │
+│                              ▼                                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                 │
+│  │  Analytics   │  │   Hunting    │  │  Playbooks   │                 │
+│  │    Rules     │  │   Queries    │  │   (SOAR)     │                 │
+│  └──────────────┘  └──────────────┘  └──────────────┘                 │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Setting Up the Data Connector</h2>
+
+            <h3>Prerequisites</h3>
+            <ul>
+                <li>Microsoft Sentinel workspace deployed</li>
+                <li>MDE P2 license (or equivalent: M365 E5, E5 Security)</li>
+                <li>Azure AD Global Admin or Security Admin role</li>
+                <li>Microsoft 365 Defender connector permissions</li>
+            </ul>
+
+            <h3>Step-by-Step Setup</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>1. Navigate to Microsoft Sentinel
+   Azure Portal → Microsoft Sentinel → Select Workspace
+
+2. Open Data Connectors
+   Configuration → Data connectors → Search "Microsoft 365 Defender"
+
+3. Open Connector Page
+   Click "Microsoft 365 Defender" → Open connector page
+
+4. Connect MDE Data
+   Under "Connect events":
+   ✓ Microsoft Defender for Endpoint
+   
+   Select tables to stream:
+   ✓ DeviceInfo
+   ✓ DeviceNetworkInfo
+   ✓ DeviceProcessEvents
+   ✓ DeviceNetworkEvents
+   ✓ DeviceFileEvents
+   ✓ DeviceRegistryEvents
+   ✓ DeviceLogonEvents
+   ✓ DeviceImageLoadEvents
+   ✓ DeviceEvents
+
+5. Enable Incident Sync (Recommended)
+   ✓ Turn on Microsoft 365 Defender incident sync
+
+6. Click "Apply Changes"</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Data Ingestion Costs</h5>
+                    <p>Streaming raw MDE telemetry tables to Sentinel incurs Log Analytics ingestion costs. For high-volume environments, consider which tables you actually need, or use Basic Logs tier for high-volume, low-query tables.</p>
+                </div>
+            </div>
+
+            <h2>Table Mapping: MDE vs Sentinel</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>MDE Table</th>
+                            <th>Sentinel Table</th>
+                            <th>Contents</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>DeviceProcessEvents</td>
+                            <td>DeviceProcessEvents</td>
+                            <td>Process execution</td>
+                        </tr>
+                        <tr>
+                            <td>DeviceNetworkEvents</td>
+                            <td>DeviceNetworkEvents</td>
+                            <td>Network connections</td>
+                        </tr>
+                        <tr>
+                            <td>DeviceFileEvents</td>
+                            <td>DeviceFileEvents</td>
+                            <td>File operations</td>
+                        </tr>
+                        <tr>
+                            <td>DeviceRegistryEvents</td>
+                            <td>DeviceRegistryEvents</td>
+                            <td>Registry changes</td>
+                        </tr>
+                        <tr>
+                            <td>DeviceLogonEvents</td>
+                            <td>DeviceLogonEvents</td>
+                            <td>Authentication events</td>
+                        </tr>
+                        <tr>
+                            <td>AlertInfo/AlertEvidence</td>
+                            <td>SecurityAlert</td>
+                            <td>MDE alerts</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Analytics Rules for MDE Data</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Encoded PowerShell Detection Rule</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Custom Analytics Rule for Sentinel</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> TimeGenerated <span class="operator">></span> <span class="function">ago</span>(<span class="number">5</span>m)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="keyword">in~</span> (<span class="string">"powershell.exe"</span>, <span class="string">"pwsh.exe"</span>)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"-enc"</span>, <span class="string">"-EncodedCommand"</span>, <span class="string">"FromBase64String"</span>)
+<span class="operator">|</span> <span class="keyword">extend</span> HostName <span class="operator">=</span> <span class="function">tostring</span>(<span class="function">split</span>(DeviceName, <span class="string">"."</span>)[<span class="number">0</span>])
+<span class="operator">|</span> <span class="keyword">project</span> TimeGenerated, DeviceName, HostName, InitiatingProcessAccountName, 
+         FileName, ProcessCommandLine</code></pre>
+                </div>
+            </div>
+
+            <h2>Cross-Product Hunting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Correlate MDE + Azure AD Sign-ins</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find suspicious process execution after risky sign-in</span>
+<span class="keyword">let</span> riskySignIns <span class="operator">=</span> 
+    <span class="variable">SigninLogs</span>
+    <span class="operator">|</span> <span class="keyword">where</span> TimeGenerated <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+    <span class="operator">|</span> <span class="keyword">where</span> RiskLevelDuringSignIn <span class="keyword">in</span> (<span class="string">"medium"</span>, <span class="string">"high"</span>)
+    <span class="operator">|</span> <span class="keyword">project</span> SignInTime <span class="operator">=</span> TimeGenerated, UserPrincipalName, IPAddress;
+riskySignIns
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind</span><span class="operator">=</span>inner (
+    <span class="variable">DeviceProcessEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> TimeGenerated <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+    <span class="operator">|</span> <span class="keyword">where</span> FileName <span class="keyword">in~</span> (<span class="string">"powershell.exe"</span>, <span class="string">"cmd.exe"</span>)
+) <span class="keyword">on</span> $left.UserPrincipalName <span class="operator">==</span> $right.InitiatingProcessAccountUpn</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Key Difference in Sentinel</h5>
+                    <p>In Sentinel, use <code>TimeGenerated</code> instead of <code>Timestamp</code>. All other MDE table columns remain the same.</p>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                <h4>Regular Operations</h4>
+                <ul>
+                    <li>Monitor Sentinel incidents for MDE alerts</li>
+                    <li>Run cross-product hunting queries</li>
+                    <li>Tune analytics rules to reduce false positives</li>
+                    <li>Review data ingestion costs and optimize</li>
+                </ul>
+                <h4>Common Tickets</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"MDE data not in Sentinel"</span>
+                    <span class="ticket-solution">→ Check connector status, verify table selections, allow 15-20 min ingestion delay</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"High ingestion costs"</span>
+                    <span class="ticket-solution">→ Review table volumes, consider Basic Logs tier, implement filtering via DCRs</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Connector</strong>: Microsoft 365 Defender connector streams MDE data</li>
+                    <li><strong>Tables</strong>: Same names in Sentinel (DeviceProcessEvents, etc.)</li>
+                    <li><strong>Time column</strong>: Use TimeGenerated in Sentinel, not Timestamp</li>
+                    <li><strong>Incident sync</strong>: Bi-directional between M365D and Sentinel</li>
+                    <li><strong>Value</strong>: Longer retention, cross-product correlation, SOAR automation</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="8-1-microsoft-365-defender.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Microsoft 365 Defender</span>
+                </a>
+                <a href="8-3-intune-integration.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Intune Integration</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

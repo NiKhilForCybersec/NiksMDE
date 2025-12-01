@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attack Surface Reduction | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Attack Surface Reduction (ASR) rules in MDE. Learn all 16+ ASR rules, deployment modes (Audit/Block/Warn), recommended configurations, common false positives, and day-to-day management tasks.</p>
+            </div>
+
+            <h1>Attack Surface Reduction (ASR) Rules</h1>
+
+            <p>Attack Surface Reduction rules are a set of configurable policies that prevent common attack techniques used by malware and exploits. ASR rules target specific behaviors commonly abused by attackers, such as launching executable files from email, running obfuscated scripts, or injecting code into processes.</p>
+
+            <h2>ASR Rule Modes</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mode</th>
+                            <th>Value</th>
+                            <th>Behavior</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="text-muted">Disabled</span></td>
+                            <td>0</td>
+                            <td>Rule is off, no events</td>
+                            <td>Rule not needed</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-yellow">Audit</span></td>
+                            <td>2</td>
+                            <td>Logs events but doesn't block</td>
+                            <td>Testing before enforcement</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-cyan">Warn</span></td>
+                            <td>6</td>
+                            <td>Shows warning, user can bypass</td>
+                            <td>Soft enforcement</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-green">Block</span></td>
+                            <td>1</td>
+                            <td>Blocks action completely</td>
+                            <td>Full enforcement</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Deployment Best Practice</h5>
+                    <p>Always start with <strong>Audit mode</strong> for 2-4 weeks to identify false positives before moving to Block mode. Use the MDE portal's ASR reports to analyze audit events.</p>
+                </div>
+            </div>
+
+            <h2>Complete ASR Rules Reference</h2>
+
+            <p>Below is the complete list of ASR rules with their GUIDs, descriptions, and recommendations:</p>
+
+            <h3>Office Application Rules</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rule Name</th>
+                            <th>GUID</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Block Office apps from creating executable content</strong><br><span class="text-muted">Prevents Office from creating .exe, .dll, .scr files</span></td>
+                            <td><code>3B576869-A4EC-4529-8536-B80A7769E899</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block Office apps from creating child processes</strong><br><span class="text-muted">Prevents Office from spawning cmd, PowerShell, etc.</span></td>
+                            <td><code>D4F940AB-401B-4EFC-AADC-AD5F3C50688A</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block Office apps from injecting code into processes</strong><br><span class="text-muted">Prevents Office from injecting into other processes</span></td>
+                            <td><code>75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block Win32 API calls from Office macros</strong><br><span class="text-muted">Prevents macros from calling Win32 APIs</span></td>
+                            <td><code>92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block Office communication apps from creating child processes</strong><br><span class="text-muted">Applies to Outlook</span></td>
+                            <td><code>26190899-1602-49E8-8B27-EB1D0A1CE869</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Script & Execution Rules</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rule Name</th>
+                            <th>GUID</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Block execution of potentially obfuscated scripts</strong><br><span class="text-muted">Detects obfuscation in JS, VBS, PowerShell</span></td>
+                            <td><code>5BEB7EFE-FD9A-4556-801D-275E5FFC04CC</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block JavaScript or VBScript from launching downloaded content</strong><br><span class="text-muted">Prevents scripts from launching downloaded executables</span></td>
+                            <td><code>D3E037E1-3EB8-44C8-A917-57927947596D</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block process creations from PSExec and WMI</strong><br><span class="text-muted">Blocks remote execution methods</span></td>
+                            <td><code>D1E49AAC-8F56-4280-B9BA-993A6D77406C</code></td>
+                            <td><span class="badge badge-l2">Audit First</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Email & Download Rules</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rule Name</th>
+                            <th>GUID</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Block executable content from email and webmail</strong><br><span class="text-muted">Blocks .exe, .dll, .scr from email clients</span></td>
+                            <td><code>BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block untrusted/unsigned processes from USB</strong><br><span class="text-muted">Blocks execution from removable media</span></td>
+                            <td><code>B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block executable files unless they meet prevalence/age/trusted list</strong><br><span class="text-muted">Cloud-based protection for unknown files</span></td>
+                            <td><code>01443614-CD74-433A-B99E-2ECDC07BFC25</code></td>
+                            <td><span class="badge badge-l2">Audit First</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Credential & Persistence Rules</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rule Name</th>
+                            <th>GUID</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Block credential stealing from LSASS</strong><br><span class="text-muted">Prevents tools like Mimikatz from accessing LSASS</span></td>
+                            <td><code>9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block persistence through WMI event subscription</strong><br><span class="text-muted">Prevents WMI-based persistence</span></td>
+                            <td><code>E6DB77E5-3DF2-4CF1-B95A-636979351E5B</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block abuse of exploited vulnerable signed drivers</strong><br><span class="text-muted">Blocks known vulnerable drivers (BYOVD)</span></td>
+                            <td><code>56A863A9-875E-4185-98A7-B882C64B5CE5</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Ransomware Protection Rule</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rule Name</th>
+                            <th>GUID</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Use advanced protection against ransomware</strong><br><span class="text-muted">ML-based detection of ransomware behaviors</span></td>
+                            <td><code>C1DB55AB-C21A-4637-BB3F-A12568109D35</code></td>
+                            <td><span class="badge badge-l1">Enable</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Deploying ASR Rules</h2>
+
+            <h3>Method 1: Microsoft Intune</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Intune Path</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Endpoint Security → Attack Surface Reduction → Create Policy
+Platform: Windows 10 and later
+Profile: Attack Surface Reduction Rules
+
+Configure each rule:
+- Not configured
+- Block
+- Audit
+- Warn
+- Disable</code></pre>
+                </div>
+            </div>
+
+            <h3>Method 2: Group Policy</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">GPO Path</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Computer Configuration → Administrative Templates → 
+Windows Components → Microsoft Defender Antivirus → 
+Microsoft Defender Exploit Guard → Attack Surface Reduction
+
+Configure Attack Surface Reduction rules:
+- Enabled
+- Set value for each rule GUID:
+  0 = Disable
+  1 = Block
+  2 = Audit
+  6 = Warn</code></pre>
+                </div>
+            </div>
+
+            <h3>Method 3: PowerShell</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Enable a rule in Block mode</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-AttackSurfaceReductionRules_Ids</span> <span class="string">"BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550"</span> `
+    <span class="variable">-AttackSurfaceReductionRules_Actions</span> Enabled
+
+<span class="comment"># Enable a rule in Audit mode</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-AttackSurfaceReductionRules_Ids</span> <span class="string">"BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550"</span> `
+    <span class="variable">-AttackSurfaceReductionRules_Actions</span> AuditMode
+
+<span class="comment"># Enable multiple rules at once</span>
+<span class="variable">$rules</span> = @(
+    <span class="string">"BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550"</span>,  <span class="comment"># Block exe from email</span>
+    <span class="string">"D4F940AB-401B-4EFC-AADC-AD5F3C50688A"</span>,  <span class="comment"># Block Office child processes</span>
+    <span class="string">"3B576869-A4EC-4529-8536-B80A7769E899"</span>   <span class="comment"># Block Office exe creation</span>
+)
+<span class="variable">$actions</span> = @(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)  <span class="comment"># All in Block mode</span>
+
+<span class="function">Set-MpPreference</span> <span class="variable">-AttackSurfaceReductionRules_Ids</span> <span class="variable">$rules</span> `
+    <span class="variable">-AttackSurfaceReductionRules_Actions</span> <span class="variable">$actions</span>
+
+<span class="comment"># View current ASR configuration</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> <span class="variable">-ExpandProperty</span> AttackSurfaceReductionRules_Ids
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> <span class="variable">-ExpandProperty</span> AttackSurfaceReductionRules_Actions</code></pre>
+                </div>
+            </div>
+
+            <h2>Monitoring ASR Events</h2>
+
+            <h3>KQL Query for ASR Events</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// All ASR events in last 7 days</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">startswith</span> <span class="string">"Asr"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> ActionType, DeviceName
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// ASR blocks only (not audit)</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">startswith</span> <span class="string">"Asr"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">endswith</span> <span class="string">"Blocked"</span>
+<span class="operator">|</span> <span class="keyword">project</span> 
+    Timestamp,
+    DeviceName,
+    ActionType,
+    FileName,
+    FolderPath,
+    InitiatingProcessFileName,
+    InitiatingProcessCommandLine
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">desc</span>
+
+<span class="comment">// Specific rule: Office child process blocks</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"AsrOfficeChildProcessBlocked"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> InitiatingProcessFileName, FileName
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Windows Event Log</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Event Log</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Log: Microsoft-Windows-Windows Defender/Operational
+
+Event IDs:
+- 1121: ASR rule fired in Block mode
+- 1122: ASR rule fired in Audit mode  
+- 1129: ASR rule fired in Warn mode (user bypassed)
+- 1131: ASR rule fired in Warn mode (user blocked)
+
+PowerShell to view:
+Get-WinEvent -LogName "Microsoft-Windows-Windows Defender/Operational" |
+    Where-Object { $_.Id -in @(1121, 1122, 1129, 1131) } |
+    Select-Object TimeCreated, Id, Message -First 50</code></pre>
+                </div>
+            </div>
+
+            <h2>ASR Exclusions</h2>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Exclusion Warning</h5>
+                    <p>ASR exclusions reduce security coverage. Only add exclusions after confirming legitimate business need and documenting the risk acceptance.</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Add ASR exclusion for a specific path</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-AttackSurfaceReductionOnlyExclusions</span> <span class="string">"C:\Program Files\CustomApp\"</span>
+
+<span class="comment"># Add ASR exclusion for a specific file</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-AttackSurfaceReductionOnlyExclusions</span> <span class="string">"C:\Scripts\LegitScript.ps1"</span>
+
+<span class="comment"># View current exclusions</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> <span class="variable">-ExpandProperty</span> AttackSurfaceReductionOnlyExclusions
+
+<span class="comment"># Remove an exclusion</span>
+<span class="function">Remove-MpPreference</span> <span class="variable">-AttackSurfaceReductionOnlyExclusions</span> <span class="string">"C:\Scripts\LegitScript.ps1"</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Daily Operations</h4>
+                <ul>
+                    <li>Monitor ASR audit events for false positives before enabling Block mode</li>
+                    <li>Review ASR block events in portal reports</li>
+                    <li>Investigate legitimate software impacted by ASR rules</li>
+                    <li>Document and process exclusion requests</li>
+                </ul>
+
+                <h4>Common Tickets You'll Handle</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Application blocked by ASR"</span>
+                    <span class="ticket-solution">→ Identify rule GUID from event, verify legitimate need, add targeted exclusion if approved</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Macro not working in Excel"</span>
+                    <span class="ticket-solution">→ Check "Block Win32 API calls from Office macros" rule, evaluate business need</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Script blocked from running"</span>
+                    <span class="ticket-solution">→ Review obfuscated script rule events, verify script legitimacy, consider exclusion</span>
+                </div>
+
+                <h4>Weekly/Monthly</h4>
+                <ul>
+                    <li>Review ASR reports for trends and new false positives</li>
+                    <li>Evaluate rules in Audit mode for promotion to Block</li>
+                    <li>Audit existing exclusions for continued necessity</li>
+                </ul>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>ASR modes</strong>: Disabled (0), Block (1), Audit (2), Warn (6) - always test with Audit first</li>
+                    <li><strong>Key rules to know</strong>: Office child process blocking, LSASS protection, obfuscated script blocking</li>
+                    <li><strong>Deployment methods</strong>: Intune (preferred), GPO, PowerShell, ConfigMgr</li>
+                    <li><strong>Monitoring</strong>: DeviceEvents table with ActionType starting with "Asr", Event IDs 1121/1122</li>
+                    <li><strong>Exclusions</strong>: Use sparingly, document thoroughly, applies to all ASR rules globally</li>
+                    <li><strong>Common false positives</strong>: Legitimate automation tools, custom scripts, LOB applications with macros</li>
+                </ul>
+            </div>
+
+            <!-- Page Navigation -->
+            <nav class="page-nav">
+                <a href="3-1-next-gen-protection.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Next-Gen Protection</span>
+                </a>
+                <a href="3-3-asr-rule-reference.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">ASR Rule Reference</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

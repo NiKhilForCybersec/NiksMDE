@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intune Policies | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to configuring MDE policies via Microsoft Intune. Learn about antivirus, ASR, EDR, firewall, and endpoint protection policies.</p>
+            </div>
+
+            <h1>Intune Policies for MDE</h1>
+
+            <p>Microsoft Intune provides comprehensive policy management for MDE. Policies can be deployed via Endpoint Security, Device Configuration, or Security Baselines.</p>
+
+            <h2>Policy Deployment Options</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Intune Policy Locations</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    INTUNE POLICY LOCATIONS                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ENDPOINT SECURITY (Recommended for MDE)                                │
+│  ├── Antivirus                                                          │
+│  │   ├── Microsoft Defender Antivirus                                  │
+│  │   ├── Microsoft Defender Antivirus exclusions                       │
+│  │   └── Windows Security experience                                   │
+│  ├── Disk encryption                                                   │
+│  ├── Firewall                                                          │
+│  ├── Endpoint detection and response                                   │
+│  ├── Attack surface reduction                                          │
+│  └── Account protection                                                │
+│                                                                          │
+│  SECURITY BASELINES                                                     │
+│  ├── Microsoft Defender for Endpoint baseline                          │
+│  ├── Windows 365 Security baseline                                     │
+│  └── Windows security baseline                                         │
+│                                                                          │
+│  DEVICE CONFIGURATION                                                   │
+│  ├── Endpoint protection (template)                                    │
+│  ├── Device restrictions                                               │
+│  └── Custom policies (OMA-URI)                                         │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Antivirus Policies</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Antivirus Policy Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ANTIVIRUS POLICY:
+Location: Endpoint security → Antivirus → Create policy
+
+PLATFORM: Windows 10, Windows 11, and Windows Server
+PROFILE: Microsoft Defender Antivirus
+
+KEY SETTINGS:
+
+CLOUD PROTECTION:
+├── Turn on cloud-delivered protection: Yes
+├── Cloud-delivered protection level: High
+├── Defender cloud extended timeout: 50 seconds
+└── Submit samples consent: Send safe samples automatically
+
+REAL-TIME PROTECTION:
+├── Turn on real-time protection: Yes
+├── Turn on behavior monitoring: Yes
+├── Enable on-access protection: Yes
+├── Turn on process scanning: Yes
+├── Scan all downloaded files and attachments: Yes
+├── Scan scripts loaded in browsers: Yes
+└── Scan network files: Yes
+
+SCAN SETTINGS:
+├── Scan type: Quick scan
+├── Day of week for scheduled scan: Sunday
+├── Time of day for scheduled scan: 2:00 AM
+├── Check for signature updates before scan: Yes
+├── Scan removable drives: Yes
+├── Scan archive files: Yes
+├── Scan incoming mail messages: Yes
+├── Scan mapped network drives for full scan: No
+└── CPU usage limit during scan: 50%
+
+REMEDIATION:
+├── Action for potentially unwanted apps: Block
+├── Days before quarantine removal: 90
+└── Allow user to restore quarantined items: No
+
+UPDATES:
+├── Signature update interval (hours): 4
+├── Signature update fallback order: InternalDefinitionUpdateServer, 
+│   MicrosoftUpdateServer, MMPC
+└── Signature update file shares sources: (optional internal share)</code></pre>
+                </div>
+            </div>
+
+            <h2>EDR Policies</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">EDR Policy Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ENDPOINT DETECTION AND RESPONSE:
+Location: Endpoint security → Endpoint detection and response
+
+PLATFORM: Windows 10, Windows 11, and Windows Server
+PROFILE: Endpoint detection and response
+
+KEY SETTINGS:
+
+ONBOARDING:
+├── Microsoft Defender for Endpoint client config package type:
+│   └── Auto from connector (recommended)
+│       OR
+│   └── Onboard (manual package upload)
+└── Note: Auto from connector requires MDE-Intune connection
+
+SAMPLE SHARING:
+├── Sample sharing for all files: Enabled
+└── Expedite telemetry reporting frequency: Yes
+
+ADDITIONAL SETTINGS (via OMA-URI if needed):
+├── ./Device/Vendor/MSFT/WindowsAdvancedThreatProtection/Onboarding
+├── ./Device/Vendor/MSFT/WindowsAdvancedThreatProtection/Configuration/SampleSharing
+└── ./Device/Vendor/MSFT/WindowsAdvancedThreatProtection/Configuration/TelemetryReportingFrequency
+
+VERIFICATION:
+After policy applies:
+├── Device appears in MDE portal
+├── Health status shows Active
+├── Onboarding state = 1 in registry
+└── HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status</code></pre>
+                </div>
+            </div>
+
+            <h2>Attack Surface Reduction</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">ASR Policy Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ATTACK SURFACE REDUCTION POLICIES:
+Location: Endpoint security → Attack surface reduction
+
+PROFILE OPTIONS:
+├── Attack Surface Reduction Rules
+├── Device Control
+├── Exploit Protection
+├── Web Protection
+└── Application Control
+
+ASR RULES POLICY:
+
+RECOMMENDED RULES (Block):
+├── Block Office apps from creating child processes
+├── Block Office apps from creating executable content
+├── Block Office apps from injecting code
+├── Block JavaScript or VBScript from launching downloads
+├── Block execution of potentially obfuscated scripts
+├── Block Win32 API calls from Office macros
+├── Block executable content from email client
+├── Block credential stealing from LSASS
+├── Block untrusted processes from USB
+├── Block process creations from PSExec and WMI
+├── Block persistence through WMI event subscription
+└── Use advanced protection against ransomware
+
+RULE MODES:
+├── Not configured: Rule disabled
+├── Block: Rule enforced, action blocked
+├── Audit: Rule logs but doesn't block
+└── Warn: User warned, can proceed
+
+EXCLUSIONS:
+├── Add file and folder exclusions
+├── Use for: Known good applications
+├── Format: Full paths or wildcards
+└── Apply per-rule or globally
+
+CONTROLLED FOLDER ACCESS:
+├── Controlled folder access: Enabled (Block mode)
+├── List of protected folders: Add custom folders
+├── List of allowed applications: Add trusted apps
+└── Start with Audit mode to identify impacts</code></pre>
+                </div>
+            </div>
+
+            <h2>Firewall Policies</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Firewall Policy Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>FIREWALL POLICIES:
+Location: Endpoint security → Firewall
+
+PROFILES:
+├── Microsoft Defender Firewall
+├── Microsoft Defender Firewall Rules
+└── Windows Firewall
+
+FIREWALL SETTINGS:
+
+DOMAIN PROFILE:
+├── Enable firewall: True
+├── Block all incoming connections: False (usually)
+├── Stealth mode: Enabled
+├── Audit mode: Not configured
+└── Default inbound action: Block
+
+PRIVATE PROFILE:
+├── Enable firewall: True
+├── Block all incoming connections: False
+├── Stealth mode: Enabled
+└── Default inbound action: Block
+
+PUBLIC PROFILE:
+├── Enable firewall: True
+├── Block all incoming connections: True (more restrictive)
+├── Stealth mode: Enabled
+└── Default inbound action: Block
+
+FIREWALL RULES:
+├── Allow specific applications
+├── Allow specific ports
+├── Block specific connections
+└── Define by direction (inbound/outbound)
+
+EXAMPLE RULE:
+├── Name: Allow Remote Desktop
+├── Direction: Inbound
+├── Action: Allow
+├── Protocol: TCP
+├── Local port: 3389
+├── Remote address: Specific IP range
+└── Profile: Domain only</code></pre>
+                </div>
+            </div>
+
+            <h2>Security Baselines</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">MDE Security Baseline</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SECURITY BASELINES:
+Location: Endpoint security → Security baselines
+
+MDE BASELINE:
+├── Pre-configured best practice settings
+├── Updated by Microsoft
+├── One-click deployment
+└── Covers AV, ASR, and more
+
+CREATING BASELINE PROFILE:
+1. Select: Microsoft Defender for Endpoint Baseline
+2. Choose version (use latest)
+3. Create profile
+4. Review settings (customize if needed)
+5. Assign to device groups
+6. Create
+
+BASELINE SETTINGS INCLUDE:
+├── Microsoft Defender Antivirus settings
+├── Attack Surface Reduction rules
+├── Network Protection
+├── Controlled Folder Access
+├── Exploit Protection
+├── SmartScreen settings
+├── Firewall settings
+└── Device Guard settings
+
+BASELINE VS CUSTOM POLICIES:
+├── Baseline: Quick deployment, best practices
+├── Custom: Granular control, specific needs
+├── Recommendation: Use baseline + targeted custom
+└── Watch for: Policy conflicts
+
+CONFLICT RESOLUTION:
+├── Baseline settings can conflict with other policies
+├── More specific policy wins
+├── Check conflict report in Intune
+└── Resolve conflicts before deployment</code></pre>
+                </div>
+            </div>
+
+            <h2>Policy Monitoring</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Monitoring Policy Deployment</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>POLICY MONITORING:
+
+DEPLOYMENT STATUS:
+Location: Policy → Properties → Device status
+├── Succeeded: Policy applied
+├── Pending: Waiting for device check-in
+├── Failed: Error applying policy
+├── Not applicable: Device doesn't meet requirements
+└── Conflict: Settings conflict with another policy
+
+REPORT VIEWS:
+├── Per-policy status
+├── Per-device status
+├── Per-setting status
+└── Conflict report
+
+TROUBLESHOOTING:
+
+POLICY NOT APPLYING:
+1. Check device check-in time
+2. Force sync: Devices → [Device] → Sync
+3. Check device compliance status
+4. Review Intune logs on device
+5. Check for policy conflicts
+
+DEVICE-SIDE VERIFICATION:
+# Check Intune MDM logs
+Get-WinEvent -LogName "Microsoft-Windows-DeviceManagement*"
+
+# Check applied policies
+mdmdiagnosticstool.exe -out C:\temp\mdmdiag
+
+# Force policy sync
+Start-Process "ms-settings:workplace"
+# Then click Sync
+
+COMMON ISSUES:
+├── License not assigned
+├── Device not enrolled
+├── User not in assignment group
+├── Policy conflict
+└── Device offline</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Use security baselines</strong>: Start with Microsoft's baseline, customize as needed</li>
+                        <li><strong>Test before production</strong>: Deploy to pilot group first</li>
+                        <li><strong>Avoid conflicts</strong>: Don't configure same setting in multiple policies</li>
+                        <li><strong>Document changes</strong>: Track why settings were customized</li>
+                        <li><strong>Monitor compliance</strong>: Review deployment status regularly</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Policy locations</strong>: Endpoint Security (primary), Security Baselines, Device Configuration</li>
+                    <li><strong>EDR auto-onboarding</strong>: "Auto from connector" with MDE-Intune connection</li>
+                    <li><strong>ASR modes</strong>: Block, Audit, Warn, Not configured</li>
+                    <li><strong>Baselines</strong>: Pre-configured best practices, quick deployment</li>
+                    <li><strong>Conflicts</strong>: More specific policy wins, check conflict report</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="10-3-group-policy-settings.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Group Policy Settings</span>
+                </a>
+                <a href="10-5-migration-strategies.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Migration Strategies</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

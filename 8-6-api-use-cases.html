@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Use Cases | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Practical API use cases for MDE automation. Learn real-world scenarios for threat intelligence integration, automated response, reporting, and SOAR integration.</p>
+            </div>
+
+            <h1>API Use Cases</h1>
+
+            <p>The MDE API enables powerful automation scenarios that extend the platform's capabilities beyond the portal interface.</p>
+
+            <h2>Common Use Cases</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">API Automation Scenarios</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       MDE API USE CASES                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  THREAT INTELLIGENCE          AUTOMATED RESPONSE                        │
+│  ├── Import IOCs from feeds   ├── Isolate compromised devices          │
+│  ├── Sync with TI platforms   ├── Collect investigation package        │
+│  ├── Export for sharing       ├── Run AV scan on demand                │
+│  └── Custom indicator mgmt    └── Block files/IPs automatically        │
+│                                                                          │
+│  REPORTING & ANALYTICS        SOAR INTEGRATION                          │
+│  ├── Custom dashboards        ├── Playbook automation                  │
+│  ├── Scheduled reports        ├── Multi-tool orchestration             │
+│  ├── Metrics collection       ├── Case management sync                 │
+│  └── Executive summaries      └── Alert enrichment                     │
+│                                                                          │
+│  DEVICE MANAGEMENT            HUNTING & INVESTIGATION                   │
+│  ├── Bulk tagging             ├── Scheduled hunts                      │
+│  ├── Inventory export         ├── Custom detection queries             │
+│  ├── Health monitoring        ├── Evidence collection                  │
+│  └── Onboarding verification  └── Timeline analysis                    │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Threat Intel Automation</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - TI Feed Import</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Import IOCs from threat intel feed</span>
+<span class="keyword">function</span> Import-ThreatFeed {
+    <span class="keyword">param</span>(
+        [string]<span class="variable">$FeedUrl</span>,
+        [string]<span class="variable">$Token</span>
+    )
+    
+    <span class="variable">$headers</span> = @{
+        Authorization = <span class="string">"Bearer $Token"</span>
+        <span class="string">"Content-Type"</span> = <span class="string">"application/json"</span>
+    }
+    
+    <span class="comment"># Get IOCs from feed</span>
+    <span class="variable">$feed</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Uri</span> <span class="variable">$FeedUrl</span>
+    
+    <span class="keyword">foreach</span> (<span class="variable">$ioc</span> <span class="keyword">in</span> <span class="variable">$feed</span>.indicators) {
+        <span class="variable">$indicator</span> = @{
+            indicatorValue = <span class="variable">$ioc</span>.value
+            indicatorType = <span class="variable">$ioc</span>.type
+            action = <span class="string">"AlertAndBlock"</span>
+            title = <span class="variable">$ioc</span>.title
+            description = <span class="string">"Auto-imported from feed"</span>
+            severity = <span class="string">"High"</span>
+            expirationTime = (<span class="function">Get-Date</span>).AddDays(<span class="number">30</span>).ToString(<span class="string">"o"</span>)
+        }
+        
+        <span class="function">Invoke-RestMethod</span> `
+            <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/indicators"</span> `
+            <span class="variable">-Method</span> POST <span class="variable">-Headers</span> <span class="variable">$headers</span> `
+            <span class="variable">-Body</span> (<span class="variable">$indicator</span> | <span class="function">ConvertTo-Json</span>)
+    }
+}
+
+<span class="comment"># Schedule daily import</span>
+<span class="comment"># Run as scheduled task at 6 AM daily</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Automated Incident Response</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Auto-Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Auto-isolate devices with critical alerts</span>
+<span class="keyword">function</span> Process-CriticalAlerts {
+    <span class="keyword">param</span>([string]<span class="variable">$Token</span>)
+    
+    <span class="variable">$headers</span> = @{
+        Authorization = <span class="string">"Bearer $Token"</span>
+        <span class="string">"Content-Type"</span> = <span class="string">"application/json"</span>
+    }
+    
+    <span class="comment"># Get critical unresolved alerts</span>
+    <span class="variable">$alerts</span> = <span class="function">Invoke-RestMethod</span> `
+        <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/alerts?`$filter=severity eq 'High' and status ne 'Resolved'"</span> `
+        <span class="variable">-Headers</span> <span class="variable">$headers</span>
+    
+    <span class="keyword">foreach</span> (<span class="variable">$alert</span> <span class="keyword">in</span> <span class="variable">$alerts</span>.value) {
+        <span class="variable">$machineId</span> = <span class="variable">$alert</span>.machineId
+        
+        <span class="comment"># Isolate the device</span>
+        <span class="variable">$body</span> = @{
+            Comment = <span class="string">"Auto-isolated due to critical alert"</span>
+            IsolationType = <span class="string">"Full"</span>
+        } | <span class="function">ConvertTo-Json</span>
+        
+        <span class="function">Invoke-RestMethod</span> `
+            <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/machines/$machineId/isolate"</span> `
+            <span class="variable">-Method</span> POST <span class="variable">-Headers</span> <span class="variable">$headers</span> <span class="variable">-Body</span> <span class="variable">$body</span>
+        
+        <span class="comment"># Collect investigation package</span>
+        <span class="function">Invoke-RestMethod</span> `
+            <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/machines/$machineId/collectInvestigationPackage"</span> `
+            <span class="variable">-Method</span> POST <span class="variable">-Headers</span> <span class="variable">$headers</span> `
+            <span class="variable">-Body</span> (@{Comment=<span class="string">"Auto-collected"</span>} | <span class="function">ConvertTo-Json</span>)
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <h2>Custom Reporting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Weekly Report</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Generate weekly security report</span>
+<span class="keyword">function</span> Generate-WeeklyReport {
+    <span class="keyword">param</span>([string]<span class="variable">$Token</span>)
+    
+    <span class="variable">$headers</span> = @{ Authorization = <span class="string">"Bearer $Token"</span> }
+    
+    <span class="comment"># Get alert statistics</span>
+    <span class="variable">$query</span> = @"
+AlertInfo
+| where Timestamp > ago(7d)
+| summarize Total=count(),
+    Critical=countif(Severity=="Critical"),
+    High=countif(Severity=="High")
+"@
+    
+    <span class="variable">$result</span> = <span class="function">Invoke-RestMethod</span> `
+        <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/advancedhunting/run"</span> `
+        <span class="variable">-Method</span> POST <span class="variable">-Headers</span> <span class="variable">$headers</span> `
+        <span class="variable">-Body</span> (@{Query=<span class="variable">$query</span>} | <span class="function">ConvertTo-Json</span>)
+    
+    <span class="comment"># Get device health</span>
+    <span class="variable">$devices</span> = <span class="function">Invoke-RestMethod</span> `
+        <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/machines"</span> `
+        <span class="variable">-Headers</span> <span class="variable">$headers</span>
+    
+    <span class="variable">$healthySensors</span> = (<span class="variable">$devices</span>.value | 
+        <span class="function">Where-Object</span> { <span class="variable">$_</span>.healthStatus <span class="operator">-eq</span> <span class="string">"Active"</span> }).Count
+    
+    <span class="comment"># Build report</span>
+    <span class="variable">$report</span> = @{
+        Week = (<span class="function">Get-Date</span>).ToString(<span class="string">"yyyy-MM-dd"</span>)
+        TotalAlerts = <span class="variable">$result</span>.Results[<span class="number">0</span>].Total
+        CriticalAlerts = <span class="variable">$result</span>.Results[<span class="number">0</span>].Critical
+        HealthyDevices = <span class="variable">$healthySensors</span>
+        TotalDevices = <span class="variable">$devices</span>.value.Count
+    }
+    
+    <span class="variable">$report</span> | <span class="function">ConvertTo-Json</span> | <span class="function">Out-File</span> <span class="string">"weekly-report.json"</span>
+}</code></pre>
+                </div>
+            </div>
+
+            <h2>SOAR Integration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Logic Apps / SOAR Example</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SOAR PLAYBOOK EXAMPLE:
+
+TRIGGER: New MDE Alert (Severity = High or Critical)
+
+STEP 1: ENRICH ALERT
+├── Get device details (GET /api/machines/{id})
+├── Get user details (GET /api/users/{id})
+├── Check VirusTotal for file hash
+└── Check IP reputation
+
+STEP 2: AUTOMATED ACTIONS
+├── If ransomware indicator → Isolate device
+├── If known malware hash → Block organization-wide
+├── If C2 IP detected → Add to block list
+└── Always: Collect investigation package
+
+STEP 3: TICKETING
+├── Create ServiceNow/Jira ticket
+├── Include alert details and enrichment
+├── Assign to on-call analyst
+└── Set priority based on severity
+
+STEP 4: NOTIFICATION
+├── Send Teams message to SOC channel
+├── Page on-call if after hours + critical
+├── Email executive summary if data breach
+└── Update status dashboard
+
+COMMON SOAR PLATFORMS:
+├── Microsoft Sentinel (Logic Apps)
+├── Splunk SOAR (Phantom)
+├── Palo Alto XSOAR
+├── IBM Resilient
+└── Swimlane</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>API Best Practices</h5>
+                    <ul>
+                        <li><strong>Rate limiting</strong>: 100 calls/min, 1500/hour - implement backoff</li>
+                        <li><strong>Error handling</strong>: Always handle 429 (throttled) and 503 errors</li>
+                        <li><strong>Secrets management</strong>: Store credentials in Key Vault, not code</li>
+                        <li><strong>Logging</strong>: Log all API calls for audit and troubleshooting</li>
+                        <li><strong>Testing</strong>: Use test environment before production</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Common use cases</strong>: TI import, auto-response, reporting, SOAR integration</li>
+                    <li><strong>Rate limits</strong>: 100/min, 1500/hour per application</li>
+                    <li><strong>Key endpoints</strong>: /api/alerts, /api/machines, /api/indicators, /api/advancedhunting</li>
+                    <li><strong>Actions via API</strong>: Isolate, scan, collect package, run Live Response</li>
+                    <li><strong>Authentication</strong>: OAuth 2.0 with app registration in Azure AD</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="8-5-api-overview.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">API Overview</span>
+                </a>
+                <a href="8-7-logic-apps-automation.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Logic Apps Automation</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

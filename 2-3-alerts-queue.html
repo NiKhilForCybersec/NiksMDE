@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts Queue | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to working with the MDE Alerts Queue. Learn alert severities, classification workflows, investigation procedures, bulk operations, and SOC triage best practices.</p>
+            </div>
+
+            <h1>Alerts Queue</h1>
+
+            <p>The Alerts Queue is the primary interface for SOC analysts to review, investigate, and respond to security detections in MDE. Mastering efficient alert triage is essential for effective security operations.</p>
+
+            <h2>Accessing the Alerts Queue</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Microsoft 365 Defender Portal (security.microsoft.com)
+├── Incidents & alerts
+│   ├── Incidents        ← Correlated alerts grouped together
+│   └── Alerts           ← Individual alert queue
+│
+└── Hunting
+    └── Advanced hunting ← Query raw alert data</code></pre>
+                </div>
+            </div>
+
+            <h2>Alert Severity Levels</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Severity</th>
+                            <th>Description</th>
+                            <th>SLA (Typical)</th>
+                            <th>Examples</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge" style="background: #dc2626;">High</span></td>
+                            <td>Active threat, immediate action needed</td>
+                            <td>15-30 minutes</td>
+                            <td>Ransomware, active C2, credential theft</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge" style="background: #f97316;">Medium</span></td>
+                            <td>Suspicious activity requiring investigation</td>
+                            <td>1-4 hours</td>
+                            <td>Suspicious PowerShell, unusual network activity</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge" style="background: #eab308;">Low</span></td>
+                            <td>Potentially unwanted behavior</td>
+                            <td>24 hours</td>
+                            <td>PUA detection, policy violations</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge" style="background: #6b7280;">Informational</span></td>
+                            <td>FYI events, no immediate action</td>
+                            <td>As time permits</td>
+                            <td>Blocked threats, audit events</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Alert Status Workflow</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Alert Lifecycle</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        ALERT STATUS WORKFLOW                             │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│    ┌──────────┐      ┌──────────┐      ┌──────────┐      ┌──────────┐  │
+│    │   New    │─────►│In Progress│─────►│ Resolved │─────►│ Closed   │  │
+│    │          │      │          │      │          │      │          │  │
+│    └──────────┘      └──────────┘      └──────────┘      └──────────┘  │
+│         │                 │                  │                          │
+│         │                 │                  ▼                          │
+│         │                 │           ┌──────────────┐                  │
+│         │                 │           │Classification│                  │
+│         │                 │           ├──────────────┤                  │
+│         │                 │           │• True Positive│                 │
+│         │                 │           │• False Positive│                │
+│         │                 │           │• Benign TP    │                 │
+│         │                 │           └──────────────┘                  │
+│         │                 │                                             │
+│         ▼                 ▼                                             │
+│    ┌─────────────────────────────┐                                     │
+│    │      SUPPRESSION            │                                     │
+│    │  (Create rule if FP/Benign) │                                     │
+│    └─────────────────────────────┘                                     │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Alert Classification Options</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Classification</th>
+                            <th>When to Use</th>
+                            <th>Follow-up Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>True Positive</strong></td>
+                            <td>Confirmed malicious activity</td>
+                            <td>Incident response, remediation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Informational, expected activity</strong></td>
+                            <td>Real activity but authorized (pen test, admin tools)</td>
+                            <td>Consider suppression rule</td>
+                        </tr>
+                        <tr>
+                            <td><strong>False Positive</strong></td>
+                            <td>Detection was incorrect</td>
+                            <td>Create suppression rule, report to Microsoft</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Alert Queue Filtering</h2>
+
+            <h3>Key Filter Options</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Filter Combinations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code># High Priority Triage Queue
+Status: New
+Severity: High, Medium
+Assigned to: Unassigned
+
+# My Assigned Alerts
+Status: New, In Progress
+Assigned to: [Your name]
+
+# False Positive Review
+Status: Resolved
+Classification: False Positive
+Time: Last 7 days
+
+# Specific Detection Source
+Detection source: EDR
+Category: Execution
+Severity: High</code></pre>
+                </div>
+            </div>
+
+            <h2>Alert Investigation Workflow</h2>
+
+            <h3>Step 1: Initial Triage (2-5 minutes)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Quick Triage Checklist</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>□ Read alert title and description
+□ Check severity and detection source
+□ Identify affected device and user
+□ Review alert story/timeline
+□ Check if device is critical (server, VIP, etc.)
+□ Look for related alerts (same device/user/timeframe)
+□ Determine: Investigate further or quick close?</code></pre>
+                </div>
+            </div>
+
+            <h3>Step 2: Deep Investigation (10-30 minutes)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Investigation Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>1. ALERT STORY TAB
+   - Review process tree
+   - Examine command lines
+   - Check parent-child relationships
+   - Note timestamps
+
+2. DEVICE TIMELINE
+   - Expand timeframe before/after alert
+   - Look for related suspicious activity
+   - Check for persistence mechanisms
+   - Review network connections
+
+3. USER CONTEXT
+   - Is this user's normal behavior?
+   - Check user's other recent alerts
+   - Review sign-in activity (Azure AD)
+
+4. FILE ANALYSIS
+   - Check file reputation (SHA256)
+   - Review VirusTotal results
+   - Check prevalence in environment
+   - Submit for deep analysis if needed
+
+5. NETWORK CONTEXT
+   - Check destination IPs/domains
+   - Look up threat intelligence
+   - Review other connections to same destination</code></pre>
+                </div>
+            </div>
+
+            <h3>Step 3: Document and Close</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Closure Documentation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code># Good closure comment example:
+
+Classification: True Positive
+Determination: Multi-stage attack
+
+Investigation Summary:
+- User clicked phishing link in email (MDO alert correlated)
+- Macro executed PowerShell download cradle
+- Second-stage payload downloaded from hxxp://evil[.]com/payload.exe
+- Payload blocked by cloud protection before execution
+
+Actions Taken:
+1. Device isolated at 14:32 UTC
+2. User password reset
+3. IOCs added as indicators (hash, URL)
+4. Phishing email reported to MDO
+5. Scanning initiated on device
+
+Remediation Status: Complete
+Ticket: INC-2024-1234</code></pre>
+                </div>
+            </div>
+
+            <h2>Bulk Alert Operations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bulk Actions Available</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code># Select multiple alerts using checkboxes, then:
+
+Bulk Actions:
+├── Assign to me / Assign to user
+├── Set status (New → In Progress → Resolved)
+├── Set classification
+├── Link to incident
+├── Create suppression rule
+└── Export to CSV
+
+# Pro tip: Use filters first, then Ctrl+A to select all visible</code></pre>
+                </div>
+            </div>
+
+            <h2>Creating Suppression Rules</h2>
+
+            <p>Suppression rules prevent specific alerts from appearing in the queue:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Suppression Rule Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Settings → Endpoints → Rules → Alert suppression
+
+Rule Conditions (combine as needed):
+├── Alert title contains: [string]
+├── Device name: [specific device or group]
+├── User name: [specific user]
+├── File path: [folder or file path]
+├── File name: [executable name]
+├── SHA256: [specific hash]
+├── Command line contains: [string]
+└── Destination IP/Domain: [network IOC]
+
+Scope:
+├── Organization-wide
+└── Device group specific
+
+Action:
+├── Hide alert (suppress from queue)
+└── Resolve automatically
+
+Expiration:
+├── Never
+├── After specific date
+└── After X days</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Suppression Best Practices</h5>
+                    <p>Be specific with suppression rules to avoid hiding real threats. Always include multiple conditions (e.g., file name AND path AND device group). Review suppression rules quarterly.</p>
+                </div>
+            </div>
+
+            <h2>KQL Queries for Alert Analysis</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Alert Statistics</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Alert volume by severity (last 7 days)</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> Severity
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// Top 10 alert titles</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> Title
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">10</span> <span class="keyword">by</span> Count
+
+<span class="comment">// Alerts by device (find noisy devices)</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">join</span> <span class="variable">AlertEvidence</span> <span class="keyword">on</span> AlertId
+<span class="operator">|</span> <span class="keyword">where</span> EntityType <span class="operator">==</span> <span class="string">"Machine"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> AlertCount <span class="operator">=</span> <span class="function">dcount</span>(AlertId) <span class="keyword">by</span> DeviceName
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">10</span> <span class="keyword">by</span> AlertCount
+
+<span class="comment">// False positive rate by detection</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Total <span class="operator">=</span> <span class="function">count</span>(),
+    FalsePositives <span class="operator">=</span> <span class="function">countif</span>(Classification <span class="operator">==</span> <span class="string">"FalsePositive"</span>)
+    <span class="keyword">by</span> Title
+<span class="operator">|</span> <span class="keyword">extend</span> FPRate <span class="operator">=</span> <span class="function">round</span>(<span class="number">100.0</span> <span class="operator">*</span> FalsePositives <span class="operator">/</span> Total, <span class="number">1</span>)
+<span class="operator">|</span> <span class="keyword">where</span> Total <span class="operator">></span> <span class="number">10</span>
+<span class="operator">|</span> <span class="keyword">order by</span> FPRate <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Daily Alert Triage</h4>
+                <ul>
+                    <li>Review High severity alerts immediately</li>
+                    <li>Process Medium alerts within SLA</li>
+                    <li>Batch process Low/Informational alerts</li>
+                    <li>Update alert classifications accurately</li>
+                    <li>Document investigation findings</li>
+                </ul>
+
+                <h4>Common Tickets</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Too many alerts for same detection"</span>
+                    <span class="ticket-solution">→ Create targeted suppression rule after validating as FP/benign</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Alert needs escalation"</span>
+                    <span class="ticket-solution">→ Link to incident, assign to senior analyst, add detailed notes</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Not sure if true positive"</span>
+                    <span class="ticket-solution">→ Check device timeline, user context, file reputation, ask for peer review</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Severities</strong>: High (immediate), Medium (hours), Low (24h), Informational (as time permits)</li>
+                    <li><strong>Classifications</strong>: True Positive, Informational/Expected, False Positive</li>
+                    <li><strong>Investigation flow</strong>: Alert story → Device timeline → User context → File analysis → Network context</li>
+                    <li><strong>Suppression rules</strong>: Be specific, use multiple conditions, set expiration, review quarterly</li>
+                    <li><strong>Documentation</strong>: Always document findings and actions in alert comments</li>
+                    <li><strong>Correlation</strong>: Look for related alerts on same device/user/timeframe</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="2-2-device-inventory.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Device Inventory</span>
+                </a>
+                <a href="2-4-incidents.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Incidents</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

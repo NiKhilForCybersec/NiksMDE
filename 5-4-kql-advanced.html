@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KQL Advanced Techniques | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="12-4-kql-cheat-sheet.html" class="header-link">KQL Cheat Sheet</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Advanced KQL techniques for threat hunting in MDE. Learn complex joins, statistical analysis, anomaly detection, time-series analysis, and performance optimization for hunting at scale.</p>
+            </div>
+
+            <h1>Advanced KQL Techniques</h1>
+
+            <p>Building on KQL fundamentals, these advanced techniques enable sophisticated threat hunting, anomaly detection, and large-scale analysis in MDE Advanced Hunting.</p>
+
+            <h2>Advanced Join Patterns</h2>
+
+            <h3>Join Types Reference</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Join Type</th>
+                            <th>Returns</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>inner</code></td>
+                            <td>Rows matching in both tables</td>
+                            <td>Correlate related events</td>
+                        </tr>
+                        <tr>
+                            <td><code>leftouter</code></td>
+                            <td>All left rows + matching right</td>
+                            <td>Enrich with optional data</td>
+                        </tr>
+                        <tr>
+                            <td><code>rightouter</code></td>
+                            <td>All right rows + matching left</td>
+                            <td>Rarely used</td>
+                        </tr>
+                        <tr>
+                            <td><code>fullouter</code></td>
+                            <td>All rows from both tables</td>
+                            <td>Complete picture of both sets</td>
+                        </tr>
+                        <tr>
+                            <td><code>leftanti</code></td>
+                            <td>Left rows NOT in right</td>
+                            <td>Find missing/new items</td>
+                        </tr>
+                        <tr>
+                            <td><code>rightanti</code></td>
+                            <td>Right rows NOT in left</td>
+                            <td>Find missing/new items</td>
+                        </tr>
+                        <tr>
+                            <td><code>leftsemi</code></td>
+                            <td>Left rows that exist in right</td>
+                            <td>Filter by existence</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Multi-Table Correlation</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Process → Network → File Correlation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Correlate: PowerShell → Downloads file → File written to disk</span>
+<span class="keyword">let</span> timeframe <span class="operator">=</span> <span class="number">1</span>h;
+<span class="keyword">let</span> suspiciousProcesses <span class="operator">=</span>
+    <span class="variable">DeviceProcessEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(timeframe)
+    <span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+    <span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"downloadstring"</span>, <span class="string">"downloadfile"</span>, <span class="string">"invoke-webrequest"</span>)
+    <span class="operator">|</span> <span class="keyword">project</span> ProcessTimestamp <span class="operator">=</span> Timestamp, DeviceId, DeviceName, 
+             ProcessId, ProcessCommandLine, AccountName;
+<span class="keyword">let</span> networkConnections <span class="operator">=</span>
+    <span class="variable">DeviceNetworkEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(timeframe)
+    <span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+    <span class="operator">|</span> <span class="keyword">where</span> RemoteIPType <span class="operator">==</span> <span class="string">"Public"</span>
+    <span class="operator">|</span> <span class="keyword">project</span> NetworkTimestamp <span class="operator">=</span> Timestamp, DeviceId, 
+             RemoteIP, RemoteUrl, InitiatingProcessId;
+<span class="keyword">let</span> fileWrites <span class="operator">=</span>
+    <span class="variable">DeviceFileEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(timeframe)
+    <span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"FileCreated"</span>
+    <span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+    <span class="operator">|</span> <span class="keyword">project</span> FileTimestamp <span class="operator">=</span> Timestamp, DeviceId, 
+             FileName, FolderPath, SHA256, InitiatingProcessId;
+<span class="comment">// Join all three</span>
+suspiciousProcesses
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind</span><span class="operator">=</span>inner networkConnections <span class="keyword">on</span> DeviceId, $left.ProcessId <span class="operator">==</span> $right.InitiatingProcessId
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind</span><span class="operator">=</span>inner fileWrites <span class="keyword">on</span> DeviceId, $left.ProcessId <span class="operator">==</span> $right.InitiatingProcessId
+<span class="operator">|</span> <span class="keyword">where</span> NetworkTimestamp <span class="keyword">between</span> (ProcessTimestamp .. (ProcessTimestamp <span class="operator">+</span> <span class="number">5</span>m))
+<span class="operator">|</span> <span class="keyword">where</span> FileTimestamp <span class="keyword">between</span> (NetworkTimestamp .. (NetworkTimestamp <span class="operator">+</span> <span class="number">5</span>m))
+<span class="operator">|</span> <span class="keyword">project</span> DeviceName, AccountName, ProcessCommandLine, RemoteUrl, FileName, SHA256</code></pre>
+                </div>
+            </div>
+
+            <h3>Anti-Join for Anomaly Detection</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - First-Time Process Execution</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find processes running for first time in environment</span>
+<span class="keyword">let</span> baseline <span class="operator">=</span> <span class="number">30</span>d;
+<span class="keyword">let</span> detection <span class="operator">=</span> <span class="number">1</span>d;
+<span class="keyword">let</span> knownProcesses <span class="operator">=</span>
+    <span class="variable">DeviceProcessEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="keyword">between</span> (<span class="function">ago</span>(baseline) .. <span class="function">ago</span>(detection))
+    <span class="operator">|</span> <span class="keyword">distinct</span> SHA256;
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(detection)
+<span class="operator">|</span> <span class="keyword">where</span> <span class="function">isnotempty</span>(SHA256)
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind</span><span class="operator">=</span>leftanti knownProcesses <span class="keyword">on</span> SHA256
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    FirstSeen <span class="operator">=</span> <span class="function">min</span>(Timestamp),
+    DeviceCount <span class="operator">=</span> <span class="function">dcount</span>(DeviceId),
+    Devices <span class="operator">=</span> <span class="function">make_set</span>(DeviceName, <span class="number">5</span>)
+    <span class="keyword">by</span> FileName, FolderPath, SHA256
+<span class="operator">|</span> <span class="keyword">where</span> DeviceCount <span class="operator"><</span> <span class="number">5</span>  <span class="comment">// Rare execution</span>
+<span class="operator">|</span> <span class="keyword">order by</span> FirstSeen <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Statistical Analysis</h2>
+
+            <h3>Percentile-Based Anomaly Detection</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Unusual Data Transfer Volume</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find devices with unusual outbound data transfer</span>
+<span class="keyword">let</span> threshold_percentile <span class="operator">=</span> <span class="number">95</span>;
+<span class="keyword">let</span> deviceTransfers <span class="operator">=</span>
+    <span class="variable">DeviceNetworkEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+    <span class="operator">|</span> <span class="keyword">where</span> RemoteIPType <span class="operator">==</span> <span class="string">"Public"</span>
+    <span class="operator">|</span> <span class="keyword">summarize</span> TotalBytesSent <span class="operator">=</span> <span class="function">sum</span>(SentBytes) <span class="keyword">by</span> DeviceName, <span class="function">bin</span>(Timestamp, <span class="number">1</span>h);
+<span class="keyword">let</span> stats <span class="operator">=</span>
+    deviceTransfers
+    <span class="operator">|</span> <span class="keyword">summarize</span> P95 <span class="operator">=</span> <span class="function">percentile</span>(TotalBytesSent, threshold_percentile);
+deviceTransfers
+<span class="operator">|</span> <span class="keyword">where</span> TotalBytesSent <span class="operator">></span> <span class="function">toscalar</span>(stats)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, TotalBytesSentMB <span class="operator">=</span> <span class="function">round</span>(TotalBytesSent <span class="operator">/</span> <span class="number">1024.0</span> <span class="operator">/</span> <span class="number">1024.0</span>, <span class="number">2</span>)
+<span class="operator">|</span> <span class="keyword">order by</span> TotalBytesSentMB <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Standard Deviation Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Detect Anomalous Login Frequency</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find users with login frequency > 3 standard deviations from mean</span>
+<span class="keyword">let</span> loginStats <span class="operator">=</span>
+    <span class="variable">DeviceLogonEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+    <span class="operator">|</span> <span class="keyword">where</span> LogonType <span class="operator">==</span> <span class="string">"Interactive"</span>
+    <span class="operator">|</span> <span class="keyword">summarize</span> LoginCount <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> AccountName, <span class="function">bin</span>(Timestamp, <span class="number">1</span>d)
+    <span class="operator">|</span> <span class="keyword">summarize</span> 
+        AvgLogins <span class="operator">=</span> <span class="function">avg</span>(LoginCount),
+        StdDev <span class="operator">=</span> <span class="function">stdev</span>(LoginCount),
+        MaxLogins <span class="operator">=</span> <span class="function">max</span>(LoginCount)
+        <span class="keyword">by</span> AccountName;
+loginStats
+<span class="operator">|</span> <span class="keyword">where</span> MaxLogins <span class="operator">></span> (AvgLogins <span class="operator">+</span> (<span class="number">3</span> <span class="operator">*</span> StdDev))
+<span class="operator">|</span> <span class="keyword">project</span> AccountName, AvgLogins <span class="operator">=</span> <span class="function">round</span>(AvgLogins, <span class="number">1</span>), 
+         StdDev <span class="operator">=</span> <span class="function">round</span>(StdDev, <span class="number">1</span>), MaxLogins, 
+         Threshold <span class="operator">=</span> <span class="function">round</span>(AvgLogins <span class="operator">+</span> (<span class="number">3</span> <span class="operator">*</span> StdDev), <span class="number">1</span>)</code></pre>
+                </div>
+            </div>
+
+            <h2>Time-Series Analysis</h2>
+
+            <h3>Beaconing Detection</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - C2 Beaconing Pattern Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Detect regular interval connections (beaconing behavior)</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> RemoteIPType <span class="operator">==</span> <span class="string">"Public"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Connections <span class="operator">=</span> <span class="function">make_list</span>(Timestamp),
+    ConnectionCount <span class="operator">=</span> <span class="function">count</span>()
+    <span class="keyword">by</span> DeviceName, RemoteIP, InitiatingProcessFileName
+<span class="operator">|</span> <span class="keyword">where</span> ConnectionCount <span class="operator">></span> <span class="number">20</span>  <span class="comment">// Minimum connections for pattern</span>
+<span class="operator">|</span> <span class="keyword">extend</span> Intervals <span class="operator">=</span> <span class="function">array_sort_asc</span>(Connections)
+<span class="operator">|</span> <span class="keyword">mv-apply</span> Intervals <span class="keyword">to</span> <span class="keyword">typeof</span>(datetime) <span class="keyword">on</span> (
+    <span class="keyword">extend</span> NextConn <span class="operator">=</span> <span class="function">next</span>(Intervals)
+    <span class="operator">|</span> <span class="keyword">extend</span> IntervalSeconds <span class="operator">=</span> <span class="function">datetime_diff</span>(<span class="string">'second'</span>, NextConn, Intervals)
+    <span class="operator">|</span> <span class="keyword">where</span> <span class="function">isnotnull</span>(IntervalSeconds)
+    <span class="operator">|</span> <span class="keyword">summarize</span> 
+        AvgInterval <span class="operator">=</span> <span class="function">avg</span>(IntervalSeconds),
+        StdDevInterval <span class="operator">=</span> <span class="function">stdev</span>(IntervalSeconds)
+)
+<span class="operator">|</span> <span class="keyword">where</span> StdDevInterval <span class="operator"><</span> (AvgInterval <span class="operator">*</span> <span class="number">0.1</span>)  <span class="comment">// Low variance = regular interval</span>
+<span class="operator">|</span> <span class="keyword">where</span> AvgInterval <span class="keyword">between</span> (<span class="number">30</span> .. <span class="number">3600</span>)  <span class="comment">// 30s to 1hr intervals</span>
+<span class="operator">|</span> <span class="keyword">project</span> DeviceName, RemoteIP, InitiatingProcessFileName, 
+         ConnectionCount, AvgIntervalSeconds <span class="operator">=</span> <span class="function">round</span>(AvgInterval, <span class="number">0</span>)</code></pre>
+                </div>
+            </div>
+
+            <h3>Time-Binned Activity Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - After-Hours Activity Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Detect unusual after-hours process execution</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">extend</span> HourOfDay <span class="operator">=</span> <span class="function">hourofday</span>(Timestamp)
+<span class="operator">|</span> <span class="keyword">extend</span> DayOfWeek <span class="operator">=</span> <span class="function">dayofweek</span>(Timestamp)
+<span class="operator">|</span> <span class="keyword">extend</span> IsAfterHours <span class="operator">=</span> (HourOfDay <span class="operator"><</span> <span class="number">6</span> <span class="keyword">or</span> HourOfDay <span class="operator">></span> <span class="number">20</span>) 
+                        <span class="keyword">or</span> (DayOfWeek <span class="operator">==</span> <span class="number">0</span>d <span class="keyword">or</span> DayOfWeek <span class="operator">==</span> <span class="number">6</span>d)  <span class="comment">// Weekend</span>
+<span class="operator">|</span> <span class="keyword">where</span> IsAfterHours <span class="operator">==</span> <span class="keyword">true</span>
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="keyword">in~</span> (<span class="string">"powershell.exe"</span>, <span class="string">"cmd.exe"</span>, <span class="string">"wscript.exe"</span>, <span class="string">"psexec.exe"</span>)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    ExecutionCount <span class="operator">=</span> <span class="function">count</span>(),
+    Devices <span class="operator">=</span> <span class="function">dcount</span>(DeviceName)
+    <span class="keyword">by</span> AccountName, FileName
+<span class="operator">|</span> <span class="keyword">where</span> ExecutionCount <span class="operator">></span> <span class="number">5</span>
+<span class="operator">|</span> <span class="keyword">order by</span> ExecutionCount <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Advanced String Manipulation</h2>
+
+            <h3>Base64 Decoding</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Decode Base64 PowerShell Commands</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Extract and decode base64 encoded commands</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has</span> <span class="string">"-enc"</span>
+<span class="operator">|</span> <span class="keyword">extend</span> Base64Command <span class="operator">=</span> <span class="function">extract</span>(<span class="string">@"-[eE][nN][cC][oOdDeEmMaA]*\s+([A-Za-z0-9+/=]+)"</span>, <span class="number">1</span>, ProcessCommandLine)
+<span class="operator">|</span> <span class="keyword">where</span> <span class="function">isnotempty</span>(Base64Command)
+<span class="operator">|</span> <span class="keyword">extend</span> DecodedCommand <span class="operator">=</span> <span class="function">base64_decode_tostring</span>(Base64Command)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, AccountName, 
+         EncodedLength <span class="operator">=</span> <span class="function">strlen</span>(Base64Command),
+         DecodedCommand
+<span class="operator">|</span> <span class="keyword">where</span> <span class="function">isnotempty</span>(DecodedCommand)</code></pre>
+                </div>
+            </div>
+
+            <h3>Regex Pattern Extraction</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Extract URLs from Command Lines</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Extract URLs from process command lines</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">matches regex</span> <span class="string">@"https?://"</span>
+<span class="operator">|</span> <span class="keyword">extend</span> ExtractedURL <span class="operator">=</span> <span class="function">extract</span>(<span class="string">@"(https?://[^\s\"\'\)]+)"</span>, <span class="number">1</span>, ProcessCommandLine)
+<span class="operator">|</span> <span class="keyword">where</span> <span class="function">isnotempty</span>(ExtractedURL)
+<span class="operator">|</span> <span class="keyword">extend</span> Domain <span class="operator">=</span> <span class="function">tostring</span>(<span class="function">parse_url</span>(ExtractedURL).Host)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Count <span class="operator">=</span> <span class="function">count</span>(),
+    Devices <span class="operator">=</span> <span class="function">make_set</span>(DeviceName, <span class="number">5</span>),
+    Processes <span class="operator">=</span> <span class="function">make_set</span>(FileName)
+    <span class="keyword">by</span> Domain
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Dynamic Data Structures</h2>
+
+            <h3>Working with Arrays</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Array Operations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Process with suspicious parent-child chain</span>
+<span class="keyword">let</span> suspiciousChains <span class="operator">=</span> <span class="keyword">dynamic</span>([
+    [<span class="string">"outlook.exe"</span>, <span class="string">"powershell.exe"</span>],
+    [<span class="string">"excel.exe"</span>, <span class="string">"cmd.exe"</span>],
+    [<span class="string">"winword.exe"</span>, <span class="string">"wscript.exe"</span>]
+]);
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">extend</span> Chain <span class="operator">=</span> <span class="function">pack_array</span>(<span class="function">tolower</span>(InitiatingProcessFileName), <span class="function">tolower</span>(FileName))
+<span class="operator">|</span> <span class="keyword">where</span> Chain <span class="keyword">in</span> (suspiciousChains)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, InitiatingProcessFileName, FileName, ProcessCommandLine
+
+<span class="comment">// Expand nested JSON from AdditionalFields</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"AsrLsassCredentialTheftBlocked"</span>
+<span class="operator">|</span> <span class="keyword">extend</span> ParsedFields <span class="operator">=</span> <span class="function">parse_json</span>(AdditionalFields)
+<span class="operator">|</span> <span class="keyword">extend</span> TargetProcess <span class="operator">=</span> <span class="function">tostring</span>(ParsedFields.TargetProcessName)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, TargetProcess</code></pre>
+                </div>
+            </div>
+
+            <h2>Performance Optimization</h2>
+
+            <div class="callout tip">
+                <div class="callout-icon">⚡</div>
+                <div class="callout-content">
+                    <h5>Query Performance Best Practices</h5>
+                    <ul>
+                        <li><strong>Time filter first</strong>: Always start with <code>where Timestamp > ago()</code></li>
+                        <li><strong>Use <code>has</code> over <code>contains</code></strong>: 10x faster due to term indexing</li>
+                        <li><strong>Avoid <code>*</code> in project</strong>: Select only needed columns</li>
+                        <li><strong>Filter before join</strong>: Reduce data volume before expensive operations</li>
+                        <li><strong>Use <code>let</code> statements</strong>: Pre-compute common subqueries</li>
+                        <li><strong>Limit <code>summarize</code> cardinality</strong>: Use <code>top</code> or <code>sample</code> for large sets</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Optimized vs Unoptimized Query</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// ❌ SLOW - Scans everything, then filters</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">contains</span> <span class="string">"mimikatz"</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+
+<span class="comment">// ✅ FAST - Time filter first, uses indexed search</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has</span> <span class="string">"mimikatz"</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Advanced Hunting Tasks</h4>
+                <ul>
+                    <li>Develop complex correlation queries for threat scenarios</li>
+                    <li>Build statistical baselines for anomaly detection</li>
+                    <li>Create beaconing and exfiltration detection queries</li>
+                    <li>Optimize slow-running hunting queries</li>
+                    <li>Convert successful hunts to custom detection rules</li>
+                </ul>
+
+                <h4>Common Challenges</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Query timing out"</span>
+                    <span class="ticket-solution">→ Reduce time range, filter earlier, use <code>has</code> instead of <code>contains</code></span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Need to correlate across tables"</span>
+                    <span class="ticket-solution">→ Use <code>let</code> statements for subqueries, join on DeviceId + ProcessId</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Join types</strong>: Know <code>inner</code>, <code>leftouter</code>, <code>leftanti</code>, <code>leftsemi</code></li>
+                    <li><strong>Anomaly detection</strong>: Percentiles, standard deviation, anti-joins for baselines</li>
+                    <li><strong>Beaconing</strong>: Regular intervals with low variance indicates C2</li>
+                    <li><strong>Performance</strong>: Time filter first, <code>has</code> > <code>contains</code>, filter before join</li>
+                    <li><strong>Base64 decoding</strong>: <code>base64_decode_tostring()</code> for encoded commands</li>
+                    <li><strong>Parse JSON</strong>: <code>parse_json()</code> for AdditionalFields column</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="5-3-kql-fundamentals.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">KQL Fundamentals</span>
+                </a>
+                <a href="5-5-hunting-queries-processes.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Hunting: Processes</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

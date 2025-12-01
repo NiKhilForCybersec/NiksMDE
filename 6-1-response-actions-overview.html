@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Response Actions Overview | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete overview of MDE response actions. Learn all available actions for devices, files, users, and how to use them effectively during incidents.</p>
+            </div>
+
+            <h1>Response Actions Overview</h1>
+
+            <p>Response actions are the tools analysts use to contain, investigate, and remediate threats. MDE provides a comprehensive set of actions for rapid incident response.</p>
+
+            <h2>Response Action Categories</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Available Response Actions</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MDE RESPONSE ACTIONS                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  DEVICE ACTIONS              FILE ACTIONS                               │
+│  ├── Isolate device          ├── Stop and quarantine                   │
+│  ├── Restrict app execution  ├── Add indicator (block)                 │
+│  ├── Run antivirus scan      ├── Download file                         │
+│  ├── Collect investigation   ├── Deep analysis                         │
+│  │   package                 └── Request sample                        │
+│  ├── Initiate Live Response                                            │
+│  ├── Initiate automated                                                │
+│  │   investigation           USER ACTIONS                               │
+│  └── Consult threat expert   ├── Contain user (MDI)                    │
+│                              ├── Disable account (Azure AD)            │
+│  NETWORK ACTIONS             └── Force password reset                  │
+│  ├── Block IP indicator                                                │
+│  ├── Block URL indicator     INVESTIGATION                             │
+│  └── Block domain indicator  ├── Go hunt (Advanced Hunting)            │
+│                              ├── View in timeline                      │
+│                              └── Link to incident                      │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Device Actions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Device Response Actions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEVICE RESPONSE ACTIONS:
+
+ISOLATE DEVICE
+├── Purpose: Stop lateral movement, cut C2
+├── Full: Blocks ALL network except MDE
+├── Selective: Allows O365 apps
+├── Impact: User cannot access network
+├── Reversible: Yes, release from isolation
+└── Use: Active threat, confirmed compromise
+
+RESTRICT APP EXECUTION
+├── Purpose: Only Microsoft-signed apps run
+├── Effect: Blocks all third-party executables
+├── Impact: User cannot run most applications
+├── Reversible: Yes, remove restriction
+└── Use: Active malware, prevent execution
+
+RUN ANTIVIRUS SCAN
+├── Quick Scan: Common locations (5-15 min)
+├── Full Scan: Entire disk (1-4+ hours)
+├── Purpose: Detect and remove threats
+└── Use: After containment, verify clean
+
+COLLECT INVESTIGATION PACKAGE
+├── Contents: Autoruns, processes, logs, etc.
+├── Time: 10-30 minutes to collect
+├── Output: ZIP file for download
+├── Use: Forensic evidence collection
+└── Location: Action Center after completion
+
+INITIATE LIVE RESPONSE
+├── Purpose: Interactive shell on device
+├── Capabilities: Run commands, collect files
+├── Permissions: Requires elevated access
+└── Use: Deep investigation, custom collection
+
+INITIATE AUTOMATED INVESTIGATION
+├── Purpose: AI-powered investigation
+├── Analyzes: Alerts, entities, evidence
+├── Output: Findings and recommendations
+└── Use: Augment analyst investigation</code></pre>
+                </div>
+            </div>
+
+            <h2>File Actions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">File Response Actions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>FILE RESPONSE ACTIONS:
+
+STOP AND QUARANTINE
+├── Stops process if running
+├── Quarantines file on device
+├── Prevents execution
+├── Scope: Single device or org-wide
+└── Use: Confirmed malicious file
+
+ADD INDICATOR (BLOCK)
+├── Block by: SHA256, SHA1, MD5
+├── Scope: Organization-wide
+├── Effect: File blocked everywhere
+├── Time: ~15 minutes to propagate
+└── Use: Prevent spread of malware
+
+DOWNLOAD FILE
+├── Download copy for analysis
+├── From device via Live Response
+├── Password protected
+└── Use: Offline analysis, sandbox
+
+DEEP ANALYSIS
+├── Submit to cloud sandbox
+├── Behavioral analysis
+├── Returns detailed report
+├── Time: May take several minutes
+└── Use: Unknown or suspicious files
+
+REQUEST SAMPLE
+├── Request file sample from device
+├── For malware research
+├── Requires: Sample sharing enabled
+└── Use: Threat intelligence</code></pre>
+                </div>
+            </div>
+
+            <h2>Action Permissions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">RBAC Requirements</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ACTION PERMISSIONS BY ROLE:
+
+SECURITY READER:
+├── View actions ✓
+├── Execute actions ✗
+└── Approve pending ✗
+
+SECURITY OPERATOR:
+├── Collect investigation package ✓
+├── Run antivirus scan ✓
+├── Isolate device ✓
+├── Restrict app execution ✓
+├── Add indicators ✓
+└── Live Response (basic) ✓
+
+SECURITY ADMINISTRATOR:
+├── All operator actions ✓
+├── Live Response (advanced) ✓
+├── Manage suppression rules ✓
+├── Configure automation ✓
+└── Modify settings ✓
+
+LIVE RESPONSE PERMISSIONS:
+├── Basic: Run predefined commands
+├── Advanced: Run any command, upload scripts
+└── Configure: Settings → Endpoints → Advanced features</code></pre>
+                </div>
+            </div>
+
+            <h2>Action Center</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Tracking Actions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ACTION CENTER:
+Location: Actions & submissions → Action center
+
+PENDING TAB:
+├── Actions awaiting device
+├── In-progress actions
+├── Cancel option
+└── Estimated completion
+
+HISTORY TAB:
+├── All completed actions
+├── Filter by: Device, action type, date, user
+├── Download investigation packages
+├── View action details
+
+ACTION STATUSES:
+├── Pending: Queued, waiting for device
+├── In progress: Currently executing
+├── Completed: Finished successfully
+├── Failed: Could not complete
+└── Cancelled: Action was cancelled
+
+COMMON ISSUES:
+├── Stuck pending: Device offline
+├── Failed: Permission denied, resource issue
+└── Solution: Check device connectivity, retry</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Document actions</strong>: Always add comments explaining why</li>
+                        <li><strong>Collect evidence first</strong>: Get investigation package before remediation</li>
+                        <li><strong>Start with containment</strong>: Isolate before investigating if active threat</li>
+                        <li><strong>Use appropriate isolation</strong>: Full for active threats, Selective for investigation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Device actions</strong>: Isolate, restrict apps, scan, collect package, Live Response</li>
+                    <li><strong>File actions</strong>: Stop/quarantine, add indicator, deep analysis</li>
+                    <li><strong>Isolation types</strong>: Full (all network) vs Selective (allows O365)</li>
+                    <li><strong>Action Center</strong>: Track pending and completed actions</li>
+                    <li><strong>Permissions</strong>: RBAC controls who can execute actions</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="5-10-hunting-workflows.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Hunting Workflows</span>
+                </a>
+                <a href="6-2-device-actions.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Device Actions</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

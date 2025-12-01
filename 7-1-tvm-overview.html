@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat & Vulnerability Management | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Microsoft Defender Vulnerability Management (MDVM/TVM). Learn exposure scoring, security recommendations, software inventory, vulnerability assessment, and integration with remediation workflows.</p>
+            </div>
+
+            <h1>Threat & Vulnerability Management (TVM)</h1>
+
+            <p>Microsoft Defender Vulnerability Management (formerly TVM) provides real-time visibility into your organization's security posture by continuously discovering vulnerabilities and misconfigurations across your endpoints without requiring additional agents or scans.</p>
+
+            <h2>TVM Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">TVM Data Flow</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        ENDPOINTS (MDE Onboarded)                         │
+│                                                                          │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐   │
+│   │  Software   │  │   OS        │  │  Security   │  │  Browser    │   │
+│   │  Inventory  │  │  Config     │  │  Controls   │  │  Extensions │   │
+│   └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘   │
+│          │                │                │                │           │
+└──────────┴────────────────┴────────────────┴────────────────┴───────────┘
+                                    │
+                                    │ MDE Sensor Telemetry
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          MICROSOFT CLOUD                                 │
+│                                                                          │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │                    VULNERABILITY MANAGEMENT                       │  │
+│  │                                                                   │  │
+│  │   ┌───────────────┐    ┌───────────────┐    ┌───────────────┐   │  │
+│  │   │ CVE Database  │    │ Threat Intel  │    │ Exploit Info  │   │  │
+│  │   │ Correlation   │    │ Context       │    │ Availability  │   │  │
+│  │   └───────┬───────┘    └───────┬───────┘    └───────┬───────┘   │  │
+│  │           │                    │                    │            │  │
+│  │           └────────────────────┼────────────────────┘            │  │
+│  │                                ▼                                  │  │
+│  │   ┌──────────────────────────────────────────────────────────┐  │  │
+│  │   │              EXPOSURE SCORE & RECOMMENDATIONS             │  │  │
+│  │   └──────────────────────────────────────────────────────────┘  │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Key TVM Metrics</h2>
+
+            <h3>Exposure Score</h3>
+
+            <p>The Exposure Score (0-100) reflects your organization's overall vulnerability to threats. Lower is better.</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Score Range</th>
+                            <th>Risk Level</th>
+                            <th>Interpretation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0-29</td>
+                            <td><span class="text-green">Low</span></td>
+                            <td>Good security posture, few critical vulnerabilities</td>
+                        </tr>
+                        <tr>
+                            <td>30-69</td>
+                            <td><span class="text-yellow">Medium</span></td>
+                            <td>Moderate risk, prioritize high-impact items</td>
+                        </tr>
+                        <tr>
+                            <td>70-100</td>
+                            <td><span class="text-red">High</span></td>
+                            <td>Significant exposure, immediate action required</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Secure Score for Devices</h3>
+
+            <p>Measures how well security controls are configured across your device fleet. Higher is better.</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Secure Score Components</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Secure Score Categories:
+├── Application security (30%)
+│   └── App vulnerabilities, outdated software
+├── Operating system security (25%)
+│   └── OS patches, security features enabled
+├── Network security (20%)
+│   └── Firewall, network protection settings
+├── Accounts (15%)
+│   └── Password policies, admin accounts
+└── Security controls (10%)
+    └── AV, EDR, ASR configuration</code></pre>
+                </div>
+            </div>
+
+            <h2>TVM Dashboard Overview</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>security.microsoft.com → Endpoints → Vulnerability management
+
+Dashboard Components:
+┌─────────────────────────────────────────────────────────────────┐
+│  EXPOSURE SCORE        │  SECURE SCORE FOR DEVICES              │
+│  [    42    ]          │  [     67%     ]                       │
+│  ▼ 3 from last week    │  ▲ 2% from last week                   │
+├─────────────────────────────────────────────────────────────────┤
+│  TOP SECURITY RECOMMENDATIONS                                    │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │ 1. Update Chrome to latest version (847 devices)    [High] ││
+│  │ 2. Enable Credential Guard (523 devices)           [High] ││
+│  │ 3. Patch CVE-2024-1234 in Adobe Reader (312 devices)[Critical]│
+│  └─────────────────────────────────────────────────────────────┘│
+├─────────────────────────────────────────────────────────────────┤
+│  EXPOSED DEVICES        │  TOP VULNERABLE SOFTWARE               │
+│  Critical: 156          │  1. Google Chrome (12 CVEs)            │
+│  High: 423              │  2. Adobe Reader (8 CVEs)              │
+│  Medium: 1,247          │  3. Java Runtime (6 CVEs)              │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h2>Security Recommendations</h2>
+
+            <p>TVM provides prioritized recommendations based on threat intelligence, exploit availability, and business context:</p>
+
+            <h3>Recommendation Types</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Software Update</strong></td>
+                            <td>Patch vulnerable software versions</td>
+                            <td>"Update Chrome from 119 to 120"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Configuration Change</strong></td>
+                            <td>Enable security features</td>
+                            <td>"Enable Credential Guard"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Security Control</strong></td>
+                            <td>Enable protective features</td>
+                            <td>"Enable ASR rule for Office macros"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Software Removal</strong></td>
+                            <td>Remove risky applications</td>
+                            <td>"Remove end-of-life Java 8"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Recommendation Prioritization Factors</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Priority Scoring</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Priority Score Factors:
+├── Threat context
+│   ├── Active exploitation in the wild
+│   ├── Exploit kit availability
+│   └── Threat actor targeting
+├── Vulnerability severity
+│   ├── CVSS score
+│   ├── Attack complexity
+│   └── Privileges required
+├── Business impact
+│   ├── Number of exposed devices
+│   ├── Device criticality (servers, VIPs)
+│   └── Internet-facing systems
+└── Remediation effort
+    ├── Patch availability
+    ├── Configuration complexity
+    └── Potential business disruption</code></pre>
+                </div>
+            </div>
+
+            <h2>Software Inventory</h2>
+
+            <p>TVM maintains a real-time inventory of all software installed across your endpoints:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Software Inventory Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// All software with known vulnerabilities</span>
+<span class="variable">DeviceTvmSoftwareInventory</span>
+<span class="operator">|</span> <span class="keyword">where</span> VulnerabilitySeverityLevel <span class="operator">!=</span> <span class="string">""</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    DeviceCount <span class="operator">=</span> <span class="function">dcount</span>(DeviceId),
+    Vulnerabilities <span class="operator">=</span> <span class="function">count</span>()
+    <span class="keyword">by</span> SoftwareName, SoftwareVersion
+<span class="operator">|</span> <span class="keyword">order by</span> DeviceCount <span class="keyword">desc</span>
+
+<span class="comment">// Find devices with specific vulnerable software</span>
+<span class="variable">DeviceTvmSoftwareInventory</span>
+<span class="operator">|</span> <span class="keyword">where</span> SoftwareName <span class="operator">=~</span> <span class="string">"Google Chrome"</span>
+<span class="operator">|</span> <span class="keyword">where</span> SoftwareVersion <span class="operator">startswith</span> <span class="string">"119"</span>
+<span class="operator">|</span> <span class="keyword">project</span> DeviceName, SoftwareName, SoftwareVersion, EndOfSupportStatus
+
+<span class="comment">// End-of-life software in environment</span>
+<span class="variable">DeviceTvmSoftwareInventory</span>
+<span class="operator">|</span> <span class="keyword">where</span> EndOfSupportStatus <span class="operator">==</span> <span class="string">"EOS Version"</span> <span class="keyword">or</span> EndOfSupportStatus <span class="operator">==</span> <span class="string">"Upcoming EOS"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> DeviceCount <span class="operator">=</span> <span class="function">dcount</span>(DeviceId) <span class="keyword">by</span> SoftwareName, SoftwareVersion, EndOfSupportStatus
+<span class="operator">|</span> <span class="keyword">order by</span> DeviceCount <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Vulnerability Assessment</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Vulnerability Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Critical vulnerabilities with exploits available</span>
+<span class="variable">DeviceTvmSoftwareVulnerabilities</span>
+<span class="operator">|</span> <span class="keyword">where</span> VulnerabilitySeverityLevel <span class="operator">==</span> <span class="string">"Critical"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ExploitIsPubliclyAvailable <span class="operator">==</span> <span class="keyword">true</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    AffectedDevices <span class="operator">=</span> <span class="function">dcount</span>(DeviceId),
+    Software <span class="operator">=</span> <span class="function">make_set</span>(SoftwareName)
+    <span class="keyword">by</span> CveId, VulnerabilitySeverityLevel
+<span class="operator">|</span> <span class="keyword">order by</span> AffectedDevices <span class="keyword">desc</span>
+
+<span class="comment">// Devices exposed to specific CVE</span>
+<span class="variable">DeviceTvmSoftwareVulnerabilities</span>
+<span class="operator">|</span> <span class="keyword">where</span> CveId <span class="operator">==</span> <span class="string">"CVE-2024-1234"</span>
+<span class="operator">|</span> <span class="keyword">project</span> DeviceName, SoftwareName, SoftwareVersion, RecommendedSecurityUpdate
+
+<span class="comment">// Vulnerability trend over time</span>
+<span class="variable">DeviceTvmSoftwareVulnerabilities</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> VulnCount <span class="operator">=</span> <span class="function">dcount</span>(CveId) <span class="keyword">by</span> <span class="function">bin</span>(Timestamp, <span class="number">1</span>d), VulnerabilitySeverityLevel
+<span class="operator">|</span> <span class="keyword">render</span> timechart</code></pre>
+                </div>
+            </div>
+
+            <h2>Remediation Workflow</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Remediation Request Flow</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     TVM REMEDIATION WORKFLOW                             │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  SECURITY TEAM                              IT OPERATIONS                │
+│                                                                          │
+│  ┌──────────────┐                          ┌──────────────┐             │
+│  │ Identify     │                          │              │             │
+│  │ Vulnerability│                          │              │             │
+│  └──────┬───────┘                          │              │             │
+│         │                                  │              │             │
+│         ▼                                  │              │             │
+│  ┌──────────────┐    Create Ticket         │              │             │
+│  │ Create       │─────────────────────────►│  Intune /    │             │
+│  │ Remediation  │                          │  SCCM /      │             │
+│  │ Request      │                          │  ServiceNow  │             │
+│  └──────┬───────┘                          │              │             │
+│         │                                  └──────┬───────┘             │
+│         │                                         │                     │
+│         │           Status Updates                │                     │
+│         │◄────────────────────────────────────────┤                     │
+│         │                                         │                     │
+│         ▼                                         ▼                     │
+│  ┌──────────────┐                          ┌──────────────┐             │
+│  │ Track        │     Deployment           │ Deploy       │             │
+│  │ Progress     │◄─────Completed───────────│ Patches      │             │
+│  └──────────────┘                          └──────────────┘             │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h3>Creating Remediation Requests</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>1. Navigate to recommendation
+   Vulnerability management → Recommendations → Select item
+
+2. Click "Request remediation"
+
+3. Configure request:
+   - Priority: Low / Medium / High / Critical
+   - Due date: Set target completion
+   - Notes: Add context for IT team
+
+4. Integration options:
+   - Create Intune remediation task
+   - Generate ServiceNow ticket
+   - Export to CSV for manual tracking
+
+5. Track progress:
+   - Remediation activities page
+   - Status: Pending / In progress / Completed / Cancelled</code></pre>
+                </div>
+            </div>
+
+            <h2>Integration with Intune</h2>
+
+            <p>TVM can directly push remediation tasks to Microsoft Intune for automated patching:</p>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Intune Integration Benefits</h5>
+                    <p>When integrated with Intune, TVM can automatically create remediation tasks that deploy updates to affected devices without manual intervention.</p>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>TVM Operations</h4>
+                <ul>
+                    <li>Review exposure score trends weekly</li>
+                    <li>Prioritize critical vulnerabilities with active exploits</li>
+                    <li>Create remediation requests for high-priority items</li>
+                    <li>Track remediation progress with IT teams</li>
+                    <li>Report vulnerability metrics to leadership</li>
+                </ul>
+
+                <h4>Common Tickets</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Which CVEs should we patch first?"</span>
+                    <span class="ticket-solution">→ Filter by Critical + Exploit Available + High device count</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Report on EOL software"</span>
+                    <span class="ticket-solution">→ Query DeviceTvmSoftwareInventory for EndOfSupportStatus</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Exposure to new CVE?"</span>
+                    <span class="ticket-solution">→ Search vulnerabilities by CVE ID, list affected devices</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Exposure Score</strong>: 0-100, lower is better, measures overall vulnerability</li>
+                    <li><strong>No additional scanning</strong>: TVM uses MDE sensor data, no separate scans needed</li>
+                    <li><strong>Prioritization factors</strong>: Exploit availability, CVSS, device count, threat intel</li>
+                    <li><strong>Remediation workflow</strong>: Security requests → IT deploys → TVM tracks</li>
+                    <li><strong>Key tables</strong>: DeviceTvmSoftwareInventory, DeviceTvmSoftwareVulnerabilities</li>
+                    <li><strong>Integration</strong>: Works with Intune for automated remediation</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="6-8-recovery-procedures.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Recovery Procedures</span>
+                </a>
+                <a href="7-2-vulnerability-assessment.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Vulnerability Assessment</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

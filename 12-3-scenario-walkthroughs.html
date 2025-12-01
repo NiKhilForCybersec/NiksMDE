@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scenario Walkthroughs | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Detailed scenario walkthroughs for MDE investigations. Practice step-by-step responses to common security incidents - perfect for interview preparation and skill building.</p>
+            </div>
+
+            <h1>Scenario Walkthroughs</h1>
+
+            <p>These scenarios simulate real-world security incidents. Work through each step as you would in a SOC environment - this is exactly what interviewers look for.</p>
+
+            <h2>Scenario 1: Phishing Email with Malicious Attachment</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Scenario Details</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>═══════════════════════════════════════════════════════════════
+SCENARIO: Phishing Email with Malicious Attachment
+═══════════════════════════════════════════════════════════════
+
+ALERT RECEIVED:
+"Suspicious file detected - Invoice.doc.exe"
+Device: WKSTN-HR-042
+User: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4822272026663b25213c20082b272538292631662b2725">[email&#160;protected]</a>
+Severity: High
+Time: 2024-01-15 09:23:45
+
+───────────────────────────────────────────────────────────────
+STEP 1: INITIAL TRIAGE (2-5 minutes)
+───────────────────────────────────────────────────────────────
+
+QUESTIONS TO ANSWER:
+├── What triggered the alert?
+├── What is the file and where did it come from?
+├── Has it executed?
+└── Is the device still at risk?
+
+ACTIONS:
+1. Open alert in MDE portal
+2. Review alert details:
+   ├── File: Invoice.doc.exe
+   ├── Location: C:\Users\john.smith\Downloads\
+   ├── SHA256: [hash value]
+   └── Detection: Trojan:Win32/Emotet
+3. Check if blocked or executed
+4. Note all IOCs (hash, file name, path)
+
+───────────────────────────────────────────────────────────────
+STEP 2: CONTAINMENT DECISION (1-2 minutes)
+───────────────────────────────────────────────────────────────
+
+DECISION MATRIX:
+├── File blocked before execution → Continue investigation
+├── File executed → IMMEDIATE ISOLATION
+├── Signs of lateral movement → FULL ISOLATION
+└── Uncertain → Selective isolation + investigate
+
+THIS SCENARIO: File executed (process created)
+ACTION: Isolate device (Full isolation)
+
+───────────────────────────────────────────────────────────────
+STEP 3: DEVICE INVESTIGATION (10-15 minutes)
+───────────────────────────────────────────────────────────────
+
+TIMELINE ANALYSIS:
+Open device timeline, filter to incident timeframe
+
+KEY EVENTS TO FIND:
+├── Email received (if O365 integration)
+├── File downloaded
+├── File execution
+├── Child processes spawned
+├── Network connections made
+├── Files created/modified
+└── Registry changes
+
+KQL QUERY - PROCESS TREE:</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Investigation Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find the malicious process and children</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">==</span> <span class="string">"WKSTN-HR-042"</span>
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"Invoice.doc.exe"</span>
+    <span class="operator">or</span> InitiatingProcessFileName <span class="operator">=~</span> <span class="string">"Invoice.doc.exe"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, FileName, ProcessCommandLine,
+         InitiatingProcessFileName
+
+<span class="comment">// Check for network connections</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">==</span> <span class="string">"WKSTN-HR-042"</span>
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="operator">=~</span> <span class="string">"Invoice.doc.exe"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, RemoteIP, RemotePort, RemoteUrl
+
+<span class="comment">// Check for persistence mechanisms</span>
+<span class="variable">DeviceRegistryEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">==</span> <span class="string">"WKSTN-HR-042"</span>
+<span class="operator">|</span> <span class="keyword">where</span> RegistryKey <span class="function">has_any</span> (<span class="string">"Run"</span>, <span class="string">"RunOnce"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, ActionType, RegistryKey, RegistryValueName</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Scenario 1 - Continued</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>───────────────────────────────────────────────────────────────
+STEP 4: SCOPE ASSESSMENT (5-10 minutes)
+───────────────────────────────────────────────────────────────
+
+QUESTIONS:
+├── Did malware spread to other devices?
+├── Were credentials compromised?
+├── Was data exfiltrated?
+└── Who else received this email?
+
+KQL - CHECK FOR SPREAD:
+DeviceFileEvents
+| where Timestamp > ago(1d)
+| where SHA256 == "[malware hash]"
+| distinct DeviceName
+
+FINDINGS:
+├── No other devices have the file
+├── No lateral movement detected
+├── C2 connection was made to 192.0.2.100
+└── 5 other users received same email (check O365)
+
+───────────────────────────────────────────────────────────────
+STEP 5: REMEDIATION (10-15 minutes)
+───────────────────────────────────────────────────────────────
+
+ACTIONS:
+1. Collect investigation package (for evidence)
+2. Run full AV scan on isolated device
+3. Block malware hash organization-wide
+4. Block C2 IP address
+5. Search for and delete email from other mailboxes
+6. Notify affected users
+
+PORTAL ACTIONS:
+├── Device → Collect investigation package
+├── Device → Run antivirus scan (Full)
+├── Indicators → Add file hash → Block
+├── Indicators → Add IP → Block
+└── (O365) Search and purge malicious email
+
+───────────────────────────────────────────────────────────────
+STEP 6: RECOVERY & CLOSURE (5-10 minutes)
+───────────────────────────────────────────────────────────────
+
+POST-REMEDIATION:
+1. Verify AV scan clean
+2. Check no persistence remains
+3. Release device from isolation
+4. Reset user credentials (precautionary)
+5. Monitor for 24-48 hours
+
+DOCUMENTATION:
+├── Update incident ticket with timeline
+├── Document all IOCs found
+├── Note remediation actions taken
+├── Classify alert as True Positive
+└── Close incident
+
+LESSONS LEARNED:
+├── User clicked on suspicious attachment
+├── Detection worked, blocked execution
+├── Consider: Security awareness training
+└── Consider: Email attachment filtering
+
+═══════════════════════════════════════════════════════════════</code></pre>
+                </div>
+            </div>
+
+            <h2>Scenario 2: Credential Theft Attempt</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Credential Theft Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>═══════════════════════════════════════════════════════════════
+SCENARIO: LSASS Memory Access Detected
+═══════════════════════════════════════════════════════════════
+
+ALERT RECEIVED:
+"Suspicious process accessed LSASS memory"
+Device: SRV-DC-01 (Domain Controller!)
+Severity: Critical
+Detection: Credential dumping behavior
+
+───────────────────────────────────────────────────────────────
+IMMEDIATE ACTIONS (CRITICAL - DC COMPROMISE)
+───────────────────────────────────────────────────────────────
+
+⚠️ DC COMPROMISE = HIGHEST PRIORITY
+
+1. DO NOT isolate DC (will break AD!)
+2. Immediately assess:
+   ├── What process accessed LSASS?
+   ├── Is it legitimate (AV, backup)?
+   ├── Was credential extraction successful?
+   └── Any signs of lateral movement?
+
+───────────────────────────────────────────────────────────────
+INVESTIGATION
+───────────────────────────────────────────────────────────────
+
+CHECK ALERT DETAILS:
+├── Process: procdump64.exe
+├── Command: procdump -ma lsass.exe lsass.dmp
+├── User: IT-ADMIN (Domain Admin account)
+├── Source: Remote execution via PsExec
+
+RED FLAGS:
+├── Procdump targeting LSASS = credential dumping
+├── Domain Admin account used
+├── Remote execution indicates attacker control
+└── CRITICAL: Assume all credentials compromised
+
+KQL INVESTIGATION:</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Credential Theft Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find the LSASS access and attacker activity</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">==</span> <span class="string">"SRV-DC-01"</span>
+<span class="operator">|</span> <span class="keyword">where</span> AccountName <span class="operator">==</span> <span class="string">"IT-ADMIN"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, FileName, ProcessCommandLine,
+         InitiatingProcessFileName
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">asc</span>
+
+<span class="comment">// Check for lateral movement with stolen creds</span>
+<span class="variable">DeviceLogonEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> AccountName <span class="function">has_any</span> (<span class="string">"IT-ADMIN"</span>, <span class="string">"Administrator"</span>)
+<span class="operator">|</span> <span class="keyword">where</span> LogonType <span class="operator">==</span> <span class="string">"Network"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Logons = <span class="function">count</span>() <span class="keyword">by</span> DeviceName, RemoteIP
+<span class="operator">|</span> <span class="keyword">order by</span> Logons <span class="keyword">desc</span>
+
+<span class="comment">// Find initial compromise (how did attacker get DA?)</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="operator">=~</span> <span class="string">"psexec.exe"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Scenario 2 - Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>───────────────────────────────────────────────────────────────
+RESPONSE ACTIONS
+───────────────────────────────────────────────────────────────
+
+IMMEDIATE:
+1. Disable compromised IT-ADMIN account
+2. Reset KRBTGT password (twice, 10+ hours apart)
+3. Reset all Domain Admin passwords
+4. Identify and isolate attacker's source device
+5. Engage incident response team
+
+INVESTIGATION CONTINUATION:
+├── Find initial access point
+├── Map all compromised accounts
+├── Identify all accessed systems
+├── Check for persistence (scheduled tasks, etc.)
+└── Look for data exfiltration
+
+POST-INCIDENT:
+├── Full credential reset for privileged accounts
+├── Review PAM/PIM implementation
+├── Implement LSASS protection (Credential Guard)
+├── Add LSASS access monitoring
+└── Security awareness for IT staff
+
+═══════════════════════════════════════════════════════════════</code></pre>
+                </div>
+            </div>
+
+            <h2>Scenario 3: Ransomware Detection</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Ransomware Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>═══════════════════════════════════════════════════════════════
+SCENARIO: Ransomware Activity Detected
+═══════════════════════════════════════════════════════════════
+
+ALERT RECEIVED:
+"Ransomware behavior detected"
+Device: WKSTN-FINANCE-015
+User: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8c2c9c6cd86ccc7cde8cbc7c5d8c9c6d186cbc7c5">[email&#160;protected]</a>
+Additional alerts:
+├── "Shadow copy deletion"
+├── "Suspicious file encryption activity"
+└── "Multiple files renamed with unusual extension"
+
+───────────────────────────────────────────────────────────────
+IMMEDIATE RESPONSE (SECONDS MATTER!)
+───────────────────────────────────────────────────────────────
+
+⚠️ RANSOMWARE = IMMEDIATE FULL ISOLATION
+
+1. ISOLATE IMMEDIATELY (Full isolation)
+2. Check for spread to other devices
+3. Identify encryption scope
+4. Preserve evidence
+
+DO NOT:
+├── Turn off the device (destroys memory evidence)
+├── Delete any files
+├── Run unauthorized recovery tools
+└── Pay ransom without proper escalation
+
+───────────────────────────────────────────────────────────────
+SCOPE ASSESSMENT
+───────────────────────────────────────────────────────────────
+
+KQL - CHECK FOR SPREAD:</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Ransomware Scope</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find ransomware file hash and check spread</span>
+<span class="keyword">let</span> RansomwareHash = <span class="string">"[SHA256 from alert]"</span>;
+<span class="variable">DeviceFileEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> SHA256 <span class="operator">==</span> RansomwareHash
+<span class="operator">|</span> <span class="keyword">distinct</span> DeviceName
+
+<span class="comment">// Check for mass file modifications</span>
+<span class="variable">DeviceFileEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"FileModified"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> ModifiedCount = <span class="function">count</span>() <span class="keyword">by</span> DeviceName, <span class="function">bin</span>(Timestamp, <span class="number">5</span>m)
+<span class="operator">|</span> <span class="keyword">where</span> ModifiedCount <span class="operator">></span> <span class="number">100</span>
+
+<span class="comment">// Check for shadow copy deletion</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"vssadmin delete"</span>,
+    <span class="string">"wmic shadowcopy"</span>,
+    <span class="string">"bcdedit"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Scenario 3 - Continued</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>───────────────────────────────────────────────────────────────
+CONTAINMENT & EVIDENCE
+───────────────────────────────────────────────────────────────
+
+CONTAINMENT:
+1. Isolate affected device(s)
+2. Block ransomware hash org-wide
+3. Block any identified C2 infrastructure
+4. Disable compromised accounts
+5. Consider network segmentation
+
+EVIDENCE COLLECTION:
+1. Collect investigation package
+2. Capture memory dump if possible
+3. Preserve ransom notes
+4. Document encrypted file extensions
+5. Note ransom amount and payment instructions
+
+───────────────────────────────────────────────────────────────
+RECOVERY CONSIDERATIONS
+───────────────────────────────────────────────────────────────
+
+OPTIONS:
+├── Restore from backups (preferred)
+├── Decryption tool available? (check NoMoreRansom.org)
+├── Pay ransom (last resort, legal/ethical concerns)
+└── Rebuild from scratch
+
+BEFORE RECOVERY:
+├── Ensure threat is fully contained
+├── Identify and fix initial access vector
+├── Verify backups are not infected
+└── Plan phased recovery
+
+═══════════════════════════════════════════════════════════════</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Interview Tips for Scenarios</h5>
+                    <ul>
+                        <li><strong>Talk through your process</strong>: Interviewers want to see how you think</li>
+                        <li><strong>Prioritize containment</strong>: Stop the bleeding before deep investigation</li>
+                        <li><strong>Ask clarifying questions</strong>: It's OK to ask for more details</li>
+                        <li><strong>Document as you go</strong>: Mention that you'd be documenting actions</li>
+                        <li><strong>Know your escalation points</strong>: When to involve management/IR team</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Triage quickly</strong>: 2-5 minutes to understand the alert</li>
+                    <li><strong>Containment first</strong>: Isolate before deep investigation when needed</li>
+                    <li><strong>Use KQL</strong>: Demonstrate query skills during scenarios</li>
+                    <li><strong>Scope the incident</strong>: Always check if it spread to other devices</li>
+                    <li><strong>Document everything</strong>: Actions, findings, timeline</li>
+                    <li><strong>Know when to escalate</strong>: DC compromise, ransomware = immediate escalation</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="12-2-interview-questions.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Interview Questions</span>
+                </a>
+                <a href="12-4-kql-cheat-sheet.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">KQL Cheat Sheet</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" p

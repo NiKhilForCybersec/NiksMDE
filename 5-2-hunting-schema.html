@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hunting Schema Reference | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete reference for Advanced Hunting schema tables. Learn what data is available for threat hunting and investigation queries.</p>
+            </div>
+
+            <h1>Advanced Hunting Schema Reference</h1>
+
+            <p>The Advanced Hunting schema contains all the tables you can query for threat detection, investigation, and proactive hunting.</p>
+
+            <h2>Schema Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Schema Table Categories</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    ADVANCED HUNTING SCHEMA                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  DEVICE TABLES              ALERT TABLES           IDENTITY TABLES      │
+│  ├── DeviceInfo             ├── AlertInfo          ├── IdentityLogon    │
+│  ├── DeviceProcessEvents    ├── AlertEvidence      │   Events           │
+│  ├── DeviceNetworkEvents    └── DeviceAlertEvents  ├── IdentityQuery    │
+│  ├── DeviceFileEvents                              │   Events           │
+│  ├── DeviceRegistryEvents   TVM TABLES             └── IdentityDir      │
+│  ├── DeviceLogonEvents      ├── DeviceTvmSoftware      Events           │
+│  ├── DeviceImageLoadEvents  │   Inventory                               │
+│  └── DeviceEvents           ├── DeviceTvmSoftware  EMAIL TABLES         │
+│                             │   Vulnerabilities    ├── EmailEvents      │
+│  CLOUD APP TABLES           └── DeviceTvmSecure    ├── EmailAttachment  │
+│  ├── CloudAppEvents             ConfigAssessment   │   Info             │
+│  └── AppFileEvents                                 └── EmailUrlInfo     │
+│                                                                          │
+│  DATA RETENTION: 30 days (Advanced Hunting), 180 days (raw telemetry)  │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Device Tables</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Device Event Tables</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEVICE TABLES - CORE TELEMETRY:
+
+DeviceInfo
+├── Device metadata and configuration
+├── Key fields: DeviceId, DeviceName, OSPlatform, OSVersion
+├── Use: Device inventory, OS analysis
+└── Example: DeviceInfo | summarize by OSPlatform
+
+DeviceProcessEvents
+├── Process creation and execution
+├── Key fields: FileName, ProcessCommandLine, InitiatingProcessFileName
+├── Key fields: SHA256, AccountName, ProcessId
+├── Use: Execution analysis, process trees
+└── Most used table for threat hunting
+
+DeviceNetworkEvents
+├── Network connections (inbound/outbound)
+├── Key fields: RemoteIP, RemotePort, RemoteUrl, LocalPort
+├── Key fields: InitiatingProcessFileName, ActionType
+├── Use: C2 detection, lateral movement
+└── ActionType: ConnectionSuccess, ConnectionFailed, ListeningConnectionCreated
+
+DeviceFileEvents
+├── File operations (create, modify, delete)
+├── Key fields: FileName, FolderPath, SHA256, ActionType
+├── ActionType: FileCreated, FileModified, FileDeleted, FileRenamed
+├── Use: Malware drops, data staging
+└── Example: File writes to temp folders
+
+DeviceRegistryEvents
+├── Registry modifications
+├── Key fields: RegistryKey, RegistryValueName, RegistryValueData
+├── ActionType: RegistryKeyCreated, RegistryValueSet, RegistryKeyDeleted
+├── Use: Persistence detection
+└── Focus: Run keys, Services, scheduled tasks
+
+DeviceLogonEvents
+├── Authentication events
+├── Key fields: LogonType, AccountName, AccountDomain, RemoteIP
+├── LogonType: Interactive (2), Network (3), Service (5), RemoteInteractive (10)
+├── Use: Lateral movement, brute force
+└── Correlate with failed logons
+
+DeviceImageLoadEvents
+├── DLL and driver loading
+├── Key fields: FileName, FolderPath, SHA256, InitiatingProcessFileName
+├── Use: DLL hijacking, injection detection
+└── High volume - filter carefully
+
+DeviceEvents
+├── Miscellaneous security events
+├── ActionTypes: Various (ASR, exploit protection, etc.)
+├── Use: Security feature triggers
+└── Catch-all for events not in other tables</code></pre>
+                </div>
+            </div>
+
+            <h2>Key Fields Reference</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Fields</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>COMMON FIELDS ACROSS TABLES:
+
+TIMESTAMP FIELDS:
+├── Timestamp: Event time (UTC)
+└── ReportId: Unique event identifier
+
+DEVICE FIELDS:
+├── DeviceId: Unique device identifier
+├── DeviceName: Computer name
+└── MachineGroup: Device group assignment
+
+PROCESS FIELDS:
+├── InitiatingProcessFileName: Parent process name
+├── InitiatingProcessCommandLine: Parent command line
+├── InitiatingProcessId: Parent PID
+├── InitiatingProcessSHA256: Parent file hash
+├── FileName: Target process/file name
+├── ProcessCommandLine: Process command line
+├── ProcessId: Process ID
+└── SHA256: File hash
+
+ACCOUNT FIELDS:
+├── AccountName: Username
+├── AccountDomain: Domain
+├── AccountSid: Security identifier
+├── AccountUpn: User principal name
+└── LogonId: Logon session ID
+
+NETWORK FIELDS:
+├── RemoteIP: Destination IP
+├── RemotePort: Destination port
+├── RemoteUrl: Full URL
+├── LocalIP: Source IP
+├── LocalPort: Source port
+└── Protocol: TCP, UDP, etc.</code></pre>
+                </div>
+            </div>
+
+            <h2>Alert and TVM Tables</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Alert and Vulnerability Tables</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ALERT TABLES:
+
+AlertInfo
+├── Alert metadata
+├── Key fields: AlertId, Title, Severity, Category, Status
+├── Use: Alert analysis, metrics
+└── Join with AlertEvidence for details
+
+AlertEvidence
+├── Entities linked to alerts
+├── Key fields: EntityType, EvidenceRole, EvidenceDirection
+├── EntityTypes: File, Process, IP, URL, User, Device
+└── Use: Investigation pivot points
+
+TVM TABLES:
+
+DeviceTvmSoftwareInventory
+├── Installed software on devices
+├── Key fields: SoftwareName, SoftwareVersion, SoftwareVendor
+├── Use: Software inventory, version tracking
+└── Join with vulnerabilities table
+
+DeviceTvmSoftwareVulnerabilities
+├── CVEs affecting installed software
+├── Key fields: CveId, VulnerabilitySeverityLevel, SoftwareName
+├── Use: Vulnerability prioritization
+└── Find devices with specific CVEs
+
+DeviceTvmSecureConfigurationAssessment
+├── Security configuration status
+├── Key fields: ConfigurationId, IsCompliant, ConfigurationCategory
+├── Use: Security posture assessment
+└── Find misconfigured devices</code></pre>
+                </div>
+            </div>
+
+            <h2>Sample Queries by Table</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Table Examples</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// DeviceProcessEvents - Find PowerShell execution</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"-enc"</span>, <span class="string">"downloadstring"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine
+
+<span class="comment">// DeviceNetworkEvents - Outbound connections</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ConnectionSuccess"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Connections = <span class="function">count</span>() <span class="keyword">by</span> RemoteIP
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">10</span> <span class="keyword">by</span> Connections
+
+<span class="comment">// DeviceFileEvents - Files in temp folders</span>
+<span class="variable">DeviceFileEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"FileCreated"</span>
+<span class="operator">|</span> <span class="keyword">where</span> FolderPath <span class="function">has</span> <span class="string">"\\Temp\\"</span>
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="function">endswith</span> <span class="string">".exe"</span>
+
+<span class="comment">// DeviceTvmSoftwareVulnerabilities - Critical CVEs</span>
+<span class="variable">DeviceTvmSoftwareVulnerabilities</span>
+<span class="operator">|</span> <span class="keyword">where</span> VulnerabilitySeverityLevel <span class="operator">==</span> <span class="string">"Critical"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Devices = <span class="function">dcount</span>(DeviceId) <span class="keyword">by</span> CveId, SoftwareName
+<span class="operator">|</span> <span class="keyword">order by</span> Devices <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Schema Tips</h5>
+                    <ul>
+                        <li><strong>Start with DeviceProcessEvents</strong>: Most threat hunting starts here</li>
+                        <li><strong>Join tables</strong>: Correlate across tables using DeviceId and Timestamp</li>
+                        <li><strong>Use schema reference</strong>: Click table name in portal to see all fields</li>
+                        <li><strong>Filter early</strong>: Add time filters first for performance</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Key tables</strong>: DeviceProcessEvents, DeviceNetworkEvents, DeviceFileEvents</li>
+                    <li><strong>Process hunting</strong>: DeviceProcessEvents for execution analysis</li>
+                    <li><strong>Network hunting</strong>: DeviceNetworkEvents for C2, lateral movement</li>
+                    <li><strong>Vulnerability</strong>: DeviceTvmSoftwareVulnerabilities for CVEs</li>
+                    <li><strong>Retention</strong>: 30 days in Advanced Hunting</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="5-1-advanced-hunting-overview.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Advanced Hunting Overview</span>
+                </a>
+                <a href="5-3-kql-fundamentals.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">KQL Fundamentals</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

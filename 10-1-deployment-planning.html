@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Planning | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo"><div class="logo-icon">MDE</div><div class="logo-text"><span>MDE</span> Ultimate Guide</div></a>
+        </div>
+        <div class="search-container"><button class="search-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg><span>Search...</span></button></div>
+        <div class="header-right"><a href="12-2-interview-questions.html" class="header-link">Interview Prep</a></div>
+    </header>
+    <div class="sidebar-overlay"></div><aside class="sidebar"></aside>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box"><h4>🎯 What This Page Covers</h4><p>Complete guide to planning enterprise MDE deployment. Learn prerequisites, phased rollout strategy, and validation steps.</p></div>
+            <h1>Deployment Planning</h1>
+            <p>Successful MDE deployment requires careful planning across licensing, infrastructure, rollout phases, and validation.</p>
+            
+            <h2>Deployment Phases</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Phased Approach</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>DEPLOYMENT PHASES:
+
+PHASE 1: PREPARATION (Weeks 1-2)
+├── Verify licensing
+│   ├── Count devices by platform
+│   ├── Confirm license availability
+│   └── Assign licenses to users/devices
+├── Plan network requirements
+│   ├── Document firewall rules needed
+│   ├── Configure proxy if required
+│   └── Test connectivity from sample device
+├── Select deployment method
+│   ├── Intune (cloud-managed)
+│   ├── Group Policy (AD-joined)
+│   ├── SCCM/MECM (ConfigMgr)
+│   └── Manual script (testing)
+├── Create device groups
+│   ├── Pilot group
+│   ├── Early adopters
+│   ├── General population
+│   └── Critical systems
+├── Plan RBAC permissions
+│   ├── Security Administrator
+│   ├── Security Operator
+│   └── Security Reader
+└── Prepare communication plan
+
+PHASE 2: PILOT (Weeks 3-4)
+├── Select pilot devices (5-10%)
+│   ├── Include IT/Security team
+│   ├── Mix of device types
+│   └── Variety of applications
+├── Deploy onboarding
+├── Validate functionality
+│   ├── Sensors reporting
+│   ├── Alerts generating
+│   └── Response actions working
+├── Identify exclusions needed
+│   ├── LOB applications
+│   ├── Development tools
+│   └── Performance-sensitive apps
+├── Tune policies
+└── Document lessons learned
+
+PHASE 3: EARLY ADOPTERS (Weeks 5-6)
+├── Expand to 25% of devices
+├── Include more business units
+├── Continue monitoring for issues
+├── Refine exclusions and policies
+├── Train helpdesk/support team
+└── Update documentation
+
+PHASE 4: BROAD DEPLOYMENT (Weeks 7-10)
+├── Roll out to all remaining devices
+├── Monitor sensor health dashboard
+├── Address onboarding failures
+├── Enable advanced features
+│   ├── ASR rules
+│   ├── Network protection
+│   └── Controlled folder access
+├── Validate 100% coverage
+└── Transition to operations</code></pre></div></div>
+
+            <h2>Prerequisites Checklist</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Prerequisites</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>PREREQUISITES CHECKLIST:
+
+LICENSING:
+[ ] MDE P1/P2 or M365 E5 licenses procured
+[ ] Sufficient licenses for all target devices
+[ ] Licenses assigned in Azure AD
+[ ] License activation verified
+
+NETWORK:
+[ ] Firewall rules allow MDE URLs (port 443):
+    - *.securitycenter.windows.com
+    - *.wdcp.microsoft.com
+    - *.wd.microsoft.com
+    - *.blob.core.windows.net
+[ ] Proxy configured if required
+[ ] SSL inspection bypass for MDE URLs
+[ ] Connectivity tested from each network segment
+
+INFRASTRUCTURE:
+[ ] Management tool ready (Intune/GPO/SCCM)
+[ ] Onboarding packages downloaded from portal
+[ ] Device groups created in portal
+[ ] RBAC roles assigned to security team
+[ ] Exclusion list prepared
+
+ORGANIZATION:
+[ ] Stakeholder approval obtained
+[ ] Project timeline agreed
+[ ] Support team trained
+[ ] Communication sent to users
+[ ] Success criteria defined
+[ ] Rollback plan documented
+
+TECHNICAL:
+[ ] Test devices identified
+[ ] Baseline performance captured
+[ ] Existing AV removal plan (if applicable)
+[ ] Third-party AV coexistence tested</code></pre></div></div>
+
+            <h2>Deployment Rings</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Ring Strategy</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>DEPLOYMENT RING STRATEGY:
+
+RING 0: SECURITY/IT TEAM (Week 1)
+├── Size: 10-50 devices
+├── Purpose: Initial validation
+├── Duration: 1 week
+├── Success criteria:
+│   ├── Sensors healthy
+│   ├── No major issues
+│   └── Features working
+└── Go/No-go decision
+
+RING 1: PILOT/EARLY ADOPTERS (Week 2-3)
+├── Size: 5-10% of org
+├── Purpose: Broader validation
+├── Include: Tech-savvy users, varied apps
+├── Duration: 2 weeks
+├── Success criteria:
+│   ├── No widespread issues
+│   ├── Exclusions identified
+│   └── Performance acceptable
+└── Go/No-go decision
+
+RING 2: GENERAL POPULATION (Week 4-6)
+├── Size: 50-75% of org
+├── Purpose: Mass deployment
+├── Include: Standard workstations
+├── Duration: 2-3 weeks
+└── Monitor closely
+
+RING 3: CRITICAL SYSTEMS (Week 7+)
+├── Size: Remaining 25%
+├── Include: Servers, executives, sensitive
+├── Purpose: High-value assets
+├── Extra validation before deployment
+└── Custom automation levels
+
+RING CRITERIA:
+├── Each ring validates before next
+├── Issues found = pause and fix
+├── Metrics tracked per ring
+└── Rollback plan per ring</code></pre></div></div>
+
+            <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-content"><h5>Best Practices</h5><ul>
+                <li><strong>Never skip pilot</strong>: Always validate with small group first</li>
+                <li><strong>Test connectivity early</strong>: Network issues are #1 deployment blocker</li>
+                <li><strong>Document exclusions</strong>: Track what and why for future reference</li>
+                <li><strong>Communicate proactively</strong>: Let users know what's happening</li>
+                <li><strong>Have rollback plan</strong>: Know how to offboard if needed</li>
+            </ul></div></div>
+
+            <div class="interview-tips"><h3>💡 Key Interview Points</h3><ul>
+                <li><strong>Phases</strong>: Preparation → Pilot → Early Adopters → Broad</li>
+                <li><strong>Pilot size</strong>: 5-10% of devices initially</li>
+                <li><strong>Prerequisites</strong>: Licensing, network connectivity, management tool</li>
+                <li><strong>Rings</strong>: Gradual rollout for risk mitigation</li>
+                <li><strong>Critical last</strong>: Deploy to servers/VIPs after validation</li>
+            </ul></div>
+
+            <nav class="page-nav"><a href="9-6-client-analyzer.html" class="page-nav-link prev"><span class="page-nav-label">← Previous</span></a><a href="10-2-deployment-rings.html" class="page-nav-link next"><span class="page-nav-label">Next →</span></a></nav>
+        </div>
+    </main>
+    <script src="main.js"></script>
+</body>
+</html>

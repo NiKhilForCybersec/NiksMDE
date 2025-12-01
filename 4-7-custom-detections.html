@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Detections | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to creating custom detection rules in MDE. Learn to convert hunting queries into scheduled detections, configure alert actions, map MITRE ATT&CK techniques, and implement automated response actions.</p>
+            </div>
+
+            <h1>Custom Detection Rules</h1>
+
+            <p>Custom detection rules allow you to create scheduled queries that automatically generate alerts when specific conditions are met. This enables proactive threat detection tailored to your organization's unique environment and threat landscape.</p>
+
+            <h2>Custom Detection Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Custom Detection Workflow</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     CUSTOM DETECTION LIFECYCLE                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│   DEVELOP              CONFIGURE            DEPLOY              TUNE     │
+│                                                                          │
+│  ┌──────────┐        ┌──────────┐        ┌──────────┐      ┌──────────┐│
+│  │ Write    │        │ Set      │        │ Enable   │      │ Monitor  ││
+│  │ KQL      │───────►│ Schedule │───────►│ Rule     │─────►│ Alerts   ││
+│  │ Query    │        │ & Actions│        │          │      │ & Tune   ││
+│  └──────────┘        └──────────┘        └──────────┘      └──────────┘│
+│                                                                          │
+│  • Test in           • Frequency         • Production      • FP review  │
+│    Advanced          • Alert settings    • Validate        • Refine     │
+│    Hunting           • Response          • Monitor         • Update     │
+│  • Validate            actions           • Document                     │
+│    results                                                              │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Creating a Custom Detection Rule</h2>
+
+            <h3>Step 1: Develop and Test the Query</h3>
+
+            <p>Start by writing and testing your detection query in Advanced Hunting:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Example: Suspicious Certutil Usage</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Detect certutil downloading files or decoding content</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"certutil.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"-urlcache"</span>, <span class="string">"-split"</span>, <span class="string">"http"</span>, <span class="string">"ftp"</span>,
+    <span class="string">"-decode"</span>, <span class="string">"-decodehex"</span>, <span class="string">"-f"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> 
+    Timestamp,
+    DeviceId,
+    DeviceName,
+    AccountName <span class="operator">=</span> InitiatingProcessAccountName,
+    FileName,
+    ProcessCommandLine,
+    InitiatingProcessFileName,
+    InitiatingProcessCommandLine,
+    FolderPath</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Query Requirements</h5>
+                    <p>Your query <strong>must</strong> include <code>Timestamp</code> and <code>DeviceId</code> columns in the output for custom detections to work. These are used to track which alerts have been generated.</p>
+                </div>
+            </div>
+
+            <h3>Step 2: Create the Detection Rule</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>1. Go to: security.microsoft.com
+2. Navigate: Hunting → Advanced hunting
+3. Run your query to validate
+4. Click: "Create detection rule"
+
+OR
+
+1. Go to: Settings → Endpoints
+2. Navigate: Rules → Custom detection rules
+3. Click: "+ Create"</code></pre>
+                </div>
+            </div>
+
+            <h3>Step 3: Configure Detection Settings</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Setting</th>
+                            <th>Options</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Rule Name</strong></td>
+                            <td>Descriptive name</td>
+                            <td>Include MITRE technique: "T1105 - Certutil Download"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Frequency</strong></td>
+                            <td>Every hour, Every 3 hours, Every 12 hours, Every 24 hours</td>
+                            <td>Match to threat urgency; high-risk = hourly</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Lookback Period</strong></td>
+                            <td>Same as frequency by default</td>
+                            <td>Avoid gaps; lookback ≥ frequency</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alert Title</strong></td>
+                            <td>Dynamic with {{variables}}</td>
+                            <td>"Certutil abuse on {{DeviceName}}"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Severity</strong></td>
+                            <td>Informational, Low, Medium, High</td>
+                            <td>Based on attack potential</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Category</strong></td>
+                            <td>MITRE tactic categories</td>
+                            <td>Select appropriate: Execution, Defense Evasion</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MITRE Techniques</strong></td>
+                            <td>Select from list</td>
+                            <td>T1105 (Ingress Tool Transfer), T1140 (Deobfuscate)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Step 4: Configure Impacted Entities</h3>
+
+            <p>Map query columns to entity types for alert enrichment:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Entity Mapping</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Entity Mappings (Example):
+┌─────────────────┬────────────────────┬───────────────────┐
+│ Entity Type     │ Query Column       │ Identifier        │
+├─────────────────┼────────────────────┼───────────────────┤
+│ Device          │ DeviceId           │ DeviceId          │
+│ Device          │ DeviceName         │ DeviceName        │
+│ User            │ AccountName        │ AccountName       │
+│ Process         │ FileName           │ ProcessId         │
+│ File            │ FolderPath         │ FilePath          │
+└─────────────────┴────────────────────┴───────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h3>Step 5: Configure Response Actions (Optional)</h3>
+
+            <p>Automated actions that execute when the detection fires:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>Use When</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Isolate device</td>
+                            <td>Network isolation (MDE channel only)</td>
+                            <td>High-confidence malicious activity</td>
+                        </tr>
+                        <tr>
+                            <td>Collect investigation package</td>
+                            <td>Gather forensic artifacts</td>
+                            <td>Need detailed investigation data</td>
+                        </tr>
+                        <tr>
+                            <td>Run antivirus scan</td>
+                            <td>Trigger quick or full scan</td>
+                            <td>Suspected malware presence</td>
+                        </tr>
+                        <tr>
+                            <td>Restrict app execution</td>
+                            <td>Only Microsoft-signed apps run</td>
+                            <td>Active threat containment</td>
+                        </tr>
+                        <tr>
+                            <td>Quarantine file</td>
+                            <td>Stop process and quarantine</td>
+                            <td>Known malicious file detected</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Automated Response Caution</h5>
+                    <p>Use automated response actions carefully. Start with alerting only, then enable actions after validating detection accuracy to avoid business disruption from false positives.</p>
+                </div>
+            </div>
+
+            <h2>Custom Detection Examples</h2>
+
+            <h3>Example 1: Encoded PowerShell from Office</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Detect Office apps spawning encoded PowerShell</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="keyword">in~</span> (
+    <span class="string">"winword.exe"</span>, <span class="string">"excel.exe"</span>, <span class="string">"powerpnt.exe"</span>, <span class="string">"outlook.exe"</span>
+)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="keyword">in~</span> (<span class="string">"powershell.exe"</span>, <span class="string">"pwsh.exe"</span>)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"-enc"</span>, <span class="string">"-EncodedCommand"</span>, <span class="string">"FromBase64"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> 
+    Timestamp, DeviceId, DeviceName,
+    AccountName <span class="operator">=</span> InitiatingProcessAccountName,
+    OfficeApp <span class="operator">=</span> InitiatingProcessFileName,
+    ProcessCommandLine
+
+<span class="comment">// Settings: Frequency=1h, Severity=High, Category=Execution</span>
+<span class="comment">// MITRE: T1059.001 (PowerShell), T1566 (Phishing)</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Example 2: LSASS Memory Access</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Detect suspicious LSASS access (credential dumping)</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"lsass.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ProcessAccessed"</span>
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="operator">!in~</span> (
+    <span class="string">"svchost.exe"</span>, <span class="string">"csrss.exe"</span>, <span class="string">"MsMpEng.exe"</span>, <span class="string">"MsSense.exe"</span>,
+    <span class="string">"lsm.exe"</span>, <span class="string">"wininit.exe"</span>, <span class="string">"services.exe"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> 
+    Timestamp, DeviceId, DeviceName,
+    AccountName <span class="operator">=</span> InitiatingProcessAccountName,
+    AccessingProcess <span class="operator">=</span> InitiatingProcessFileName,
+    InitiatingProcessCommandLine
+
+<span class="comment">// Settings: Frequency=1h, Severity=High, Category=Credential Access</span>
+<span class="comment">// MITRE: T1003.001 (LSASS Memory)</span>
+<span class="comment">// Consider: Auto-isolate for high-confidence environments</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Example 3: Rare Process Execution</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Detect processes seen on very few devices (anomaly detection)</span>
+<span class="keyword">let</span> rareThreshold <span class="operator">=</span> <span class="number">3</span>;
+<span class="keyword">let</span> lookback <span class="operator">=</span> <span class="number">7</span>d;
+<span class="keyword">let</span> processBaseline <span class="operator">=</span>
+    <span class="variable">DeviceProcessEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="keyword">between</span> (<span class="function">ago</span>(lookback) .. <span class="function">ago</span>(<span class="number">1</span>h))
+    <span class="operator">|</span> <span class="keyword">summarize</span> DeviceCount <span class="operator">=</span> <span class="function">dcount</span>(DeviceId) <span class="keyword">by</span> FileName, SHA256
+    <span class="operator">|</span> <span class="keyword">where</span> DeviceCount <span class="operator">>=</span> rareThreshold;
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind</span><span class="operator">=</span>leftanti processBaseline <span class="keyword">on</span> FileName, SHA256
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    ExecutionCount <span class="operator">=</span> <span class="function">count</span>(),
+    Devices <span class="operator">=</span> <span class="function">make_set</span>(DeviceName),
+    FirstSeen <span class="operator">=</span> <span class="function">min</span>(Timestamp)
+    <span class="keyword">by</span> FileName, SHA256, FolderPath
+<span class="operator">|</span> <span class="keyword">extend</span> DeviceId <span class="operator">=</span> <span class="string">""</span>, Timestamp <span class="operator">=</span> FirstSeen  <span class="comment">// Required fields</span>
+
+<span class="comment">// Settings: Frequency=24h, Severity=Medium, Category=Execution</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Best Practices</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">✅</div>
+                    <h4>Test Thoroughly</h4>
+                    <p>Run queries in Advanced Hunting for several days before creating detection rules. Validate results are true positives.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">📊</div>
+                    <h4>Monitor Volume</h4>
+                    <p>High-volume detections create alert fatigue. Target detections should fire rarely but with high fidelity.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">🏷️</div>
+                    <h4>Use MITRE Mapping</h4>
+                    <p>Map every detection to MITRE ATT&CK techniques. This improves coverage analysis and threat reporting.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">📝</div>
+                    <h4>Document Intent</h4>
+                    <p>Include comments in queries explaining what you're detecting and why. Future you will thank you.</p>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Custom Detection Tasks</h4>
+                <ul>
+                    <li>Convert successful hunting queries into detections</li>
+                    <li>Review and tune existing rules based on FP feedback</li>
+                    <li>Update detections for new threat intelligence</li>
+                    <li>Monitor rule execution and alert generation</li>
+                    <li>Document detection coverage gaps</li>
+                </ul>
+
+                <h4>Common Issues</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Detection not firing"</span>
+                    <span class="ticket-solution">→ Verify query returns results, check Timestamp/DeviceId columns, review rule status</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Too many false positives"</span>
+                    <span class="ticket-solution">→ Add exclusions to query, refine conditions, consider suppression rules</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Need to detect new threat"</span>
+                    <span class="ticket-solution">→ Research IOCs/TTPs, develop query in hunting, test, create detection rule</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Required columns</strong>: Timestamp and DeviceId must be in query output</li>
+                    <li><strong>Frequency options</strong>: 1h, 3h, 12h, 24h - match to threat urgency</li>
+                    <li><strong>Response actions</strong>: Can auto-isolate, scan, quarantine, but use carefully</li>
+                    <li><strong>Entity mapping</strong>: Maps query columns to alert entities for enrichment</li>
+                    <li><strong>MITRE mapping</strong>: Best practice to map all detections to ATT&CK</li>
+                    <li><strong>Lifecycle</strong>: Develop → Test → Deploy → Monitor → Tune</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-6-automated-investigation.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Automated Investigation</span>
+                </a>
+                <a href="4-8-indicators-ioc.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Indicators (IOC)</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

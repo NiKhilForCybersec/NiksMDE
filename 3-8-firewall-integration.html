@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firewall Integration | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Windows Defender Firewall integration with MDE. Learn about firewall reporting, rule management, and network protection visibility.</p>
+            </div>
+
+            <h1>Firewall Integration</h1>
+
+            <p>Windows Defender Firewall integrates with MDE to provide visibility into network connections, blocked traffic, and firewall rule effectiveness. This integration enhances network security monitoring.</p>
+
+            <h2>Firewall Integration Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Firewall + MDE Integration</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    FIREWALL INTEGRATION                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  WINDOWS DEFENDER FIREWALL                                              │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                   │   │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │   │
+│  │  │   DOMAIN    │  │  PRIVATE    │  │  PUBLIC     │              │   │
+│  │  │  PROFILE    │  │  PROFILE    │  │  PROFILE    │              │   │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘              │   │
+│  │                                                                   │   │
+│  │  RULES: Inbound | Outbound | Connection Security                 │   │
+│  │                                                                   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                               │                                         │
+│                               ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                    MDE TELEMETRY                                 │   │
+│  │                                                                   │   │
+│  │  • Firewall status per device                                    │   │
+│  │  • Blocked connection events                                     │   │
+│  │  • Rule hit counts                                               │   │
+│  │  • Profile changes                                               │   │
+│  │  • Connection events (Network events)                            │   │
+│  │                                                                   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                               │                                         │
+│                               ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  MDE PORTAL: Device → Network events, Firewall reports          │   │
+│  │  HUNTING: DeviceNetworkEvents, DeviceFirewallEvents             │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Firewall Reporting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Firewall Reports in MDE</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>FIREWALL REPORTING:
+Location: Reports → Endpoints → Firewall
+
+AVAILABLE REPORTS:
+
+FIREWALL STATUS:
+├── Devices with firewall on/off
+├── Status by profile (Domain/Private/Public)
+├── Devices not reporting
+└── Compliance percentage
+
+BLOCKED CONNECTIONS:
+├── Inbound blocks by device
+├── Outbound blocks (if logging enabled)
+├── Top blocked applications
+├── Top blocked ports/protocols
+└── Trend over time
+
+RULE EFFECTIVENESS:
+├── Rules with most hits
+├── Rules with no hits (candidates for removal)
+├── Custom rules vs default rules
+└── Allow vs block rule distribution
+
+REPORT FILTERING:
+├── Time range
+├── Device groups
+├── Profile type
+├── Rule type
+└── Connection direction
+
+EXPORT OPTIONS:
+├── CSV export for analysis
+├── API access for automation
+└── Power BI integration</code></pre>
+                </div>
+            </div>
+
+            <h2>Advanced Hunting - Firewall</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Firewall Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Devices with firewall disabled</span>
+<span class="variable">DeviceTvmSecureConfigurationAssessment</span>
+<span class="operator">|</span> <span class="keyword">where</span> ConfigurationId <span class="function">has</span> <span class="string">"firewall"</span>
+<span class="operator">|</span> <span class="keyword">where</span> IsCompliant <span class="operator">==</span> <span class="number">0</span>
+<span class="operator">|</span> <span class="keyword">project</span> DeviceName, ConfigurationId, IsCompliant
+
+<span class="comment">// Blocked inbound connections (if logging enabled)</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"FirewallInboundConnectionBlocked"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> BlockCount = <span class="function">count</span>() <span class="keyword">by</span> DeviceName, LocalPort, RemoteIP
+<span class="operator">|</span> <span class="keyword">order by</span> BlockCount <span class="keyword">desc</span>
+
+<span class="comment">// Outbound connections by process</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ConnectionSuccess"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Connections = <span class="function">count</span>() <span class="keyword">by</span> InitiatingProcessFileName, RemotePort
+<span class="operator">|</span> <span class="keyword">order by</span> Connections <span class="keyword">desc</span>
+<span class="operator">|</span> <span class="keyword">take</span> <span class="number">20</span>
+
+<span class="comment">// Unusual ports used by processes</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ConnectionSuccess"</span>
+<span class="operator">|</span> <span class="keyword">where</span> RemotePort <span class="function">!in</span> (<span class="number">80</span>, <span class="number">443</span>, <span class="number">53</span>, <span class="number">445</span>, <span class="number">389</span>, <span class="number">636</span>, <span class="number">88</span>)
+<span class="operator">|</span> <span class="keyword">summarize</span> <span class="function">count</span>() <span class="keyword">by</span> InitiatingProcessFileName, RemotePort
+<span class="operator">|</span> <span class="keyword">where</span> count_ <span class="operator">></span> <span class="number">10</span>
+
+<span class="comment">// Listening ports</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ListeningConnectionCreated"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> <span class="function">dcount</span>(DeviceName) <span class="keyword">by</span> LocalPort, InitiatingProcessFileName
+<span class="operator">|</span> <span class="keyword">order by</span> LocalPort</code></pre>
+                </div>
+            </div>
+
+            <h2>Firewall Rule Management</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Managing Firewall Rules</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>FIREWALL RULE MANAGEMENT:
+
+MANAGEMENT OPTIONS:
+├── Intune: Endpoint Security → Firewall
+├── Group Policy: Windows Firewall with Advanced Security
+├── PowerShell: NetFirewall cmdlets
+└── Local: wf.msc (Windows Firewall with Advanced Security)
+
+INTUNE FIREWALL RULES:
+Location: Endpoint security → Firewall → Create policy
+
+Rule configuration:
+├── Name: Descriptive rule name
+├── Direction: Inbound / Outbound
+├── Action: Allow / Block
+├── Protocol: TCP / UDP / Any
+├── Local ports: Specific or range
+├── Remote ports: Specific or range
+├── Local addresses: Specific / Any
+├── Remote addresses: Specific / Any
+├── Application: Path to executable
+├── Interface types: All / Specific
+└── Authorized users: All / Specific groups
+
+POWERSHELL RULE MANAGEMENT:
+# View all firewall rules
+Get-NetFirewallRule | Select-Object Name, Enabled, Direction, Action
+
+# View enabled inbound rules
+Get-NetFirewallRule -Direction Inbound -Enabled True | 
+    Select-Object Name, Action
+
+# Create new inbound rule
+New-NetFirewallRule -DisplayName "Allow RDP from IT" `
+    -Direction Inbound -LocalPort 3389 -Protocol TCP `
+    -Action Allow -RemoteAddress 10.0.1.0/24
+
+# Disable a rule
+Disable-NetFirewallRule -DisplayName "Allow RDP from IT"
+
+# Remove a rule
+Remove-NetFirewallRule -DisplayName "Allow RDP from IT"
+
+# Export rules for backup
+netsh advfirewall export "C:\backup\firewall-rules.wfw"
+
+# Import rules
+netsh advfirewall import "C:\backup\firewall-rules.wfw"</code></pre>
+                </div>
+            </div>
+
+            <h2>Firewall Profiles</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Profile Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>FIREWALL PROFILES:
+
+DOMAIN PROFILE:
+├── When: Connected to domain network
+├── Trust level: High (corporate network)
+├── Typical settings:
+│   ├── Firewall: On
+│   ├── Block inbound: Allow exceptions
+│   ├── Allow outbound: Yes
+│   └── Rules: More permissive
+└── Use: Corporate LAN connections
+
+PRIVATE PROFILE:
+├── When: Connected to trusted private network
+├── Trust level: Medium (home/known network)
+├── Typical settings:
+│   ├── Firewall: On
+│   ├── Block inbound: Allow some
+│   ├── Allow outbound: Yes
+│   └── Rules: Moderate
+└── Use: Home networks, VPN
+
+PUBLIC PROFILE:
+├── When: Connected to public/unknown network
+├── Trust level: Low (untrusted network)
+├── Typical settings:
+│   ├── Firewall: On
+│   ├── Block ALL inbound: Yes
+│   ├── Allow outbound: Yes
+│   └── Rules: Most restrictive
+└── Use: Coffee shop, airport, hotel WiFi
+
+PROFILE DETECTION:
+├── Domain: NLA identifies domain network
+├── Private: User selects or GPO configures
+├── Public: Default for unknown networks
+└── Check: ncpa.cpl → Network icon shows profile
+
+POWERSHELL - CHECK PROFILES:
+# View current profile settings
+Get-NetFirewallProfile | Select-Object Name, Enabled, DefaultInboundAction
+
+# Set profile settings
+Set-NetFirewallProfile -Profile Public -DefaultInboundAction Block
+Set-NetFirewallProfile -Profile Domain -Enabled True</code></pre>
+                </div>
+            </div>
+
+            <h2>Network Protection Synergy</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Firewall + Network Protection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>NETWORK PROTECTION INTEGRATION:
+
+FIREWALL:
+├── Controls: Port/IP level access
+├── Rules: Allow/Block by port, IP, application
+├── Direction: Inbound and outbound
+└── Use: Network segmentation, access control
+
+NETWORK PROTECTION:
+├── Controls: URL/domain level access
+├── Blocks: Malicious/phishing sites
+├── Inspects: Web traffic at application layer
+└── Use: Web threat protection
+
+COMBINED PROTECTION:
+┌─────────────────────────────────────────────────────────────┐
+│                    OUTBOUND WEB REQUEST                     │
+│                                                             │
+│  Application → Firewall → Network Protection → Internet    │
+│                   │              │                          │
+│                   │              └─ Checks URL reputation   │
+│                   │                 Blocks malicious sites  │
+│                   │                                         │
+│                   └─ Checks port/IP rules                   │
+│                      Blocks unauthorized ports              │
+└─────────────────────────────────────────────────────────────┘
+
+ENABLE NETWORK PROTECTION:
+# Enable Network Protection (Block mode)
+Set-MpPreference -EnableNetworkProtection Enabled
+
+# Audit mode (log only)
+Set-MpPreference -EnableNetworkProtection AuditMode
+
+# Check status
+Get-MpPreference | Select-Object EnableNetworkProtection</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Enable on all profiles</strong>: Firewall should be on for Domain, Private, and Public</li>
+                        <li><strong>Block inbound on Public</strong>: Most restrictive for untrusted networks</li>
+                        <li><strong>Review rule hits</strong>: Remove unused rules, verify needed rules are working</li>
+                        <li><strong>Log blocked connections</strong>: Helps with troubleshooting and threat hunting</li>
+                        <li><strong>Combine with Network Protection</strong>: Defense in depth for web traffic</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Three profiles</strong>: Domain (corporate), Private (home), Public (untrusted)</li>
+                    <li><strong>MDE visibility</strong>: Firewall status, blocked connections via reporting and hunting</li>
+                    <li><strong>Management</strong>: Intune, GPO, PowerShell (NetFirewall cmdlets)</li>
+                    <li><strong>Network Protection</strong>: Complements firewall with URL/domain blocking</li>
+                    <li><strong>Public profile</strong>: Most restrictive, block all inbound</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="3-7-device-control.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Device Control</span>
+                </a>
+                <a href="3-9-tamper-protection.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Tamper Protection</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

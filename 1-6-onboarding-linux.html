@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Linux | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to onboarding Linux servers to MDE. Learn about supported distributions, installation methods, and configuration.</p>
+            </div>
+
+            <h1>Onboarding Linux Devices</h1>
+
+            <p>MDE for Linux provides antivirus and EDR capabilities for Linux servers and workstations.</p>
+
+            <h2>Supported Distributions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Linux Requirements</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SUPPORTED LINUX DISTRIBUTIONS:
+
+RHEL/CENTOS:
+├── RHEL 7.2+, 8.x, 9.x
+├── CentOS 7.2+, 8.x
+├── Oracle Linux 7.2+, 8.x
+└── Amazon Linux 2
+
+DEBIAN/UBUNTU:
+├── Ubuntu 16.04, 18.04, 20.04, 22.04 LTS
+├── Debian 9, 10, 11, 12
+└── Linux Mint 18+
+
+SUSE:
+├── SUSE Linux Enterprise Server 12+
+└── openSUSE 15+
+
+FEDORA:
+└── Fedora 33+
+
+SYSTEM REQUIREMENTS:
+├── Kernel: 3.10.0+ (RHEL), 4.4+ (Debian)
+├── Disk space: 1 GB
+├── systemd or init system
+└── fanotify kernel option enabled</code></pre>
+                </div>
+            </div>
+
+            <h2>Installation Methods</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Installation Commands</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>RHEL/CENTOS (yum):
+# Add Microsoft repo
+sudo yum-config-manager --add-repo=https://packages.microsoft.com/config/rhel/8/prod.repo
+
+# Install
+sudo yum install mdatp
+
+UBUNTU/DEBIAN (apt):
+# Add Microsoft repo
+curl -o microsoft.list https://packages.microsoft.com/config/ubuntu/22.04/prod.list
+sudo mv ./microsoft.list /etc/apt/sources.list.d/
+
+# Import key
+curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/
+
+# Install
+sudo apt update
+sudo apt install mdatp
+
+SUSE (zypper):
+sudo zypper addrepo https://packages.microsoft.com/config/sles/15/prod.repo
+sudo zypper install mdatp</code></pre>
+                </div>
+            </div>
+
+            <h2>Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Onboarding Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ONBOARDING AFTER INSTALLATION:
+
+STEP 1: DOWNLOAD ONBOARDING PACKAGE
+├── MDE Portal → Settings → Onboarding
+├── Select: Linux Server
+└── Download: Python onboarding script
+
+STEP 2: RUN ONBOARDING
+sudo python MicrosoftDefenderATPOnboardingLinuxServer.py
+
+STEP 3: VERIFY
+mdatp health
+# Expected: healthy = true, licensed = true
+
+USEFUL COMMANDS:
+mdatp health                    # Check status
+mdatp health --field org_id     # Check org ID
+mdatp threat list               # List threats
+mdatp connectivity test         # Test cloud
+mdatp config real-time-protection --value enabled
+mdatp scan quick                # Run quick scan
+
+TROUBLESHOOTING:
+mdatp diagnostic create         # Create support bundle
+journalctl -u mdatp             # View service logs
+systemctl status mdatp          # Check service</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Key Points</h5>
+                    <ul>
+                        <li><strong>Root required</strong>: Installation and onboarding need root</li>
+                        <li><strong>Kernel support</strong>: fanotify must be enabled in kernel</li>
+                        <li><strong>CLI-based</strong>: Use mdatp command for management</li>
+                        <li><strong>Automation</strong>: Use Ansible/Puppet for scale deployment</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Supported distros</strong>: RHEL, Ubuntu, Debian, SUSE, Amazon Linux</li>
+                    <li><strong>Package managers</strong>: yum/dnf (RHEL), apt (Debian), zypper (SUSE)</li>
+                    <li><strong>Key command</strong>: mdatp health for status check</li>
+                    <li><strong>Requirement</strong>: fanotify kernel support</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="1-5-onboarding-macos.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Onboarding macOS</span>
+                </a>
+                <a href="1-7-onboarding-mobile.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Onboarding Mobile</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

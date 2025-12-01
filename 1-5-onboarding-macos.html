@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding macOS | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to onboarding macOS devices to MDE. Learn about system requirements, deployment methods, and configuration.</p>
+            </div>
+
+            <h1>Onboarding macOS Devices</h1>
+
+            <p>Microsoft Defender for Endpoint supports macOS with full antivirus and EDR capabilities.</p>
+
+            <h2>Requirements</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">macOS Requirements</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MACOS REQUIREMENTS:
+
+SUPPORTED VERSIONS:
+├── macOS 14 (Sonoma)
+├── macOS 13 (Ventura)
+├── macOS 12 (Monterey)
+├── macOS 11 (Big Sur)
+└── Note: Latest three versions supported
+
+SYSTEM REQUIREMENTS:
+├── Disk space: 1 GB minimum
+├── Apple Silicon (M1/M2) or Intel
+├── Kernel extensions or System Extensions
+└── Full Disk Access required
+
+PERMISSIONS REQUIRED:
+├── System Extensions (approved)
+├── Full Disk Access
+├── Network filtering
+├── Notifications
+└── Background services
+
+DEPLOYMENT OPTIONS:
+├── Microsoft Intune (Recommended)
+├── JAMF Pro
+├── Manual installation (PKG)
+└── Shell script</code></pre>
+                </div>
+            </div>
+
+            <h2>Intune Deployment</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Intune Method</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INTUNE DEPLOYMENT:
+
+STEP 1: DOWNLOAD PACKAGES
+├── MDE Portal → Settings → Onboarding
+├── Select: macOS
+├── Download: Onboarding package
+└── Download: Installation package (wdav.pkg)
+
+STEP 2: CREATE CONFIGURATION PROFILES
+Required profiles:
+├── System Extensions profile
+├── Full Disk Access profile
+├── Network Filter profile
+├── Notifications profile
+└── Onboarding profile
+
+STEP 3: DEPLOY APP
+Intune → Apps → macOS → Add
+├── App type: macOS app (PKG)
+├── Upload: wdav.pkg
+├── Detection: /Applications/Microsoft Defender.app
+└── Assign to device groups
+
+STEP 4: VERIFY
+├── Device appears in MDE portal
+├── Check: mdatp health
+└── Test detection with EICAR</code></pre>
+                </div>
+            </div>
+
+            <h2>Manual Installation</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Manual Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MANUAL INSTALLATION:
+
+STEP 1: DOWNLOAD
+├── Download wdav.pkg from MDE portal
+└── Download onboarding package
+
+STEP 2: INSTALL
+sudo installer -pkg wdav.pkg -target /
+
+STEP 3: APPROVE EXTENSIONS
+├── System Preferences → Security & Privacy
+├── Approve Microsoft system extensions
+├── Grant Full Disk Access to:
+│   └── Microsoft Defender
+└── Grant Network Filter permission
+
+STEP 4: ONBOARD
+sudo python MicrosoftDefenderATPOnboardingMacOs.py
+
+STEP 5: VERIFY
+mdatp health
+# Check: healthy = true, licensed = true
+
+USEFUL COMMANDS:
+mdatp health                    # Check status
+mdatp threat list               # List threats
+mdatp connectivity test         # Test cloud connection
+mdatp diagnostic create         # Create support bundle</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Key Points</h5>
+                    <ul>
+                        <li><strong>Permissions critical</strong>: System extensions and FDA must be approved</li>
+                        <li><strong>MDM preferred</strong>: Silently approve permissions via Intune/JAMF</li>
+                        <li><strong>mdatp CLI</strong>: Use for troubleshooting and verification</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Requirements</strong>: macOS 11+, System Extensions, Full Disk Access</li>
+                    <li><strong>Deployment</strong>: Intune, JAMF, or manual PKG</li>
+                    <li><strong>Verification</strong>: mdatp health command</li>
+                    <li><strong>Permissions</strong>: Must be pre-approved via MDM for silent deployment</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="1-4-onboarding-windows.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Onboarding Windows</span>
+                </a>
+                <a href="1-6-onboarding-linux.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Onboarding Linux</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

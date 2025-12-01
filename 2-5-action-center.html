@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action Center | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to the Action Center in Microsoft 365 Defender. Learn to track remediation actions, approve pending actions, review action history, and manage automated responses.</p>
+            </div>
+
+            <h1>Action Center</h1>
+
+            <p>The Action Center is the central hub for tracking all remediation and response actions in MDE. It shows pending actions awaiting approval, completed actions, and the status of automated investigations.</p>
+
+            <h2>Accessing Action Center</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PORTAL NAVIGATION:
+security.microsoft.com → Actions & submissions → Action center
+
+DIRECT URL:
+https://security.microsoft.com/action-center
+
+TABS:
+├── Pending (actions requiring approval)
+├── History (completed actions)
+└── Submissions (file submissions for analysis)</code></pre>
+                </div>
+            </div>
+
+            <h2>Action Center Interface</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Action Center Layout</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         ACTION CENTER                                    │
+├─────────────────────────────────────────────────────────────────────────┤
+│  [Pending (5)]  [History]  [Submissions]                                │
+├─────────────────────────────────────────────────────────────────────────┤
+│  FILTERS: [Action type ▼] [Status ▼] [Date range ▼] [Entity ▼]         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  PENDING ACTIONS:                                                        │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ □ Quarantine file    │ payload.exe  │ DESKTOP-01 │ AIR │ [✓][✗]│   │
+│  │ □ Block IP address   │ 185.x.x.x    │ Global     │ AIR │ [✓][✗]│   │
+│  │ □ Isolate device     │ LAPTOP-03    │ -          │ AIR │ [✓][✗]│   │
+│  │ □ Stop process       │ malware.exe  │ SERVER-02  │ AIR │ [✓][✗]│   │
+│  │ □ Remove registry    │ Run key      │ DESKTOP-01 │ AIR │ [✓][✗]│   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  [Approve selected] [Reject selected]                                   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Action Types</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action Type</th>
+                            <th>Description</th>
+                            <th>Reversible?</th>
+                            <th>Scope</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Quarantine file</strong></td>
+                            <td>Move file to quarantine</td>
+                            <td>Yes (can restore)</td>
+                            <td>Per device</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stop process</strong></td>
+                            <td>Terminate running process</td>
+                            <td>No</td>
+                            <td>Per device</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Remove registry</strong></td>
+                            <td>Delete registry key/value</td>
+                            <td>No</td>
+                            <td>Per device</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block IP/domain</strong></td>
+                            <td>Add to block list</td>
+                            <td>Yes (remove indicator)</td>
+                            <td>Organization</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block file</strong></td>
+                            <td>Block file hash org-wide</td>
+                            <td>Yes (remove indicator)</td>
+                            <td>Organization</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Isolate device</strong></td>
+                            <td>Network isolation</td>
+                            <td>Yes (release)</td>
+                            <td>Per device</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Action Status</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Action Statuses</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ACTION STATUS VALUES:
+
+PENDING:
+├── PendingApproval - Waiting for analyst approval
+├── PendingResource - Waiting for system resources
+└── Pending - General pending state
+
+IN PROGRESS:
+├── Running - Currently executing
+└── InProgress - Action being processed
+
+COMPLETED:
+├── Succeeded - Action completed successfully
+├── PartiallySucceeded - Some actions completed
+├── Failed - Action could not complete
+├── Cancelled - Manually cancelled
+└── TimeOut - Action timed out
+
+WHEN ACTIONS FAIL:
+• Check device connectivity
+• Verify file/process still exists
+• Check permissions
+• Review error message in details</code></pre>
+                </div>
+            </div>
+
+            <h2>Pending Actions Tab</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Managing Pending Actions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>REVIEWING PENDING ACTIONS:
+
+1. CLICK ACTION TO SEE DETAILS
+   └── View evidence and context
+   └── See why action was recommended
+   └── Check related investigation
+
+2. BEFORE APPROVING, VERIFY:
+   ├── Is the file/process actually malicious?
+   ├── Will blocking impact business operations?
+   ├── Is this a false positive?
+   ├── Are there dependencies?
+   └── Is this the right remediation?
+
+3. APPROVE OR REJECT
+   ├── Approve: Action executes immediately
+   ├── Reject: Action cancelled, investigate manually
+   └── Can approve/reject in bulk
+
+COMMON DECISIONS:
+
+APPROVE:
+• Known malware file hash
+• C2 IP address
+• Persistence registry key for malware
+• Malicious process needing termination
+
+REJECT (needs review):
+• Unknown file - investigate first
+• Internal IP - could be misconfiguration
+• File in common location - verify not FP
+• Critical process - assess impact</code></pre>
+                </div>
+            </div>
+
+            <h2>History Tab</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Action History</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>HISTORY TAB SHOWS:
+
+COLUMNS:
+├── Action type
+├── Entity (file, device, IP)
+├── Status (Succeeded, Failed, etc.)
+├── Requested by (analyst name or "Automated")
+├── Date/time
+└── Related investigation
+
+USES FOR HISTORY:
+├── Audit trail of all actions taken
+├── Troubleshoot failed actions
+├── Review what was done for incident
+├── Verify remediation completed
+└── Generate reports
+
+FILTERING HISTORY:
+├── By action type
+├── By status
+├── By date range
+├── By entity type
+├── By requestor (manual vs automated)</code></pre>
+                </div>
+            </div>
+
+            <h2>Automation Levels</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Automation Settings</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>AUTOMATION LEVELS:
+Settings → Endpoints → Device groups → Automation level
+
+FULL AUTOMATION:
+├── All remediation actions execute automatically
+├── No approval required
+├── Fastest response time
+├── Recommended for most organizations
+└── Requires trust in detection accuracy
+
+SEMI AUTOMATION (Core folders):
+├── Auto-remediate in core folders only
+│   └── Windows, Program Files, Users\*\AppData
+├── Other locations need approval
+└── Balance of speed and control
+
+SEMI AUTOMATION (Any folder):
+├── Auto-remediate anywhere but requires approval
+├── For organizations wanting control
+└── Recommended for initial deployment
+
+NO AUTOMATION:
+├── All actions require approval
+├── Slowest response time
+├── Maximum control
+└── Not recommended for production
+
+CONFIGURE PER DEVICE GROUP:
+• Different levels for different device types
+• Servers: May want more control
+• Workstations: May allow full automation</code></pre>
+                </div>
+            </div>
+
+            <h2>Submissions Tab</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">File Submissions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SUBMISSIONS TAB:
+
+PURPOSE:
+├── Submit files for deep analysis
+├── Submit false positives for review
+├── Submit false negatives for detection
+└── Track submission status
+
+SUBMISSION TYPES:
+├── Malware (FN) - File should be detected
+├── Clean (FP) - File incorrectly detected
+└── Deep analysis - Need more information
+
+SUBMISSION STATUS:
+├── Submitted - Sent to Microsoft
+├── In progress - Being analyzed
+├── Completed - Analysis done
+└── View results - See verdict
+
+BEST PRACTICES:
+• Submit FPs promptly to improve detection
+• Include context in submission notes
+• Check results after analysis completes
+• Follow up if verdict seems wrong</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL for Action Tracking</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Action Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Recent remediation actions</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">has_any</span> (<span class="string">"Quarantine"</span>, <span class="string">"Remediation"</span>, <span class="string">"Blocked"</span>)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> ActionType
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// Files quarantined in last 24 hours</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"AntivirusDetection"</span>
+<span class="operator">|</span> <span class="keyword">extend</span> Fields <span class="operator">=</span> <span class="function">parse_json</span>(AdditionalFields)
+<span class="operator">|</span> <span class="keyword">where</span> Fields.Action <span class="operator">==</span> <span class="string">"Quarantine"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, Fields.ThreatName</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Action Center Operations</h4>
+                <ul>
+                    <li>Review pending actions at start of shift</li>
+                    <li>Approve/reject actions with proper verification</li>
+                    <li>Monitor for failed actions needing follow-up</li>
+                    <li>Track action history for incidents</li>
+                    <li>Adjust automation levels as needed</li>
+                    <li>Submit FPs/FNs for detection improvement</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Action failed - file not found"</span>
+                    <span class="ticket-solution">→ File may have been deleted or moved. Check timeline for what happened to file.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Should I approve this block?"</span>
+                    <span class="ticket-solution">→ Check the evidence, research the file/IP, verify it's actually malicious.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Too many pending actions"</span>
+                    <span class="ticket-solution">→ Consider increasing automation level if FP rate is acceptable.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Central hub for all remediation action tracking</li>
+                    <li><strong>Tabs</strong>: Pending (needs approval), History (completed), Submissions</li>
+                    <li><strong>Automation levels</strong>: Full, Semi (core folders), Semi (any folder), None</li>
+                    <li><strong>Common actions</strong>: Quarantine file, stop process, block IP/hash, isolate device</li>
+                    <li><strong>Action status</strong>: Pending, Running, Succeeded, Failed, TimeOut</li>
+                    <li><strong>Best practice</strong>: Verify evidence before approving actions</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="2-4-incidents.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Incidents</span>
+                </a>
+                <a href="2-6-threat-analytics.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Threat Analytics</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

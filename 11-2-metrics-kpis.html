@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Metrics & KPIs | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to SOC metrics and KPIs for MDE operations. Learn how to measure SOC effectiveness, track security posture, create dashboards, and report to leadership.</p>
+            </div>
+
+            <h1>SOC Metrics & KPIs</h1>
+
+            <p>Effective SOC operations require measurable metrics to track performance, identify improvement areas, and demonstrate value to leadership. This guide covers key metrics for MDE-focused security operations.</p>
+
+            <h2>Metric Categories</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">SOC Metric Framework</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       SOC METRICS FRAMEWORK                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  DETECTION METRICS              RESPONSE METRICS                        │
+│  ┌─────────────────────────┐   ┌─────────────────────────┐             │
+│  │ • Alert volume          │   │ • MTTD (Mean Time to    │             │
+│  │ • True positive rate    │   │   Detect)               │             │
+│  │ • False positive rate   │   │ • MTTR (Mean Time to    │             │
+│  │ • Detection coverage    │   │   Respond)              │             │
+│  │ • Threat types detected │   │ • MTTC (Mean Time to    │             │
+│  │ • Dwell time            │   │   Contain)              │             │
+│  └─────────────────────────┘   │ • Incident closure rate │             │
+│                                 └─────────────────────────┘             │
+│                                                                          │
+│  OPERATIONAL METRICS            SECURITY POSTURE                        │
+│  ┌─────────────────────────┐   ┌─────────────────────────┐             │
+│  │ • Alert queue depth     │   │ • Exposure score        │             │
+│  │ • SLA compliance        │   │ • Secure score          │             │
+│  │ • Analyst productivity  │   │ • Vulnerability count   │             │
+│  │ • Automation rate       │   │ • Patch compliance      │             │
+│  │ • Escalation rate       │   │ • Configuration drift   │             │
+│  └─────────────────────────┘   └─────────────────────────┘             │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Key Performance Indicators</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>KPI</th>
+                            <th>Description</th>
+                            <th>Target</th>
+                            <th>Measurement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>MTTD</strong></td>
+                            <td>Mean Time to Detect threats</td>
+                            <td>&lt; 1 hour</td>
+                            <td>Alert timestamp - Activity timestamp</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MTTR</strong></td>
+                            <td>Mean Time to Respond</td>
+                            <td>&lt; 4 hours (High)</td>
+                            <td>First response - Alert time</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MTTC</strong></td>
+                            <td>Mean Time to Contain</td>
+                            <td>&lt; 24 hours</td>
+                            <td>Containment - Detection time</td>
+                        </tr>
+                        <tr>
+                            <td><strong>False Positive Rate</strong></td>
+                            <td>% of alerts that are FP</td>
+                            <td>&lt; 30%</td>
+                            <td>FP alerts / Total alerts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SLA Compliance</strong></td>
+                            <td>% meeting response SLAs</td>
+                            <td>&gt; 95%</td>
+                            <td>On-time / Total alerts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Exposure Score</strong></td>
+                            <td>Organizational risk level</td>
+                            <td>&lt; 30</td>
+                            <td>TVM dashboard</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Detection Metrics</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Detection Metrics Details</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ALERT VOLUME METRICS:
+
+TOTAL ALERTS:
+├── Daily/weekly/monthly counts
+├── Trend analysis (increasing/decreasing)
+├── Breakdown by severity
+└── Breakdown by detection source
+
+ALERT SEVERITY DISTRIBUTION:
+├── Critical: Should be &lt; 5% of total
+├── High: Typically 10-20%
+├── Medium: Typically 30-40%
+├── Low/Informational: 40-50%
+└── Unusual distribution = investigation needed
+
+TRUE POSITIVE RATE:
+├── Formula: TP / (TP + FP)
+├── Target: &gt; 70%
+├── Track by detection rule
+└── Low TP rate = tuning needed
+
+FALSE POSITIVE RATE:
+├── Formula: FP / (TP + FP)
+├── Target: &lt; 30%
+├── High FP = wasted analyst time
+└── Track top FP sources for tuning
+
+DETECTION COVERAGE:
+├── MITRE ATT&CK coverage percentage
+├── Detection rules enabled vs available
+├── Custom detections deployed
+└── Gap analysis results
+
+DWELL TIME:
+├── Time threat existed before detection
+├── Target: &lt; 24 hours
+├── Indicates detection effectiveness
+└── Benchmark: Industry average ~200 days</code></pre>
+                </div>
+            </div>
+
+            <h2>Response Metrics</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Response Time Metrics</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>RESPONSE TIME SLAs:
+
+BY SEVERITY:
+┌──────────────┬───────────────┬───────────────┬───────────────┐
+│ Severity     │ First Response│ Investigation │ Resolution    │
+├──────────────┼───────────────┼───────────────┼───────────────┤
+│ Critical     │ 15 minutes    │ 1 hour        │ 4 hours       │
+│ High         │ 30 minutes    │ 4 hours       │ 24 hours      │
+│ Medium       │ 4 hours       │ 24 hours      │ 72 hours      │
+│ Low          │ 24 hours      │ 72 hours      │ 1 week        │
+└──────────────┴───────────────┴───────────────┴───────────────┘
+
+MEAN TIME CALCULATIONS:
+
+MTTD (Mean Time to Detect):
+├── When activity occurred → When alert generated
+├── Lower is better
+├── Depends on detection rule frequency
+└── Target: &lt; 1 hour for most threats
+
+MTTR (Mean Time to Respond):
+├── When alert generated → When analyst responds
+├── Measures SOC responsiveness
+├── Affected by queue depth and staffing
+└── Target: Within SLA by severity
+
+MTTC (Mean Time to Contain):
+├── When detected → When threat contained
+├── Includes investigation + action time
+├── Containment = isolation, blocking, remediation
+└── Target: &lt; 24 hours for most threats
+
+MTTR (Mean Time to Remediate/Resolve):
+├── When detected → When fully resolved
+├── Includes cleanup and validation
+├── Longest metric
+└── Target varies by incident type
+
+INCIDENT CLOSURE METRICS:
+├── Average incidents per analyst per day
+├── Backlog age distribution
+├── Reopened incident rate (&lt; 5% target)
+└── Incidents requiring escalation</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL Queries for Metrics</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - SOC Metrics</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Alert volume by severity (last 30 days)</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> Severity
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// Daily alert trend</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> DailyAlerts = <span class="function">count</span>() <span class="keyword">by</span> <span class="function">bin</span>(Timestamp, <span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">render</span> timechart
+
+<span class="comment">// Alerts by detection source</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> DetectionSource
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// Top alerting devices</span>
+<span class="variable">AlertEvidence</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> EntityType <span class="operator">==</span> <span class="string">"Machine"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> AlertCount = <span class="function">dcount</span>(AlertId) <span class="keyword">by</span> DeviceId
+<span class="operator">|</span> <span class="keyword">order by</span> AlertCount <span class="keyword">desc</span>
+<span class="operator">|</span> <span class="keyword">take</span> <span class="number">10</span>
+
+<span class="comment">// MITRE ATT&CK coverage</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">mv-expand</span> AttackTechniques
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> <span class="function">tostring</span>(AttackTechniques)
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Dashboard Examples</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Executive Dashboard Components</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXECUTIVE DASHBOARD:
+
+TOP-LEVEL METRICS:
+├── Exposure Score (current vs 30-day trend)
+├── Open High/Critical Incidents
+├── SLA Compliance Rate
+└── Threats Blocked This Month
+
+TREND CHARTS:
+├── Alert volume over time
+├── Incident resolution time trend
+├── Exposure score trend
+└── False positive rate trend
+
+BREAKDOWN TABLES:
+├── Top 5 threat types detected
+├── Top 5 vulnerable software
+├── Top 5 misconfigured settings
+└── Top 5 at-risk device groups
+
+SOC MANAGER DASHBOARD:
+
+REAL-TIME METRICS:
+├── Current queue depth by severity
+├── Analysts on shift
+├── Average handle time today
+└── SLA breaches today
+
+OPERATIONAL CHARTS:
+├── Alerts per analyst
+├── Hourly alert ingestion
+├── Automation success rate
+└── Escalation rate
+
+TEAM PERFORMANCE:
+├── Cases closed per analyst
+├── Average investigation time
+├── Quality score (reopened rate)
+└── Training compliance</code></pre>
+                </div>
+            </div>
+
+            <h2>Reporting Best Practices</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Reporting Guidelines</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>REPORTING FREQUENCY:
+
+DAILY:
+├── Alert volume
+├── Open incidents
+├── SLA status
+└── Critical findings
+
+WEEKLY:
+├── Trend analysis
+├── Top threats
+├── Analyst productivity
+└── Tuning recommendations
+
+MONTHLY:
+├── Executive summary
+├── Security posture changes
+├── Remediation progress
+└── Improvement initiatives
+
+QUARTERLY:
+├── Strategic review
+├── Budget justification
+├── Capability assessment
+└── Roadmap updates
+
+REPORTING TIPS:
+├── Lead with business impact
+├── Show trends, not just snapshots
+├── Include context and comparisons
+├── Highlight wins and concerns
+├── Provide actionable recommendations
+└── Tailor detail level to audience</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                <ul>
+                    <li>Track daily alert volumes and SLA compliance</li>
+                    <li>Monitor queue depth and backlog</li>
+                    <li>Identify high false positive sources</li>
+                    <li>Prepare weekly/monthly reports</li>
+                    <li>Analyze trends for improvement opportunities</li>
+                </ul>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Key metrics</strong>: MTTD, MTTR, MTTC, FP rate, SLA compliance</li>
+                    <li><strong>Detection goal</strong>: High TP rate (&gt;70%), low FP rate (&lt;30%)</li>
+                    <li><strong>Response SLAs</strong>: Critical 15min, High 30min, Medium 4hr</li>
+                    <li><strong>Posture metrics</strong>: Exposure score, Secure score, patch compliance</li>
+                    <li><strong>Reporting</strong>: Tailor to audience, show trends, be actionable</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="11-1-soc-workflows.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">SOC Workflows</span>
+                </a>
+                <a href="11-3-reporting-stakeholders.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Reporting to Stakeholders</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

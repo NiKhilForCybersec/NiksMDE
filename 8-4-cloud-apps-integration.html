@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defender for Cloud Apps Integration | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to integrating Microsoft Defender for Endpoint with Microsoft Defender for Cloud Apps. Learn about shadow IT discovery, app governance, and unified security.</p>
+            </div>
+
+            <h1>Defender for Cloud Apps Integration</h1>
+
+            <p>Microsoft Defender for Cloud Apps (formerly Microsoft Cloud App Security) integrates with MDE to provide visibility into cloud app usage and enable enforcement of cloud app policies directly on endpoints.</p>
+
+            <h2>Integration Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE + Cloud Apps Integration</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│               MDE + DEFENDER FOR CLOUD APPS                             │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  MICROSOFT DEFENDER            DEFENDER FOR                             │
+│  FOR ENDPOINT                  CLOUD APPS                               │
+│  ┌─────────────────────┐      ┌─────────────────────┐                  │
+│  │                     │      │                     │                  │
+│  │  Endpoint           │◄────►│  Cloud Discovery    │                  │
+│  │  Telemetry          │      │  App Catalog        │                  │
+│  │                     │      │  Policy Enforcement │                  │
+│  │  Network Traffic    │      │  Risk Assessment    │                  │
+│  │  Process Data       │      │  DLP Integration    │                  │
+│  │                     │      │                     │                  │
+│  └─────────────────────┘      └─────────────────────┘                  │
+│           │                            │                                │
+│           │      Integration           │                                │
+│           └────────────────────────────┘                                │
+│                       │                                                 │
+│                       ▼                                                 │
+│  ┌──────────────────────────────────────────────────────────────┐      │
+│  │                    CAPABILITIES                               │      │
+│  ├──────────────────────────────────────────────────────────────┤      │
+│  │ • Shadow IT Discovery (find unsanctioned apps)               │      │
+│  │ • App risk assessment (risk scoring)                         │      │
+│  │ • Block unsanctioned apps (via Network Protection)           │      │
+│  │ • Monitor cloud app activity                                 │      │
+│  │ • Enforce session policies                                   │      │
+│  │ • Unified investigation across endpoint and cloud            │      │
+│  └──────────────────────────────────────────────────────────────┘      │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Enabling Integration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Setup Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>STEP 1: ENABLE IN MDE
+Location: Settings → Endpoints → Advanced features
+├── Microsoft Defender for Cloud Apps: Toggle ON
+└── Save
+
+STEP 2: VERIFY IN CLOUD APPS
+Location: Cloud Apps portal → Settings → 
+         Microsoft Defender for Endpoint
+├── Connection status: Should show "Connected"
+├── Devices discovered: Count of MDE devices
+└── Data sync: Automatic
+
+PREREQUISITES:
+├── Microsoft 365 E5 or equivalent licensing
+├── MDE P2 license
+├── Defender for Cloud Apps license
+├── Network Protection enabled on endpoints
+└── Devices onboarded to MDE
+
+WHAT HAPPENS AFTER INTEGRATION:
+├── MDE sends cloud app traffic data to Cloud Apps
+├── Cloud Apps analyzes app usage patterns
+├── Shadow IT dashboard populates with discovered apps
+├── Risk scores calculated for each app
+└── Blocking policies can be enforced via MDE</code></pre>
+                </div>
+            </div>
+
+            <h2>Shadow IT Discovery</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Cloud Discovery</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SHADOW IT DISCOVERY:
+Location: Cloud Apps portal → Cloud Discovery → Dashboard
+
+DATA SOURCE: MDE Endpoint Traffic
+├── Automatic - no log upload needed
+├── Real-time or near real-time data
+├── Per-device and per-user visibility
+└── Works for all MDE-onboarded devices
+
+DISCOVERY DASHBOARD:
+├── Total apps discovered
+├── Risky apps count
+├── Data volume per app
+├── Users per app
+├── App categories breakdown
+└── Trend over time
+
+APP CATALOG (35,000+ apps):
+Each app scored on:
+├── General: Headquarters, founded, domain age
+├── Security: Encryption, MFA support, audit logs
+├── Compliance: SOC 2, HIPAA, GDPR, ISO 27001
+├── Legal: Data ownership, DMCA compliance
+└── Risk factors: Data breaches, vulnerabilities
+
+RISK SCORE: 1-10
+├── 1-3: High risk
+├── 4-6: Medium risk
+├── 7-8: Low risk
+└── 9-10: Trusted/Sanctioned
+
+EXAMPLE DISCOVERIES:
+├── Employees using personal cloud storage
+├── Unapproved collaboration tools
+├── Risky file-sharing services
+├── Consumer apps for business purposes
+└── Potential data exfiltration channels</code></pre>
+                </div>
+            </div>
+
+            <h2>App Governance</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">App Tagging and Policies</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>APP TAGGING:
+Location: Cloud Discovery → Discovered apps → Select app
+
+TAG OPTIONS:
+├── Sanctioned: Approved for business use
+├── Unsanctioned: Not approved, should be blocked
+├── Monitored: Under review
+└── Custom tags: Create your own categories
+
+GOVERNANCE ACTIONS:
+For Unsanctioned Apps:
+├── Block access via MDE Network Protection
+├── User notification when blocked
+├── Track attempts to access blocked apps
+└── Generate alerts on policy violations
+
+BLOCKING UNSANCTIONED APPS:
+1. Tag app as "Unsanctioned" in Cloud Apps
+2. MDE receives the app URL list
+3. Network Protection blocks access on endpoints
+4. User sees warning page when attempting access
+5. Event logged in both Cloud Apps and MDE
+
+POLICY CREATION:
+Location: Cloud Apps → Control → Policies → Create policy
+
+EXAMPLE POLICY - Block risky file sharing:
+├── Type: App discovery policy
+├── Condition: Risk score < 5 AND Category = File sharing
+├── Governance: Tag as Unsanctioned
+├── Alert: Generate alert when triggered
+└── Threshold: > 5 users or > 100 MB data</code></pre>
+                </div>
+            </div>
+
+            <h2>Unified Investigation</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Cross-Platform Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>UNIFIED INVESTIGATION FLOW:
+
+SCENARIO: User downloading data to cloud storage
+
+1. MDE DETECTS:
+   ├── Large file downloads from SharePoint
+   ├── Connections to personal Dropbox
+   ├── Unusual data volume
+   └── Triggers behavioral alert
+
+2. CLOUD APPS SHOWS:
+   ├── Files uploaded to Dropbox
+   ├── User's cloud app activity history
+   ├── App risk score (Dropbox = 8)
+   └── Other users with similar behavior
+
+3. INVESTIGATION PATH:
+   ├── MDE: Device timeline → Network events
+   ├── Cloud Apps: User → Activity log
+   ├── Correlate: Same time, same user, same files
+   └── Determine: Data exfiltration or legitimate
+
+ADVANCED HUNTING (MDE):
+<span class="comment">// Cloud app connections from endpoint</span>
+DeviceNetworkEvents
+| where Timestamp > ago(7d)
+| where RemoteUrl has_any ("dropbox.com", "drive.google.com")
+| summarize Connections = count(), 
+            DataVolume = sum(ReceivedBytes + SentBytes)
+  by DeviceName, AccountName, RemoteUrl
+
+CLOUD APPS ACTIVITY:
+├── Activity log shows user actions
+├── Files accessed, downloaded, shared
+├── Governance actions applied
+└── Linked to MDE device context</code></pre>
+                </div>
+            </div>
+
+            <h2>Session Controls</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Conditional Access App Control</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CONDITIONAL ACCESS APP CONTROL:
+Provides real-time session monitoring and control
+
+CAPABILITIES:
+├── Monitor user sessions in cloud apps
+├── Block downloads of sensitive files
+├── Protect on download (watermark, DRM)
+├── Block uploads to personal storage
+├── Block copy/paste of sensitive data
+└── Require step-up authentication
+
+SETUP:
+1. Configure app in Azure AD → Enterprise Apps
+2. Create Conditional Access policy:
+   ├── Cloud apps: Select target app
+   ├── Session: Use Conditional Access App Control
+   └── Enable policy
+3. User accesses app → Routed through Cloud Apps proxy
+4. Session policies applied in real-time
+
+EXAMPLE SESSION POLICY:
+├── Name: Block download of labeled files
+├── Source: Conditional Access App Control
+├── Activity type: Download file
+├── Files matching: Sensitivity label = Confidential
+├── Action: Block
+└── User notification: "This download is blocked per policy"
+
+INTEGRATION WITH MDE:
+├── MDE provides device risk context
+├── High-risk devices get stricter session controls
+├── Low-risk devices get more permissive access
+└── Continuous risk assessment during session</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL - Cloud App Queries</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Cloud App Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Top cloud apps by traffic volume</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">extend</span> Domain = <span class="function">tostring</span>(<span class="function">parse_url</span>(RemoteUrl).Host)
+<span class="operator">|</span> <span class="keyword">summarize</span> TotalBytes = <span class="function">sum</span>(SentBytes + ReceivedBytes),
+          Connections = <span class="function">count</span>(),
+          Users = <span class="function">dcount</span>(AccountName)
+          <span class="keyword">by</span> Domain
+<span class="operator">|</span> <span class="keyword">where</span> TotalBytes <span class="operator">></span> <span class="number">100000000</span> <span class="comment">// > 100 MB</span>
+<span class="operator">|</span> <span class="keyword">order by</span> TotalBytes <span class="keyword">desc</span>
+
+<span class="comment">// Users accessing risky cloud storage</span>
+<span class="keyword">let</span> RiskyDomains = <span class="keyword">dynamic</span>([
+    <span class="string">"mega.nz"</span>, <span class="string">"mediafire.com"</span>, <span class="string">"rapidshare.com"</span>
+]);
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> RemoteUrl <span class="function">has_any</span> (RiskyDomains)
+<span class="operator">|</span> <span class="keyword">summarize</span> Attempts = <span class="function">count</span>() <span class="keyword">by</span> AccountName, DeviceName, RemoteUrl
+
+<span class="comment">// Blocked cloud app access attempts</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"NetworkProtectionUserWarning"</span>
+    <span class="operator">or</span> ActionType <span class="operator">==</span> <span class="string">"SmartScreenUrlWarning"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, AccountName, 
+         RemoteUrl, ActionType</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Enable Network Protection</strong>: Required for blocking unsanctioned apps</li>
+                        <li><strong>Review discovered apps regularly</strong>: New shadow IT appears constantly</li>
+                        <li><strong>Start with monitoring</strong>: Understand usage before blocking</li>
+                        <li><strong>Communicate with users</strong>: Explain why apps are blocked</li>
+                        <li><strong>Provide alternatives</strong>: Offer sanctioned apps for common use cases</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Shadow IT</strong>: Discover unsanctioned cloud apps via MDE traffic data</li>
+                    <li><strong>App catalog</strong>: 35,000+ apps with risk scores</li>
+                    <li><strong>Enforcement</strong>: Block unsanctioned apps via Network Protection</li>
+                    <li><strong>Session controls</strong>: Real-time monitoring via Conditional Access App Control</li>
+                    <li><strong>Integration benefit</strong>: Unified view of endpoint and cloud activity</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="8-3-intune-integration.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Intune Integration</span>
+                </a>
+                <a href="8-5-api-overview.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">API Overview</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

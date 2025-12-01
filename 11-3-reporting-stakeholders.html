@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporting to Stakeholders | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to security reporting for different stakeholders. Learn how to create executive reports, board presentations, compliance documentation, and operational summaries.</p>
+            </div>
+
+            <h1>Reporting to Stakeholders</h1>
+
+            <p>Effective security reporting translates technical data into actionable insights for different audiences. The key is tailoring your message to what each stakeholder cares about.</p>
+
+            <h2>Stakeholder Communication Matrix</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Audience-Specific Reporting</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    STAKEHOLDER REPORTING MATRIX                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  BOARD / C-SUITE              CISO / SECURITY LEADERSHIP                │
+│  ┌─────────────────────────┐  ┌─────────────────────────────┐           │
+│  │ Frequency: Quarterly    │  │ Frequency: Monthly/Weekly   │           │
+│  │ Focus: Risk & Business  │  │ Focus: Program Effectiveness│           │
+│  │ Format: 5-10 slides     │  │ Format: Dashboard + Report  │           │
+│  │ Metrics:                │  │ Metrics:                    │           │
+│  │ • Risk score trends     │  │ • Detection effectiveness   │           │
+│  │ • Breach likelihood     │  │ • Response times            │           │
+│  │ • Compliance status     │  │ • Coverage gaps             │           │
+│  │ • Investment ROI        │  │ • Threat landscape          │           │
+│  └─────────────────────────┘  └─────────────────────────────┘           │
+│                                                                          │
+│  IT LEADERSHIP                SOC TEAM                                  │
+│  ┌─────────────────────────┐  ┌─────────────────────────────┐           │
+│  │ Frequency: Monthly      │  │ Frequency: Daily/Weekly     │           │
+│  │ Focus: Operational      │  │ Focus: Tactical             │           │
+│  │ Format: Report + Data   │  │ Format: Dashboards          │           │
+│  │ Metrics:                │  │ Metrics:                    │           │
+│  │ • Device health         │  │ • Alert volume              │           │
+│  │ • Patching status       │  │ • Investigation backlog     │           │
+│  │ • Deployment coverage   │  │ • False positive rate       │           │
+│  │ • Resource needs        │  │ • Resolution times          │           │
+│  └─────────────────────────┘  └─────────────────────────────┘           │
+│                                                                          │
+│  COMPLIANCE / AUDIT           BUSINESS UNIT LEADERS                     │
+│  ┌─────────────────────────┐  ┌─────────────────────────────┐           │
+│  │ Frequency: As needed    │  │ Frequency: Quarterly        │           │
+│  │ Focus: Evidence         │  │ Focus: Their environment    │           │
+│  │ Format: Documentation   │  │ Format: Summary + Trends    │           │
+│  │ Metrics:                │  │ Metrics:                    │           │
+│  │ • Control effectiveness │  │ • Incidents in their area   │           │
+│  │ • Policy compliance     │  │ • User behavior issues      │           │
+│  │ • Audit trail           │  │ • Risk to their operations  │           │
+│  │ • Remediation tracking  │  │ • Training compliance       │           │
+│  └─────────────────────────┘  └─────────────────────────────┘           │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Executive Report Template</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Monthly Executive Security Report</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MONTHLY SECURITY EXECUTIVE SUMMARY
+Report Period: [Month Year]
+Prepared by: [Name], Security Team
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. SECURITY POSTURE OVERVIEW
+   ┌─────────────────────────────────────────┐
+   │ Metric              Current   Trend     │
+   ├─────────────────────────────────────────┤
+   │ Exposure Score      32/100    ↓ Good    │
+   │ Secure Score        68/100    ↑ Improved│
+   │ Device Coverage     94%       → Stable  │
+   │ Critical Vulns      12        ↓ Good    │
+   └─────────────────────────────────────────┘
+
+   KEY TAKEAWAY: [One sentence summary]
+
+2. THREAT SUMMARY
+   • Total Incidents: 8 (vs 12 last month)
+   • Critical/High: 2 (both resolved)
+   • Notable Threats: [Brief description]
+   • Industry Comparison: Below average incident rate
+
+3. TOP RISKS REQUIRING ATTENTION
+   [1] [Risk Name] - Impact: High, Likelihood: Medium
+       Mitigation: [Brief action needed]
+   [2] [Risk Name] - Impact: Medium, Likelihood: High
+       Mitigation: [Brief action needed]
+
+4. KEY ACCOMPLISHMENTS
+   • [Achievement 1]
+   • [Achievement 2]
+   • [Achievement 3]
+
+5. RESOURCE REQUESTS
+   • [Request with business justification]
+
+6. NEXT MONTH PRIORITIES
+   • [Priority 1]
+   • [Priority 2]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Appendix: Detailed metrics available upon request</code></pre>
+                </div>
+            </div>
+
+            <h2>Board Presentation Structure</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Quarterly Board Presentation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>QUARTERLY CYBERSECURITY BOARD BRIEFING
+
+SLIDE 1: Executive Summary (1 slide)
+├── Overall security posture: Good / Moderate / Needs Attention
+├── Key metric: Exposure Score trend
+├── Major incidents: Count and impact
+└── One key message to remember
+
+SLIDE 2: Threat Landscape (1 slide)
+├── External threats targeting our industry
+├── Incidents we detected and stopped
+├── Comparison to industry peers
+└── Emerging threats on radar
+
+SLIDE 3: Risk Dashboard (1 slide)
+├── Top 5 risks with heat map
+├── Risk trend vs last quarter
+├── Mitigation status
+└── Residual risk assessment
+
+SLIDE 4: Program Effectiveness (1 slide)
+├── Detection rate improvement
+├── Response time metrics
+├── Coverage expansion
+└── Key investments and ROI
+
+SLIDE 5: Compliance Status (1 slide)
+├── Regulatory compliance status
+├── Audit findings (if any)
+├── Remediation progress
+└── Upcoming compliance deadlines
+
+SLIDE 6: Strategic Initiatives (1 slide)
+├── Current projects and status
+├── Completed milestones
+├── Challenges and mitigations
+└── Timeline updates
+
+SLIDE 7: Resource & Budget (1 slide)
+├── Budget utilization YTD
+├── Planned vs actual spending
+├── Resource requests with justification
+└── Expected outcomes
+
+SLIDE 8: Q&A / Discussion Points
+
+PRESENTATION TIPS:
+• Lead with the most important message
+• Use visuals over text (charts, gauges, traffic lights)
+• Translate technical metrics to business impact
+• Have detailed backup slides ready
+• Practice the 30-second version of each slide</code></pre>
+                </div>
+            </div>
+
+            <h2>Key Metrics by Audience</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Metrics Selection Guide</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXECUTIVE METRICS (Business-focused):
+├── Risk/Exposure Score: Overall security posture number
+├── Breach Probability: Likelihood of material incident
+├── Compliance Status: % of controls met
+├── Cost of Incidents: Financial impact if applicable
+├── Security Investment ROI: Value delivered vs spent
+└── Industry Benchmarking: How we compare to peers
+
+SECURITY LEADERSHIP METRICS (Program-focused):
+├── Detection Effectiveness: % of threats caught
+├── Mean Time to Detect (MTTD): Hours to identify threat
+├── Mean Time to Respond (MTTR): Hours to contain threat
+├── Coverage Gaps: % of assets without protection
+├── Vulnerability Remediation: Days to patch critical vulns
+├── Alert-to-Incident Ratio: Quality of detections
+└── False Positive Rate: % of alerts that were benign
+
+OPERATIONAL METRICS (Tactical-focused):
+├── Alert Volume: Total alerts processed
+├── Alert Backlog: Unprocessed alerts
+├── Analyst Productivity: Alerts per analyst per day
+├── Automation Rate: % of alerts auto-resolved
+├── Escalation Rate: % requiring tier 2/3
+├── SLA Compliance: % meeting response targets
+└── Tool Uptime: % availability of security tools
+
+COMPLIANCE METRICS (Evidence-focused):
+├── Control Coverage: % of required controls implemented
+├── Audit Findings: Open vs closed findings
+├── Policy Exceptions: Count and risk acceptance
+├── Training Completion: % of staff trained
+├── Access Review: % of reviews completed
+└── Data Protection: Sensitive data handling compliance</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL Queries for Reports</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Reporting Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Monthly incident summary</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    TotalAlerts = <span class="function">count</span>(),
+    Critical = <span class="function">countif</span>(Severity <span class="operator">==</span> <span class="string">"Critical"</span>),
+    High = <span class="function">countif</span>(Severity <span class="operator">==</span> <span class="string">"High"</span>),
+    Medium = <span class="function">countif</span>(Severity <span class="operator">==</span> <span class="string">"Medium"</span>),
+    Low = <span class="function">countif</span>(Severity <span class="operator">==</span> <span class="string">"Low"</span>)
+
+<span class="comment">// Week-over-week comparison</span>
+<span class="keyword">let</span> ThisWeek = 
+    <span class="variable">AlertInfo</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+    <span class="operator">|</span> <span class="keyword">count</span>;
+<span class="keyword">let</span> LastWeek = 
+    <span class="variable">AlertInfo</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">between</span> (<span class="function">ago</span>(<span class="number">14</span>d) .. <span class="function">ago</span>(<span class="number">7</span>d))
+    <span class="operator">|</span> <span class="keyword">count</span>;
+<span class="keyword">print</span> ThisWeek=ThisWeek, LastWeek=LastWeek, 
+      Change=ThisWeek - LastWeek
+
+<span class="comment">// Top affected business units (by device group)</span>
+<span class="variable">AlertEvidence</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> EntityType <span class="operator">==</span> <span class="string">"Machine"</span>
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind=inner</span> <span class="variable">DeviceInfo</span> <span class="keyword">on</span> DeviceId
+<span class="operator">|</span> <span class="keyword">summarize</span> IncidentCount = <span class="function">dcount</span>(AlertId) <span class="keyword">by</span> MachineGroup
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">10</span> <span class="keyword">by</span> IncidentCount
+
+<span class="comment">// Detection source effectiveness</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> DetectionSource
+<span class="operator">|</span> <span class="keyword">extend</span> Percentage = <span class="function">round</span>(<span class="number">100.0</span> * Count / <span class="function">toscalar</span>(
+    <span class="variable">AlertInfo</span> 
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d) 
+    <span class="operator">|</span> <span class="keyword">count</span>), <span class="number">1</span>)
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Communication Best Practices</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Effective Security Communication</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>COMMUNICATION PRINCIPLES:
+
+1. KNOW YOUR AUDIENCE
+   ├── What decisions do they make?
+   ├── What information do they need?
+   ├── What is their technical level?
+   └── How much time do they have?
+
+2. LEAD WITH THE HEADLINE
+   ├── Start with the most important point
+   ├── Assume they may only read the first sentence
+   ├── Make the ask clear upfront
+   └── Details support, not lead
+
+3. TRANSLATE TECHNICAL TO BUSINESS
+   ├── "CVE-2024-1234" → "Critical vulnerability affecting payment systems"
+   ├── "MTTD improved" → "We detect threats 40% faster than last quarter"
+   ├── "ASR blocked execution" → "Prevented potential ransomware attack"
+   └── "Exposure score 35" → "Our risk is lower than industry average"
+
+4. USE VISUALS EFFECTIVELY
+   ├── Trend charts: Show direction over time
+   ├── Heat maps: Show risk distribution
+   ├── Traffic lights: Quick status indication
+   ├── Gauges: Show current position vs target
+   └── Tables: For detailed comparison only
+
+5. PROVIDE CONTEXT
+   ├── Compare to previous periods
+   ├── Compare to industry benchmarks
+   ├── Explain why changes happened
+   └── Show progress toward goals
+
+6. ACTIONABLE RECOMMENDATIONS
+   ├── Clear next steps
+   ├── Resource requirements
+   ├── Expected outcomes
+   └── Timelines and owners</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Reporting Tips</h5>
+                    <ul>
+                        <li><strong>Consistency</strong>: Use the same metrics and format each period</li>
+                        <li><strong>Trends matter</strong>: Direction is often more important than absolute numbers</li>
+                        <li><strong>Be honest</strong>: Don't hide bad news; present it with context and mitigation plan</li>
+                        <li><strong>Have backup detail</strong>: Be ready to drill down if asked</li>
+                        <li><strong>Automate</strong>: Schedule report generation to save time</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Audience adaptation</strong>: Executives want risk/business impact, SOC wants tactical data</li>
+                    <li><strong>Key executive metrics</strong>: Exposure score, breach probability, compliance status</li>
+                    <li><strong>Key operational metrics</strong>: MTTD, MTTR, alert backlog, false positive rate</li>
+                    <li><strong>Communication</strong>: Translate technical to business language</li>
+                    <li><strong>Reporting frequency</strong>: Board quarterly, CISO monthly, SOC daily/weekly</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="11-2-soc-metrics-kpis.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">SOC Metrics & KPIs</span>
+                </a>
+                <a href="11-4-incident-communication.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Incident Communication</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Recommendations | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Security Recommendations in TVM. Learn how to interpret recommendations, prioritize remediation, track progress, and integrate with IT operations for vulnerability management.</p>
+            </div>
+
+            <h1>Security Recommendations</h1>
+
+            <p>Security Recommendations provide prioritized, actionable guidance to reduce organizational exposure. They cover software updates, configuration changes, and security best practices based on your environment's specific vulnerabilities.</p>
+
+            <h2>Accessing Security Recommendations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PORTAL NAVIGATION:
+security.microsoft.com → Endpoints → Vulnerability management 
+→ Security recommendations
+
+DIRECT URL:
+https://security.microsoft.com/security-recommendations
+
+DASHBOARD WIDGETS:
+├── Top security recommendations
+├── Recommendations by category
+├── Exposure score impact
+└── Remediation activities</code></pre>
+                </div>
+            </div>
+
+            <h2>Recommendation Categories</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Security Recommendation Types</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    SECURITY RECOMMENDATION CATEGORIES                    │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  SOFTWARE UPDATES                    SECURITY CONFIGURATIONS            │
+│  ┌─────────────────────────────┐    ┌─────────────────────────────┐    │
+│  │ • OS patches                │    │ • Enable ASR rules          │    │
+│  │ • Application updates       │    │ • Enable Network Protection │    │
+│  │ • Browser updates           │    │ • Configure firewall        │    │
+│  │ • Driver updates            │    │ • Enable tamper protection  │    │
+│  │ • Remove vulnerable apps    │    │ • Harden authentication     │    │
+│  └─────────────────────────────┘    └─────────────────────────────┘    │
+│                                                                          │
+│  ACCOUNT/ACCESS                      APPLICATION CONTROL                │
+│  ┌─────────────────────────────┐    ┌─────────────────────────────┐    │
+│  │ • Disable local admin       │    │ • Remove unwanted software  │    │
+│  │ • Enable MFA                │    │ • Block vulnerable apps     │    │
+│  │ • Review privileges         │    │ • Update end-of-life apps   │    │
+│  │ • Secure service accounts   │    │ • Control browser extensions│    │
+│  └─────────────────────────────┘    └─────────────────────────────┘    │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Recommendation Details</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Recommendation Components</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>RECOMMENDATION PAGE STRUCTURE:
+
+HEADER INFORMATION:
+├── Title (e.g., "Update Microsoft Edge")
+├── Category (Software update, Configuration, etc.)
+├── Severity (Critical, High, Medium, Low)
+├── Status (Active, Exception, Completed)
+└── Related threats
+
+EXPOSURE METRICS:
+├── Exposed devices (count and percentage)
+├── Exposure score impact (potential reduction)
+├── Related vulnerabilities (CVE count)
+└── Age (how long recommendation has been active)
+
+DETAILS TAB:
+├── Description (what needs to be done)
+├── Remediation steps (how to fix)
+├── Affected software/configuration
+├── Related CVEs
+└── MITRE ATT&CK techniques addressed
+
+EXPOSED DEVICES TAB:
+├── List of affected devices
+├── Device name, OS, risk level
+├── Last seen timestamp
+├── Device groups
+└── Export to CSV option</code></pre>
+                </div>
+            </div>
+
+            <h2>Prioritization Factors</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Factor</th>
+                            <th>High Priority</th>
+                            <th>Lower Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Exposure Score Impact</strong></td>
+                            <td>High impact (5+ points)</td>
+                            <td>Low impact (&lt;1 point)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Exploit Availability</strong></td>
+                            <td>Active exploitation</td>
+                            <td>No known exploits</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Affected Devices</strong></td>
+                            <td>Many devices (50%+)</td>
+                            <td>Few devices (&lt;5%)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Threat Linkage</strong></td>
+                            <td>Linked to active threats</td>
+                            <td>No threat associations</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Remediation Effort</strong></td>
+                            <td>Quick fix (config change)</td>
+                            <td>Complex (app upgrade)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Remediation Workflow</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Remediation Process</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>REMEDIATION WORKFLOW:
+
+1. REVIEW RECOMMENDATION
+   ├── Understand what needs to change
+   ├── Check affected devices
+   ├── Assess business impact
+   └── Identify stakeholders
+
+2. CREATE REMEDIATION REQUEST
+   ├── Click "Request remediation"
+   ├── Set priority (Urgent/High/Medium/Low)
+   ├── Set due date
+   ├── Assign to team/individual
+   ├── Add notes/justification
+   └── Select scope (all or specific devices)
+
+3. TRACK PROGRESS
+   ├── Monitor in Remediation dashboard
+   ├── Check device compliance
+   ├── Review progress percentage
+   └── Follow up on overdue items
+
+4. VALIDATE COMPLETION
+   ├── Verify exposed device count decreases
+   ├── Check recommendation status
+   ├── Confirm with IT team
+   └── Close remediation request
+
+5. HANDLE EXCEPTIONS
+   ├── If cannot remediate, document exception
+   ├── Set exception duration
+   ├── Provide justification
+   ├── Implement compensating controls
+   └── Review exceptions periodically</code></pre>
+                </div>
+            </div>
+
+            <h2>Common Security Recommendations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Frequent Recommendations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>TOP SECURITY RECOMMENDATIONS:
+
+SOFTWARE UPDATES:
+├── Update Windows to latest version
+├── Update Microsoft Office
+├── Update web browsers (Chrome, Edge, Firefox)
+├── Update Adobe Reader/Acrobat
+├── Update Java Runtime Environment
+└── Remove end-of-support software
+
+DEFENDER CONFIGURATIONS:
+├── Enable Attack Surface Reduction rules
+├── Enable Network Protection
+├── Enable Controlled Folder Access
+├── Enable cloud-delivered protection
+├── Enable tamper protection
+└── Configure real-time protection
+
+WINDOWS SECURITY:
+├── Enable Credential Guard
+├── Enable Secure Boot
+├── Enable BitLocker encryption
+├── Disable SMBv1
+├── Enable Windows Defender Firewall
+└── Configure Windows Defender Application Control
+
+ACCOUNT SECURITY:
+├── Disable local administrator accounts
+├── Implement least privilege
+├── Enable Local Admin Password Solution (LAPS)
+├── Remove unnecessary admin rights
+└── Secure service account credentials</code></pre>
+                </div>
+            </div>
+
+            <h2>Exceptions Management</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Handling Exceptions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WHEN TO CREATE EXCEPTIONS:
+
+VALID EXCEPTION REASONS:
+├── Business-critical application incompatibility
+├── Vendor doesn't support update yet
+├── Planned for future project
+├── Compensating controls in place
+├── Risk accepted by management
+└── Testing/development environment
+
+EXCEPTION GOVERNANCE:
+├── Review exceptions monthly
+├── Require re-justification for renewals
+├── Track exception aging
+├── Report exceptions to leadership
+├── Audit exception decisions
+└── Remove stale exceptions</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL Queries</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Security Recommendations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Devices missing critical configurations</span>
+<span class="variable">DeviceTvmSecureConfigurationAssessment</span>
+<span class="operator">|</span> <span class="keyword">where</span> IsCompliant <span class="operator">==</span> <span class="number">0</span>
+<span class="operator">|</span> <span class="keyword">where</span> IsApplicable <span class="operator">==</span> <span class="number">1</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> NonCompliantDevices = <span class="function">dcount</span>(DeviceId) <span class="keyword">by</span> ConfigurationId
+<span class="operator">|</span> <span class="keyword">order by</span> NonCompliantDevices <span class="keyword">desc</span>
+
+<span class="comment">// ASR rule compliance</span>
+<span class="variable">DeviceTvmSecureConfigurationAssessment</span>
+<span class="operator">|</span> <span class="keyword">where</span> ConfigurationCategory <span class="operator">==</span> <span class="string">"AttackSurfaceReduction"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Compliant = <span class="function">countif</span>(IsCompliant == <span class="number">1</span>),
+    NonCompliant = <span class="function">countif</span>(IsCompliant == <span class="number">0</span>)
+    <span class="keyword">by</span> ConfigurationId
+
+<span class="comment">// Software needing updates</span>
+<span class="variable">DeviceTvmSoftwareInventory</span>
+<span class="operator">|</span> <span class="keyword">where</span> NumberOfWeaknesses <span class="operator">></span> <span class="number">0</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Vulnerabilities = <span class="function">sum</span>(NumberOfWeaknesses),
+    Devices = <span class="function">dcount</span>(DeviceId)
+    <span class="keyword">by</span> SoftwareName, SoftwareVersion
+<span class="operator">|</span> <span class="keyword">order by</span> Vulnerabilities <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                <ul>
+                    <li>Review new critical recommendations weekly</li>
+                    <li>Create and track remediation requests</li>
+                    <li>Follow up on overdue remediations</li>
+                    <li>Manage exception requests</li>
+                    <li>Report exposure score trends</li>
+                </ul>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Prioritized guidance to reduce exposure</li>
+                    <li><strong>Categories</strong>: Software updates, configurations, account security</li>
+                    <li><strong>Prioritization</strong>: Exposure impact, exploit availability, device count</li>
+                    <li><strong>Remediation workflow</strong>: Request → Assign → Track → Validate</li>
+                    <li><strong>Exceptions</strong>: Time-limited, require justification</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="7-2-vulnerability-assessment.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Vulnerability Assessment</span>
+                </a>
+                <a href="7-4-software-inventory.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Software Inventory</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

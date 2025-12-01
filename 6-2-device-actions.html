@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Actions | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to MDE device response actions. Learn how to isolate devices, run scans, collect evidence, and manage device restrictions during incident response.</p>
+            </div>
+
+            <h1>Device Response Actions</h1>
+
+            <p>Device actions allow security teams to remotely contain threats and collect evidence from compromised endpoints. These actions are critical for effective incident response.</p>
+
+            <h2>Available Device Actions</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Device Response Actions</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    DEVICE RESPONSE ACTIONS                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  CONTAINMENT                      INVESTIGATION                         │
+│  ┌─────────────────────────────┐ ┌─────────────────────────────┐       │
+│  │ • Isolate device           │ │ • Collect investigation     │       │
+│  │   └── Full isolation       │ │   package                   │       │
+│  │   └── Selective isolation  │ │ • Initiate automated       │       │
+│  │ • Restrict app execution   │ │   investigation            │       │
+│  │ • Contain device (Preview) │ │ • Run antivirus scan       │       │
+│  └─────────────────────────────┘ │   └── Quick scan           │       │
+│                                   │   └── Full scan            │       │
+│  REMEDIATION                     └─────────────────────────────┘       │
+│  ┌─────────────────────────────┐                                        │
+│  │ • Run antivirus scan       │ MANAGEMENT                             │
+│  │ • Stop and quarantine file │ ┌─────────────────────────────┐       │
+│  │ • Request sample           │ │ • Manage tags              │       │
+│  │ • Block file org-wide      │ │ • Consult threat expert    │       │
+│  └─────────────────────────────┘ │ • Offboard device          │       │
+│                                   └─────────────────────────────┘       │
+│                                                                          │
+│  LIVE RESPONSE (Advanced)                                               │
+│  ┌──────────────────────────────────────────────────────────────┐      │
+│  │ • Interactive shell session                                   │      │
+│  │ • Run commands, scripts, collect files                        │      │
+│  │ • Requires elevated permissions                               │      │
+│  └──────────────────────────────────────────────────────────────┘      │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Device Isolation</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Device Isolation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEVICE ISOLATION:
+Purpose: Prevent lateral movement and C2 communication
+
+ISOLATION TYPES:
+
+FULL ISOLATION:
+├── Blocks ALL network connections
+├── Except: MDE cloud service communication
+├── User cannot access any network resources
+├── Use for: Confirmed compromise, active threat
+└── Impact: High - user cannot work
+
+SELECTIVE ISOLATION:
+├── Blocks most network connections
+├── Allows: Outlook, Teams, OneDrive
+├── User can continue limited work
+├── Use for: Suspected compromise, investigation needed
+└── Impact: Medium - limited functionality
+
+HOW TO ISOLATE:
+
+PORTAL METHOD:
+1. Device inventory → Select device
+2. Click "..." (More actions)
+3. Select "Isolate device"
+4. Choose: Full or Selective
+5. Enter reason/comment (required)
+6. Confirm action
+
+API METHOD:
+POST /api/machines/{id}/isolate
+{
+  "Comment": "Isolated due to ransomware alert",
+  "IsolationType": "Full"  // or "Selective"
+}
+
+RELEASE FROM ISOLATION:
+├── Device page → Release from isolation
+├── Or API: POST /api/machines/{id}/unisolate
+├── Requires comment
+└── Takes effect within minutes
+
+VERIFICATION:
+├── Device status shows "Isolated"
+├── Timeline shows isolation action
+├── User sees isolation notification
+└── Network connections blocked (except MDE)</code></pre>
+                </div>
+            </div>
+
+            <h2>Antivirus Scan</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Run Antivirus Scan</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ANTIVIRUS SCAN:
+Purpose: Detect and remediate malware on device
+
+SCAN TYPES:
+
+QUICK SCAN:
+├── Scans common malware locations
+├── Duration: 5-15 minutes
+├── Locations: Memory, startup items, registry, common folders
+├── Use for: Initial assessment, routine check
+└── Lower impact on device performance
+
+FULL SCAN:
+├── Scans entire file system
+├── Duration: 1-4+ hours (depends on disk size)
+├── Locations: All files, all drives
+├── Use for: Deep investigation, post-remediation verification
+└── Higher impact on performance
+
+HOW TO RUN:
+
+PORTAL METHOD:
+1. Device page → Response actions
+2. Select "Run antivirus scan"
+3. Choose: Quick scan or Full scan
+4. Enter comment
+5. Confirm
+
+API METHOD:
+POST /api/machines/{id}/runAntiVirusScan
+{
+  "Comment": "Scanning after alert investigation",
+  "ScanType": "Quick"  // or "Full"
+}
+
+MONITORING:
+├── Action Center shows scan status
+├── Timeline shows when scan started/completed
+├── Threats found appear as alerts
+└── Remediation actions logged
+
+BEST PRACTICE:
+├── Quick scan first for immediate assessment
+├── Full scan after remediation to verify clean
+├── Schedule during low-usage hours for full scans
+└── Document findings in investigation notes</code></pre>
+                </div>
+            </div>
+
+            <h2>App Execution Restriction</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Restrict App Execution</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>APP EXECUTION RESTRICTION:
+Purpose: Allow only Microsoft-signed executables to run
+
+BEHAVIOR:
+├── Blocks all non-Microsoft signed executables
+├── Allows Windows and Microsoft applications
+├── Prevents unknown malware from executing
+├── Very restrictive - may impact user productivity
+
+USE CASES:
+├── Active malware infection
+├── Ransomware containment
+├── Unknown threat investigation
+├── High-confidence compromise
+
+HOW TO ENABLE:
+
+PORTAL METHOD:
+1. Device page → Response actions
+2. Select "Restrict app execution"
+3. Enter comment explaining reason
+4. Confirm action
+
+API METHOD:
+POST /api/machines/{id}/restrictCodeExecution
+{
+  "Comment": "Restricting due to active malware"
+}
+
+REMOVE RESTRICTION:
+├── Device page → Remove app restrictions
+├── Or API: POST /api/machines/{id}/unrestrictCodeExecution
+└── Takes effect within minutes
+
+USER IMPACT:
+├── Cannot run third-party applications
+├── Cannot run custom scripts
+├── Cannot run unsigned installers
+├── May need to coordinate with user
+
+VERIFICATION:
+├── Device status shows restriction
+├── User attempts to run blocked app → fails
+├── Event logged in device timeline
+└── Action logged in Action Center</code></pre>
+                </div>
+            </div>
+
+            <h2>Investigation Package</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Collect Investigation Package</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INVESTIGATION PACKAGE:
+Purpose: Collect forensic evidence from device
+
+PACKAGE CONTENTS:
+├── Autoruns (startup items, services)
+├── Installed programs
+├── Network connections
+├── Scheduled tasks
+├── Security event logs
+├── Services
+├── SMB sessions
+├── System information
+├── Temp directories
+├── Users and groups
+├── Windows Prefetch
+├── WMI subscriptions
+└── More...
+
+HOW TO COLLECT:
+
+PORTAL METHOD:
+1. Device page → Response actions
+2. Select "Collect investigation package"
+3. Enter comment
+4. Confirm action
+5. Wait for collection (10-30 minutes)
+6. Download from Action Center
+
+API METHOD:
+POST /api/machines/{id}/collectInvestigationPackage
+{
+  "Comment": "Collecting for incident INC-2024-001"
+}
+
+GET PACKAGE:
+GET /api/machineactions/{actionId}/getPackageUri
+
+PACKAGE FORMAT:
+├── ZIP file containing collected data
+├── CSV files for structured data
+├── Text files for logs
+├── Binary files (prefetch, registry)
+└── Can be analyzed with forensic tools
+
+ANALYSIS TIPS:
+├── Review autoruns for persistence mechanisms
+├── Check network connections for C2
+├── Examine prefetch for execution evidence
+├── Review scheduled tasks for persistence
+└── Correlate with timeline data in MDE</code></pre>
+                </div>
+            </div>
+
+            <h2>Action Center</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Action Center Overview</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ACTION CENTER:
+Location: Defender Portal → Actions & submissions → Action center
+
+PURPOSE:
+├── Track all response actions
+├── View action status
+├── Download collected data
+├── Review action history
+
+ACTION STATUSES:
+├── Pending: Action queued, waiting for device
+├── In progress: Action executing on device
+├── Completed: Action finished successfully
+├── Failed: Action could not complete
+└── Cancelled: Action was cancelled
+
+TABS:
+
+PENDING ACTIONS:
+├── Actions waiting for device to come online
+├── Actions in progress
+├── Can cancel pending actions
+└── Shows estimated completion time
+
+HISTORY:
+├── All completed actions
+├── Filter by: Device, action type, date, user
+├── Download investigation packages
+├── View action details and comments
+
+COMMON ISSUES:
+
+ACTION STUCK PENDING:
+├── Device offline
+├── Device not communicating with MDE
+├── Network issues
+└── Solution: Verify device connectivity
+
+ACTION FAILED:
+├── Permission denied
+├── Resource unavailable
+├── Sensor issues
+└── Solution: Check device health, retry</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Document everything</strong>: Always add meaningful comments to actions</li>
+                        <li><strong>Coordinate with users</strong>: Notify before disruptive actions when possible</li>
+                        <li><strong>Collect evidence first</strong>: Get investigation package before remediation</li>
+                        <li><strong>Use appropriate isolation</strong>: Selective for investigation, Full for active threats</li>
+                        <li><strong>Verify actions complete</strong>: Check Action Center for status</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Common Response Workflows</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Ransomware detected"</span>
+                    <span class="ticket-solution">→ Immediately isolate (Full), collect investigation package, run full scan after isolation.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Suspicious activity, needs investigation"</span>
+                    <span class="ticket-solution">→ Selective isolation, collect package, review timeline, run quick scan.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Malware cleaned, verify remediation"</span>
+                    <span class="ticket-solution">→ Run full scan, review results, release isolation if clean.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Isolation types</strong>: Full (all network blocked) vs Selective (allows O365)</li>
+                    <li><strong>Scan types</strong>: Quick (5-15 min, common locations) vs Full (1-4+ hrs, everything)</li>
+                    <li><strong>App restriction</strong>: Only Microsoft-signed executables can run</li>
+                    <li><strong>Investigation package</strong>: Autoruns, network connections, logs, prefetch</li>
+                    <li><strong>Action Center</strong>: Track status, download packages, view history</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="6-1-remediation-actions.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Remediation Actions</span>
+                </a>
+                <a href="6-3-investigation-package.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Investigation Package</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

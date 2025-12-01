@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIEM Integration | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to integrating MDE with third-party SIEM platforms. Learn about Splunk, IBM QRadar, ArcSight integration, and streaming API configuration.</p>
+            </div>
+
+            <h1>SIEM Integration</h1>
+
+            <p>MDE integrates with third-party SIEM platforms to provide unified security visibility. This enables correlation of endpoint data with other security sources for comprehensive threat detection.</p>
+
+            <h2>Integration Options</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">SIEM Integration Architecture</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MDE SIEM INTEGRATION OPTIONS                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                  MICROSOFT DEFENDER FOR ENDPOINT                 │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                               │                                         │
+│         ┌─────────────────────┼─────────────────────┐                  │
+│         ▼                     ▼                     ▼                   │
+│  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐            │
+│  │  SIEM API   │      │  Event Hub  │      │  Sentinel   │            │
+│  │  (Legacy)   │      │  Streaming  │      │  (Native)   │            │
+│  └──────┬──────┘      └──────┬──────┘      └──────┬──────┘            │
+│         │                    │                    │                     │
+│         ▼                    ▼                    ▼                     │
+│  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐            │
+│  │ • Splunk    │      │ • Splunk    │      │ Microsoft   │            │
+│  │ • QRadar    │      │ • QRadar    │      │ Sentinel    │            │
+│  │ • ArcSight  │      │ • Any SIEM  │      │ (Preferred) │            │
+│  │ • Generic   │      │ • Data Lake │      │             │            │
+│  └─────────────┘      └─────────────┘      └─────────────┘            │
+│                                                                          │
+│  DATA AVAILABLE:                                                        │
+│  ├── Alerts and incidents                                               │
+│  ├── Device information                                                 │
+│  ├── Advanced Hunting data (via streaming)                             │
+│  ├── Vulnerability data                                                 │
+│  └── Machine actions                                                    │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>SIEM API Configuration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">SIEM API Setup</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SIEM API (LEGACY METHOD):
+Location: Settings → Endpoints → APIs → SIEM
+
+STEP 1: ENABLE SIEM API
+├── Toggle: Enable SIEM connector
+├── Generate: Client secret (save securely!)
+├── Note: Tenant ID and Resource URI
+└── Secret validity: 1 year (set reminder to rotate)
+
+STEP 2: GET CONNECTION DETAILS
+├── Tenant ID: [Your Azure AD tenant ID]
+├── Client ID: [Application ID for SIEM]
+├── Client Secret: [Generated secret]
+├── Resource: https://api.securitycenter.microsoft.com
+└── Token URL: https://login.microsoftonline.com/{tenant}/oauth2/token
+
+STEP 3: CONFIGURE SIEM CONNECTOR
+Each SIEM has specific configuration requirements
+See platform-specific sections below
+
+DATA AVAILABLE VIA SIEM API:
+├── Alerts: Real-time alert data
+├── Machines: Device inventory
+└── Note: Limited compared to streaming API
+
+RATE LIMITS:
+├── 100 calls per minute
+├── 1500 calls per hour
+└── Implement exponential backoff</code></pre>
+                </div>
+            </div>
+
+            <h2>Event Hub Streaming</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Streaming API (Recommended)</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>STREAMING API (PREFERRED METHOD):
+Location: Settings → Endpoints → Data export settings
+
+ADVANTAGES:
+├── Near real-time data (minutes, not polling)
+├── All Advanced Hunting tables available
+├── Higher throughput than REST API
+├── More reliable delivery
+└── Cost-effective at scale
+
+SETUP STEPS:
+
+STEP 1: CREATE EVENT HUB
+Azure Portal → Event Hubs → Create namespace
+├── Namespace name: mde-streaming-[company]
+├── Pricing tier: Standard (recommended)
+├── Throughput units: Start with 1, scale as needed
+└── Create Event Hub within namespace: mde-events
+
+STEP 2: CONFIGURE MDE STREAMING
+Settings → Endpoints → Data export settings → Add
+
+Export settings:
+├── Name: SIEM-Export
+├── Event Hub namespace: [your namespace]
+├── Event Hub name: mde-events
+├── Event types to stream:
+│   ├── Device information
+│   ├── Alert information
+│   ├── Device network events
+│   ├── Device process events
+│   ├── Device file events
+│   ├── Device registry events
+│   └── Device logon events
+└── Save
+
+STEP 3: CONFIGURE SIEM TO CONSUME
+├── Create consumer group in Event Hub
+├── Get connection string (listen permission)
+├── Configure SIEM Event Hub connector
+└── Map fields to SIEM schema
+
+EVENT HUB CONNECTION STRING:
+Endpoint=sb://[namespace].servicebus.windows.net/;
+SharedAccessKeyName=Listen;
+SharedAccessKey=[key];
+EntityPath=mde-events</code></pre>
+                </div>
+            </div>
+
+            <h2>Splunk Integration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Splunk Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SPLUNK INTEGRATION OPTIONS:
+
+OPTION 1: MICROSOFT 365 DEFENDER ADD-ON (Recommended)
+├── Install: Splunkbase → Microsoft 365 Defender Add-on
+├── Supports: Alerts, incidents, advanced hunting
+├── Method: REST API polling
+└── Setup: Configure with app registration credentials
+
+OPTION 2: AZURE EVENT HUB ADD-ON
+├── Install: Splunkbase → Splunk Add-on for Microsoft Cloud Services
+├── Supports: All streaming data
+├── Method: Event Hub consumption
+└── Better for: High-volume, real-time data
+
+ADD-ON CONFIGURATION:
+
+1. Install Add-on from Splunkbase
+2. Configure inputs:
+   ├── Tenant ID
+   ├── Client ID
+   ├── Client Secret
+   └── Data types to collect
+3. Create index: microsoft_defender
+4. Set sourcetype: ms:defender:endpoint
+5. Enable inputs
+
+SAMPLE SPLUNK SEARCHES:
+
+# MDE Alerts by severity
+index=microsoft_defender sourcetype="ms:defender:endpoint:alert"
+| stats count by severity
+| sort -count
+
+# High severity alerts last 24h
+index=microsoft_defender sourcetype="ms:defender:endpoint:alert"
+| where severity="High" OR severity="Critical"
+| table _time, title, deviceName, severity
+
+# Correlation with other data sources
+index=microsoft_defender sourcetype="ms:defender:endpoint:alert"
+| join type=left deviceName [
+    search index=windows sourcetype=WinEventLog:Security
+    | stats count as windows_events by host
+    | rename host as deviceName
+]</code></pre>
+                </div>
+            </div>
+
+            <h2>IBM QRadar Integration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">QRadar Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>QRADAR INTEGRATION:
+
+OPTION 1: MICROSOFT DEFENDER DSM
+├── Install: QRadar → DSM Editor → Microsoft Defender ATP
+├── Supports: Alerts via API
+├── Method: REST API polling
+└── Built-in field mapping
+
+OPTION 2: AZURE EVENT HUB PROTOCOL
+├── Configure: Log Source → Azure Event Hubs
+├── Supports: All streaming data
+├── Method: Event Hub consumption
+└── Requires: Custom property mapping
+
+DSM CONFIGURATION:
+
+1. Install Microsoft Defender ATP DSM
+2. Create log source:
+   ├── Log Source Type: Microsoft Defender ATP
+   ├── Protocol: Microsoft Defender ATP REST API
+   ├── Tenant ID: [Azure AD Tenant]
+   ├── Client ID: [App Registration]
+   ├── Client Secret: [Secret]
+   └── Collection interval: 1 minute
+3. Deploy changes
+4. Verify events flowing
+
+CUSTOM PROPERTIES:
+├── Map alert severity → QRadar magnitude
+├── Map device name → asset
+├── Map user name → username
+└── Map MITRE techniques → attack category
+
+QRADAR AQL QUERIES:
+
+-- MDE alerts by device
+SELECT devicename, COUNT(*) as alert_count
+FROM events
+WHERE logsourcetypename = 'Microsoft Defender ATP'
+GROUP BY devicename
+ORDER BY alert_count DESC
+LAST 24 HOURS
+
+-- High severity correlation
+SELECT *
+FROM events
+WHERE logsourcetypename = 'Microsoft Defender ATP'
+AND severity IN ('High', 'Critical')
+LAST 7 DAYS</code></pre>
+                </div>
+            </div>
+
+            <h2>ArcSight Integration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">ArcSight Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ARCSIGHT INTEGRATION:
+
+CONNECTOR OPTIONS:
+├── SmartConnector for Microsoft Graph Security API
+├── SmartConnector for Azure Event Hubs
+└── FlexConnector (custom development)
+
+SMARTCONNECTOR SETUP:
+
+1. Install SmartConnector on connector host
+2. Configure Microsoft Graph Security connector:
+   ├── Azure AD Tenant ID
+   ├── Application ID
+   ├── Client Secret
+   ├── API Endpoint: graph.microsoft.com
+   └── Polling interval: 60 seconds
+
+3. Configure parser:
+   ├── Map MDE fields to ArcSight CEF
+   ├── Configure categorization
+   └── Set severity mapping
+
+FIELD MAPPING (CEF):
+├── deviceVendor = Microsoft
+├── deviceProduct = Defender for Endpoint
+├── name = Alert Title
+├── severity = Alert Severity (1-10 scale)
+├── src = Source Device
+├── suser = User Name
+├── cat = MITRE Technique
+└── msg = Alert Description
+
+ARCSIGHT QUERY EXAMPLE:
+
+// MDE Alerts Dashboard Filter
+deviceVendor = "Microsoft" AND 
+deviceProduct = "Defender for Endpoint" AND
+endTime > NOW - 24h
+
+// Correlation Rule
+IF deviceProduct = "Defender for Endpoint"
+   AND severity >= 7
+   AND categoryBehavior = "Credential Access"
+THEN
+   Trigger Alert "Potential Credential Theft"
+   Priority: High</code></pre>
+                </div>
+            </div>
+
+            <h2>Data Mapping</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Field Mapping</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MDE TO SIEM FIELD MAPPING:
+
+ALERT FIELDS:
+├── alertId → event_id / alert_id
+├── title → event_name / alert_title
+├── severity → severity / priority
+├── category → category / attack_type
+├── status → status / state
+├── assignedTo → owner / analyst
+├── classification → classification
+├── determination → determination
+├── detectionSource → detection_source
+├── firstEventTime → first_seen
+├── lastEventTime → last_seen
+└── threatFamilyName → threat_name
+
+DEVICE FIELDS:
+├── deviceId → asset_id / host_id
+├── deviceName → hostname / computer_name
+├── osPlatform → os / operating_system
+├── osVersion → os_version
+├── ipAddresses → src_ip / ip_address
+├── machineTags → tags / labels
+├── riskScore → risk_score
+└── exposureLevel → exposure / vulnerability_level
+
+USER FIELDS:
+├── accountName → username / user
+├── accountDomain → domain
+├── accountSid → user_sid
+└── logonType → logon_type
+
+PROCESS FIELDS:
+├── fileName → process_name
+├── filePath → process_path
+├── sha256 → file_hash_sha256
+├── processId → pid
+├── processCommandLine → command_line
+├── parentProcessName → parent_process
+└── parentProcessId → parent_pid</code></pre>
+                </div>
+            </div>
+
+            <h2>Use Cases</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">SIEM Integration Use Cases</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SIEM INTEGRATION USE CASES:
+
+1. UNIFIED SECURITY VISIBILITY
+   ├── Correlate MDE alerts with firewall logs
+   ├── Link endpoint activity to network traffic
+   ├── Combine with identity events (Azure AD)
+   └── Single pane of glass for SOC
+
+2. ADVANCED CORRELATION RULES
+   ├── Endpoint alert + failed VPN = compromised remote user
+   ├── Malware detection + data exfil = active breach
+   ├── Credential theft + lateral movement = APT activity
+   └── Multiple low-severity = potential attack chain
+
+3. COMPLIANCE REPORTING
+   ├── Centralized audit logging
+   ├── Long-term retention (beyond MDE 180 days)
+   ├── Regulatory compliance evidence
+   └── Executive dashboards
+
+4. THREAT HUNTING ENRICHMENT
+   ├── Hunt across multiple data sources
+   ├── Correlate IOCs from threat intel
+   ├── Build attack timelines
+   └── Identify attack scope
+
+5. AUTOMATION & RESPONSE
+   ├── Trigger SOAR playbooks from SIEM
+   ├── Enrich alerts with SIEM data
+   ├── Automated ticketing
+   └── Cross-platform response actions
+
+EXAMPLE CORRELATION:
+MDE Alert: "Mimikatz detected on WKSTN-001"
++ Firewall: Outbound connection to known C2 IP
++ VPN: User authenticated from unusual location
++ AD: Password reset for privileged account
+= High-confidence APT detection</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Use Event Hub streaming</strong>: More reliable and real-time than API polling</li>
+                        <li><strong>Start with alerts</strong>: Begin integration with alert data before raw events</li>
+                        <li><strong>Normalize fields</strong>: Map MDE fields to your SIEM's common schema</li>
+                        <li><strong>Monitor ingestion</strong>: Set up alerts for data gaps or delays</li>
+                        <li><strong>Plan retention</strong>: SIEM can extend beyond MDE's 180-day limit</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Integration methods</strong>: SIEM API (legacy), Event Hub streaming (preferred), Sentinel (native)</li>
+                    <li><strong>Event Hub advantage</strong>: Near real-time, all hunting tables, higher throughput</li>
+                    <li><strong>Splunk</strong>: Microsoft 365 Defender Add-on or Azure Event Hub Add-on</li>
+                    <li><strong>QRadar</strong>: Microsoft Defender ATP DSM or Event Hub protocol</li>
+                    <li><strong>Key benefit</strong>: Cross-source correlation and extended retention</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="8-7-logic-apps-automation.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Logic Apps Automation</span>
+                </a>
+                <a href="9-1-sensor-health.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Sensor Health</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

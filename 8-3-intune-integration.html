@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intune Integration | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to integrating Microsoft Defender for Endpoint with Microsoft Intune. Learn about onboarding, policy configuration, compliance, and security baselines.</p>
+            </div>
+
+            <h1>Intune Integration</h1>
+
+            <p>Microsoft Intune provides the primary management plane for deploying and configuring MDE across your organization. This integration enables automated onboarding, policy management, and compliance enforcement.</p>
+
+            <h2>Integration Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Intune + MDE Integration</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     INTUNE + MDE INTEGRATION                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌─────────────────┐                    ┌─────────────────┐             │
+│  │   MICROSOFT     │◄──── Service ────►│   MICROSOFT     │             │
+│  │     INTUNE      │     Connection    │   DEFENDER      │             │
+│  │                 │                    │   FOR ENDPOINT  │             │
+│  └────────┬────────┘                    └────────┬────────┘             │
+│           │                                      │                       │
+│           │ Policies &                           │ Risk                  │
+│           │ Configuration                        │ Signals               │
+│           ▼                                      ▼                       │
+│  ┌──────────────────────────────────────────────────────────────┐       │
+│  │                     MANAGED DEVICES                          │       │
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐         │       │
+│  │  │Windows  │  │ macOS   │  │  iOS    │  │ Android │         │       │
+│  │  │ 10/11   │  │         │  │         │  │         │         │       │
+│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘         │       │
+│  └──────────────────────────────────────────────────────────────┘       │
+│                                                                          │
+│  INTEGRATION CAPABILITIES:                                              │
+│  ├── Automated MDE onboarding via enrollment                            │
+│  ├── Security baseline deployment                                       │
+│  ├── Antivirus policy management                                        │
+│  ├── ASR rule configuration                                             │
+│  ├── EDR policy settings                                                │
+│  ├── Compliance policies based on risk                                  │
+│  ├── Conditional Access integration                                     │
+│  └── Tamper Protection management                                       │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Enabling the Connection</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Setup Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>STEP 1: ENABLE IN MDE PORTAL
+Location: Settings → Endpoints → Advanced features
+├── Toggle ON: Microsoft Intune connection
+└── Save settings
+
+STEP 2: ENABLE IN INTUNE
+Location: Endpoint security → Microsoft Defender for Endpoint
+├── Connection status: Should show "Available"
+├── Connect Windows devices: Toggle ON
+├── Connect Android devices: Toggle ON (if needed)
+├── Connect iOS devices: Toggle ON (if needed)
+├── Connect macOS devices: Toggle ON (if needed)
+└── Save
+
+STEP 3: CONFIGURE COMPLIANCE
+Location: Endpoint security → Microsoft Defender for Endpoint
+├── Risk level required: Low / Medium / High / Clear
+├── Remediation grace period: 1-30 days
+└── App protection policy evaluation: Enable
+
+VERIFICATION:
+├── Status shows "Enabled" in both portals
+├── Devices show compliance status
+└── Risk level flows between services</code></pre>
+                </div>
+            </div>
+
+            <h2>Automated Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Automatic Onboarding Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WINDOWS AUTOMATIC ONBOARDING:
+Location: Endpoint security → Endpoint detection and response
+
+CREATE EDR POLICY:
+1. Create policy → Platform: Windows 10 and later
+2. Profile: Endpoint detection and response
+3. Settings:
+   ├── Microsoft Defender for Endpoint client config package type:
+   │   └── Auto from connector (recommended)
+   ├── Sample sharing: All
+   └── Expedite telemetry reporting: Yes
+4. Assign to: All devices or specific groups
+5. Create
+
+RESULT:
+├── New Intune-enrolled devices auto-onboard to MDE
+├── Onboarding happens during enrollment
+├── No manual package deployment needed
+└── Consistent configuration across devices
+
+MACOS AUTOMATIC ONBOARDING:
+1. Create policy → Platform: macOS
+2. Profile: Endpoint detection and response
+3. Settings similar to Windows
+4. Assign to macOS device groups
+
+MOBILE DEVICES:
+├── iOS: Requires Defender app from App Store
+├── Android: Requires Defender app from Play Store
+├── Deploy apps via Intune app deployment
+└── Enable web protection features</code></pre>
+                </div>
+            </div>
+
+            <h2>Security Baselines</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">MDE Security Baseline</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SECURITY BASELINE:
+Location: Endpoint security → Security baselines → 
+         Microsoft Defender for Endpoint baseline
+
+BASELINE CATEGORIES:
+├── Microsoft Defender Antivirus
+│   ├── Cloud-delivered protection: Enabled
+│   ├── Real-time protection: Enabled
+│   ├── Behavior monitoring: Enabled
+│   ├── Scan all downloaded files: Enabled
+│   ├── PUA protection: Enabled
+│   └── Cloud block level: High
+│
+├── Microsoft Defender Exploit Guard
+│   ├── Attack Surface Reduction rules
+│   ├── Network Protection: Enabled
+│   ├── Controlled Folder Access: Enabled
+│   └── Exploit Protection settings
+│
+├── Microsoft Defender SmartScreen
+│   ├── SmartScreen for apps: Warn
+│   ├── SmartScreen for Edge: Enabled
+│   └── Block potentially unwanted apps: Block
+│
+└── Microsoft Defender Firewall
+    ├── Enable firewall: Yes
+    ├── Block inbound connections: Yes (default profile)
+    └── Logging settings
+
+DEPLOYING BASELINE:
+1. Create profile from baseline
+2. Review and customize settings if needed
+3. Assign to device groups
+4. Monitor compliance
+5. Review conflicts with other policies</code></pre>
+                </div>
+            </div>
+
+            <h2>Antivirus Policies</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Antivirus Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ANTIVIRUS POLICY:
+Location: Endpoint security → Antivirus → Create policy
+
+MICROSOFT DEFENDER ANTIVIRUS SETTINGS:
+├── Cloud protection
+│   ├── Turn on cloud-delivered protection: Yes
+│   ├── Cloud-delivered protection level: High
+│   ├── Defender cloud extended timeout: 50 seconds
+│   └── Submit samples consent: Send safe samples automatically
+│
+├── Real-time protection
+│   ├── Turn on real-time protection: Yes
+│   ├── Turn on behavior monitoring: Yes
+│   ├── Scan all downloaded files: Yes
+│   ├── Scan scripts loaded in browsers: Yes
+│   └── Turn on network protection: Enabled
+│
+├── Scan settings
+│   ├── Scan type: Quick scan
+│   ├── Day of week for scheduled scan: Sunday
+│   ├── Time of day for scheduled scan: 2:00 AM
+│   ├── Check for signature updates before scan: Yes
+│   └── Scan removable drives: Yes
+│
+├── Exclusions (use sparingly)
+│   ├── Exclude paths
+│   ├── Exclude extensions
+│   └── Exclude processes
+│
+└── Remediation
+    ├── Action for severe threats: Remove
+    ├── Action for high threats: Remove
+    ├── Action for moderate threats: Quarantine
+    └── Action for low threats: Quarantine</code></pre>
+                </div>
+            </div>
+
+            <h2>Attack Surface Reduction</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">ASR via Intune</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ASR POLICY:
+Location: Endpoint security → Attack surface reduction → Create policy
+
+ASR RULES CONFIGURATION:
+Platform: Windows 10 and later
+Profile: Attack Surface Reduction Rules
+
+RECOMMENDED RULES (Block mode):
+├── Block Office apps from creating child processes
+├── Block Office apps from creating executable content
+├── Block Office apps from injecting code into other processes
+├── Block JavaScript or VBScript from launching downloaded content
+├── Block execution of potentially obfuscated scripts
+├── Block Win32 API calls from Office macros
+├── Block executable content from email client
+├── Block credential stealing from LSASS
+├── Block untrusted and unsigned processes from USB
+├── Block process creations from PSExec and WMI
+├── Block persistence through WMI event subscription
+└── Block abuse of exploited vulnerable signed drivers
+
+ADDITIONAL PROTECTIONS:
+├── Controlled folder access: Enabled
+├── Network protection: Enabled
+└── Exploit protection: Configure via XML
+
+DEPLOYMENT STRATEGY:
+1. Start in Audit mode for all rules
+2. Monitor for 2-4 weeks
+3. Create exclusions for legitimate blocks
+4. Enable Block mode for validated rules
+5. Document exceptions with justification</code></pre>
+                </div>
+            </div>
+
+            <h2>Compliance Policies</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Risk-Based Compliance</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>COMPLIANCE POLICY WITH MDE RISK:
+Location: Devices → Compliance policies → Create policy
+
+PLATFORM: Windows 10 and later
+
+MICROSOFT DEFENDER FOR ENDPOINT SECTION:
+├── Require device to be at or under machine risk score
+│   ├── Clear: No known risk
+│   ├── Low: Minimal risk
+│   ├── Medium: Moderate risk (recommended max)
+│   └── High: Significant risk
+└── Action for noncompliance:
+    ├── Mark device noncompliant: Immediately or after X days
+    ├── Send email to user
+    ├── Remotely lock device
+    └── Retire device (extreme cases)
+
+CONDITIONAL ACCESS INTEGRATION:
+1. Create Conditional Access policy in Azure AD
+2. Target: All users or specific groups
+3. Cloud apps: Office 365, SharePoint, etc.
+4. Conditions: Require device to be compliant
+5. Grant: Require device to be marked as compliant
+6. Enable policy
+
+RESULT:
+├── High-risk devices blocked from corporate resources
+├── Users prompted to remediate issues
+├── Automatic access restoration after remediation
+└── Real-time risk assessment</code></pre>
+                </div>
+            </div>
+
+            <h2>Tamper Protection</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Tamper Protection via Intune</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>TAMPER PROTECTION:
+├── Prevents malware from disabling Defender
+├── Blocks changes to security settings
+├── Requires Intune management for full control
+
+ENABLE VIA INTUNE:
+Location: Endpoint security → Antivirus → Create policy
+Platform: Windows 10 and later
+Profile: Windows Security experience
+
+SETTINGS:
+├── Tamper Protection: On (recommended)
+├── Prevents:
+│   ├── Disabling real-time protection
+│   ├── Disabling cloud-delivered protection
+│   ├── Disabling behavior monitoring
+│   ├── Disabling script scanning
+│   ├── Removing security updates
+│   └── Changing exclusions via registry/PowerShell
+└── Legitimate admins can still manage via Intune
+
+VERIFICATION:
+Get-MpComputerStatus | Select-Object IsTamperProtected
+# Should return: True
+
+NOTE: Without Intune, Tamper Protection can be enabled
+in MDE portal but local admin can potentially disable</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Use security baselines</strong>: Start with Microsoft's baseline, customize as needed</li>
+                        <li><strong>Enable auto-onboarding</strong>: Reduces manual work, ensures consistency</li>
+                        <li><strong>Layer policies carefully</strong>: Avoid conflicts between baselines and custom policies</li>
+                        <li><strong>Test in pilot groups</strong>: Deploy to test devices before organization-wide rollout</li>
+                        <li><strong>Monitor compliance</strong>: Review compliance reports regularly</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Connection</strong>: Enable in both MDE and Intune portals</li>
+                    <li><strong>Auto-onboarding</strong>: EDR policy with "Auto from connector" for enrollment-based onboarding</li>
+                    <li><strong>Security baselines</strong>: Pre-configured Microsoft best practices</li>
+                    <li><strong>Compliance + CA</strong>: Block high-risk devices from corporate resources</li>
+                    <li><strong>Tamper Protection</strong>: Intune management enables full control</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="8-2-sentinel-integration.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Sentinel Integration</span>
+                </a>
+                <a href="8-4-cloud-apps-integration.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Defender for Cloud Apps</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

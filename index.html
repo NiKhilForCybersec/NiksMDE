@@ -3,557 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Microsoft Defender for Endpoint (MDE) - Ultimate Enterprise Guide for Security Analysts and Engineers">
-    <title>MDE Ultimate Guide - Microsoft Defender for Endpoint</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>MDE Ultimate Guide | Microsoft Defender for Endpoint Documentation</title>
+    <meta name="description" content="Comprehensive Microsoft Defender for Endpoint guide with 80+ pages covering EDR, threat hunting, KQL queries, and security operations.">
+    <link rel="stylesheet" href="main.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="index.html" class="navbar-brand">
-                <span class="brand-icon">🛡️</span>
-                <span>MDE Ultimate Guide</span>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
             </a>
-            <button class="navbar-toggle">☰</button>
-            <ul class="navbar-nav">
-                <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
-                <li class="nav-item"><a href="architecture.html" class="nav-link">Architecture</a></li>
-                <li class="nav-item"><a href="deployment.html" class="nav-link">Deployment</a></li>
-                <li class="nav-item"><a href="features.html" class="nav-link">Features</a></li>
-                <li class="nav-item"><a href="tvm.html" class="nav-link">TVM</a></li>
-                <li class="nav-item"><a href="asr-rules.html" class="nav-link">ASR Rules</a></li>
-                <li class="nav-item"><a href="analyst-engineer.html" class="nav-link">Analyst vs Engineer</a></li>
-                <li class="nav-item"><a href="troubleshooting.html" class="nav-link">Troubleshooting</a></li>
-                <li class="nav-item"><a href="licensing.html" class="nav-link">Licensing & Comparison</a></li>
-                <li class="nav-item"><a href="kql-rules.html" class="nav-link">KQL Rules</a></li>
-                <li class="nav-item"><a href="use-cases.html" class="nav-link">Use Cases</a></li>
-                <li class="nav-item"><a href="automation.html" class="nav-link">Automation</a></li>
-                <li class="nav-item"><a href="best-practices.html" class="nav-link">Best Practices</a></li>
-            </ul>
         </div>
-    </nav>
+        
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut">
+                    <kbd>⌘</kbd><kbd>K</kbd>
+                </span>
+            </button>
+        </div>
+        
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <!-- Navigation built by JavaScript -->
+    </aside>
 
     <!-- Main Content -->
-    <main class="main-container">
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-content">
-                <div class="hero-icon">🛡️</div>
-                <h1>Microsoft Defender for Endpoint</h1>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-badge">
+                    <span>📚</span> 80+ Comprehensive Pages
+                </div>
+                <h1>MDE Ultimate Guide</h1>
                 <p class="hero-subtitle">
-                    The Ultimate Enterprise Guide for Security Analysts & Engineers. 
-                    Comprehensive coverage of architecture, deployment, detection, and response capabilities.
+                    Master Microsoft Defender for Endpoint with comprehensive documentation covering 
+                    architecture, detection engineering, threat hunting, and security operations.
                 </p>
-                <div class="hero-stats">
-                    <div class="stat-card">
-                        <div class="stat-value">12+</div>
-                        <div class="stat-label">Chapters</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">50+</div>
-                        <div class="stat-label">KQL Rules</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">100%</div>
-                        <div class="stat-label">Coverage</div>
-                    </div>
+                <a href="1-1-mde-overview.html" class="hero-cta">
+                    Start Learning →
+                </a>
+            </section>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">80+</div>
+                    <div class="stat-label">Pages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Sections</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100+</div>
+                    <div class="stat-label">KQL Queries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">50+</div>
+                    <div class="stat-label">Interview Tips</div>
                 </div>
             </div>
-        </section>
 
-        <!-- Quick Overview -->
-        <section class="section-header">
-            <h2>📚 What is Microsoft Defender for Endpoint?</h2>
-        </section>
-        
-        <div class="card">
-            <div class="card-body">
-                <p>
-                    <strong>Microsoft Defender for Endpoint (MDE)</strong> is an enterprise-grade endpoint security platform 
-                    designed to help enterprise networks prevent, detect, investigate, and respond to advanced threats. 
-                    It combines endpoint behavioral sensors, cloud security analytics, and threat intelligence to provide 
-                    comprehensive endpoint protection.
-                </p>
-                <p>
-                    MDE is part of Microsoft's broader <strong>Microsoft 365 Defender</strong> extended detection and response (XDR) 
-                    solution, which correlates signals across endpoints, identities, email, and cloud applications to provide 
-                    unified threat detection and response capabilities.
-                </p>
-                <h4>Key Capabilities:</h4>
-                <ul>
-                    <li><strong>Threat & Vulnerability Management (TVM)</strong> - Real-time visibility into software vulnerabilities and misconfigurations</li>
-                    <li><strong>Attack Surface Reduction (ASR)</strong> - Proactive controls to reduce the attack surface</li>
-                    <li><strong>Next-Generation Protection</strong> - Microsoft Defender Antivirus with behavior-based and heuristic detection</li>
-                    <li><strong>Endpoint Detection & Response (EDR)</strong> - Advanced threat detection, investigation, and response</li>
-                    <li><strong>Automated Investigation & Remediation (AIR)</strong> - AI-driven investigation and automatic remediation</li>
-                    <li><strong>Microsoft Threat Experts</strong> - Managed threat hunting service</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Navigation Cards -->
-        <section class="section-header mt-4">
-            <h2>🗂️ Guide Sections</h2>
-            <p class="section-desc">Navigate through comprehensive chapters covering every aspect of MDE.</p>
-        </section>
-
-        <div class="card-grid">
-            <!-- Architecture Card -->
-            <a href="architecture.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">🏗️</div>
-                    <h3 class="card-title">Architecture & Overview</h3>
-                    <p class="card-body">
-                        Deep dive into MDE architecture, data flow, cloud backend, sensor components, 
-                        and integration points. Includes visual diagrams and terminology.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-primary">Diagrams</span>
-                        <span class="badge badge-secondary">Data Flow</span>
-                    </div>
+            <!-- What's Inside -->
+            <h2>What's Inside</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">🏗️</div>
+                    <h4>Architecture & Deployment</h4>
+                    <p>Deep dive into MDE sensor architecture, cloud connectivity, and multi-platform onboarding.</p>
                 </div>
-            </a>
-
-            <!-- Deployment Card -->
-            <a href="deployment.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">🚀</div>
-                    <h3 class="card-title">Deployment Models</h3>
-                    <p class="card-body">
-                        Complete guide to on-premises, cloud, and hybrid deployments. Covers Intune, 
-                        GPO, SCCM, Azure Arc, and VDI onboarding strategies.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-primary">On-Prem</span>
-                        <span class="badge badge-primary">Cloud</span>
-                        <span class="badge badge-primary">Hybrid</span>
-                    </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">🛡️</div>
+                    <h4>Prevention Controls</h4>
+                    <p>Complete ASR rules reference, exploit protection, network filtering, and device control.</p>
                 </div>
-            </a>
-
-            <!-- Features Card -->
-            <a href="features.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">⚙️</div>
-                    <h3 class="card-title">Core Features</h3>
-                    <p class="card-body">
-                        Comprehensive coverage of Defender AV, EDR, TVM, Network Protection, 
-                        Web Filtering, Device Control, and Automated Investigation.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-secondary">EDR</span>
-                        <span class="badge badge-secondary">TVM</span>
-                        <span class="badge badge-secondary">AIR</span>
-                    </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">🎯</div>
+                    <h4>Advanced Hunting</h4>
+                    <p>KQL from basics to advanced, with 100+ ready-to-use detection queries.</p>
                 </div>
-            </a>
-
-            <!-- ASR Rules Card -->
-            <a href="asr-rules.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">🔒</div>
-                    <h3 class="card-title">ASR Rules Deep Dive</h3>
-                    <p class="card-body">
-                        Complete Attack Surface Reduction rules reference with configuration, 
-                        audit mode, exclusions, and enterprise deployment strategies.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-warning">19 Rules</span>
-                        <span class="badge badge-secondary">Exclusions</span>
-                    </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">⚡</div>
+                    <h4>Response & Remediation</h4>
+                    <p>Live Response commands, automated investigations, and IR playbooks.</p>
                 </div>
-            </a>
-
-            <!-- Analyst vs Engineer Card -->
-            <a href="analyst-engineer.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">👥</div>
-                    <h3 class="card-title">Analyst vs Engineer</h3>
-                    <p class="card-body">
-                        Role-based responsibilities with real-world enterprise scenarios, 
-                        daily workflows, and practical examples for each MDE feature.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-info">SOC Analyst</span>
-                        <span class="badge badge-info">SecEng</span>
-                    </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">🔧</div>
+                    <h4>Day-to-Day Operations</h4>
+                    <p>Real-world tasks, common tickets, and troubleshooting procedures.</p>
                 </div>
-            </a>
-
-            <!-- Troubleshooting Card -->
-            <a href="troubleshooting.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">🔧</div>
-                    <h3 class="card-title">Troubleshooting</h3>
-                    <p class="card-body">
-                        Common issues, diagnostic commands, sensor health, connectivity 
-                        problems, and step-by-step resolution workflows.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-danger">Issues</span>
-                        <span class="badge badge-secondary">Diagnostics</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Licensing Card -->
-            <a href="licensing.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">📋</div>
-                    <h3 class="card-title">Licensing & Comparison</h3>
-                    <p class="card-body">
-                        License tiers, feature comparison matrix, and detailed comparison 
-                        with CrowdStrike, SentinelOne, Trellix, and other EDR/XDR solutions.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-success">E5</span>
-                        <span class="badge badge-secondary">P1/P2</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- KQL Rules Card -->
-            <a href="kql-rules.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">🔍</div>
-                    <h3 class="card-title">KQL Rules Library</h3>
-                    <p class="card-body">
-                        50+ production-ready KQL detection rules with use cases, MITRE ATT&CK 
-                        mapping, and custom detection implementation guidance.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-primary">50+ Rules</span>
-                        <span class="badge badge-secondary">MITRE</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Use Cases Card -->
-            <a href="use-cases.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">🎯</div>
-                    <h3 class="card-title">Detection Scenarios</h3>
-                    <p class="card-body">
-                        Real-world attack scenarios including ransomware, lateral movement, 
-                        credential theft, and living-off-the-land techniques with response playbooks.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-danger">Ransomware</span>
-                        <span class="badge badge-warning">LOLBins</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Automation Card -->
-            <a href="automation.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">🤖</div>
-                    <h3 class="card-title">Automation & APIs</h3>
-                    <p class="card-body">
-                        MDE APIs, Microsoft Sentinel integration, Power BI dashboards, 
-                        SOAR playbooks, and automated response workflows.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-primary">APIs</span>
-                        <span class="badge badge-secondary">Sentinel</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Best Practices Card -->
-            <a href="best-practices.html" class="card-link">
-                <div class="card feature-card">
-                    <div class="card-icon">✅</div>
-                    <h3 class="card-title">Best Practices</h3>
-                    <p class="card-body">
-                        Enterprise hardening, policy tuning, MITRE ATT&CK alignment, 
-                        operational excellence, and future outlook for MDE.
-                    </p>
-                    <div class="tag-group">
-                        <span class="badge badge-success">Hardening</span>
-                        <span class="badge badge-secondary">Tuning</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Quick Start Section -->
-        <section class="section-header mt-4">
-            <h2>🚀 Quick Start Overview</h2>
-        </section>
-
-        <div class="diagram-container">
-            <div class="diagram-title">MDE Deployment Quick Start Flow</div>
-            <div class="flow-diagram">
-                <div class="flow-box primary">
-                    <div class="flow-box-title">1. Prerequisites</div>
-                    <div class="flow-box-desc">License, Azure AD, Network</div>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box">
-                    <div class="flow-box-title">2. Portal Setup</div>
-                    <div class="flow-box-desc">security.microsoft.com</div>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box">
-                    <div class="flow-box-title">3. Onboarding</div>
-                    <div class="flow-box-desc">Intune/GPO/Script</div>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box">
-                    <div class="flow-box-title">4. Configure</div>
-                    <div class="flow-box-desc">Policies & Rules</div>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box success">
-                    <div class="flow-box-title">5. Monitor</div>
-                    <div class="flow-box-desc">Alerts & Response</div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">💡</div>
+                    <h4>Interview Preparation</h4>
+                    <p>Key points, scenario walkthroughs, and technical questions for each topic.</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Key URLs Section -->
-        <section class="section-header mt-4">
-            <h2>🔗 Essential MDE URLs & Portals</h2>
-        </section>
+            <!-- Sections -->
+            <h2>Documentation Sections</h2>
+            <div class="sections-grid">
+                <!-- Section 1: Foundations -->
+                <a href="1-1-mde-overview.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">🏗️</span>
+                        <span class="section-card-num">01</span>
+                    </div>
+                    <h3>MDE Foundations</h3>
+                    <p>Architecture, licensing, and deployment across Windows, macOS, Linux, and mobile.</p>
+                    <div class="section-card-meta">
+                        <span>8 pages</span>
+                        <span class="badge badge-l1">Beginner</span>
+                    </div>
+                </a>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Portal / URL</th>
-                        <th>Purpose</th>
-                        <th>Access Level</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>security.microsoft.com</code></td>
-                        <td>Microsoft 365 Defender Portal - Primary MDE management interface</td>
-                        <td>Security Admin/Analyst</td>
-                    </tr>
-                    <tr>
-                        <td><code>intune.microsoft.com</code></td>
-                        <td>Microsoft Intune - Endpoint management and policy deployment</td>
-                        <td>Intune Admin</td>
-                    </tr>
-                    <tr>
-                        <td><code>portal.azure.com</code></td>
-                        <td>Azure Portal - Defender for Cloud, Arc, Azure VMs</td>
-                        <td>Azure Admin</td>
-                    </tr>
-                    <tr>
-                        <td><code>entra.microsoft.com</code></td>
-                        <td>Microsoft Entra (Azure AD) - Identity management</td>
-                        <td>Identity Admin</td>
-                    </tr>
-                    <tr>
-                        <td><code>compliance.microsoft.com</code></td>
-                        <td>Microsoft Purview - Compliance and DLP integration</td>
-                        <td>Compliance Admin</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                <!-- Section 2: Portal -->
+                <a href="2-1-security-portal-overview.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">🖥️</span>
+                        <span class="section-card-num">02</span>
+                    </div>
+                    <h3>Portal & Interface</h3>
+                    <p>Navigate the security portal, device inventory, alerts, incidents, and dashboards.</p>
+                    <div class="section-card-meta">
+                        <span>8 pages</span>
+                        <span class="badge badge-l1">Beginner</span>
+                    </div>
+                </a>
 
-        <!-- MDE Architecture Overview -->
-        <section class="section-header mt-4">
-            <h2>🏛️ High-Level Architecture</h2>
-        </section>
+                <!-- Section 3: Prevention -->
+                <a href="3-1-next-gen-protection.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">🛡️</span>
+                        <span class="section-card-num">03</span>
+                    </div>
+                    <h3>Prevention & Protection</h3>
+                    <p>ASR rules, exploit protection, network protection, device control, and exclusions.</p>
+                    <div class="section-card-meta">
+                        <span>10 pages</span>
+                        <span class="badge badge-l2">Intermediate</span>
+                    </div>
+                </a>
 
-        <div class="diagram-container">
-            <div class="diagram-title">Microsoft Defender for Endpoint Architecture</div>
-            <div class="arch-grid">
-                <div class="arch-layer">
-                    <div class="arch-layer-title">🖥️ Endpoints</div>
-                    <div class="arch-component">Windows 10/11 Workstations</div>
-                    <div class="arch-component">Windows Server 2012 R2+</div>
-                    <div class="arch-component">macOS (Monterey+)</div>
-                    <div class="arch-component">Linux (RHEL, Ubuntu, etc.)</div>
-                    <div class="arch-component">iOS & Android (Limited)</div>
+                <!-- Section 4: Detection -->
+                <a href="4-1-edr-capabilities.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">🔍</span>
+                        <span class="section-card-num">04</span>
+                    </div>
+                    <h3>Detection & EDR</h3>
+                    <p>EDR capabilities, alert types, device timeline, live response, and custom detections.</p>
+                    <div class="section-card-meta">
+                        <span>10 pages</span>
+                        <span class="badge badge-l2">Intermediate</span>
+                    </div>
+                </a>
+
+                <!-- Section 5: Hunting -->
+                <a href="5-1-advanced-hunting-overview.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">🎯</span>
+                        <span class="section-card-num">05</span>
+                    </div>
+                    <h3>Advanced Hunting</h3>
+                    <p>KQL mastery, schema reference, and hunting queries for processes, network, and more.</p>
+                    <div class="section-card-meta">
+                        <span>10 pages</span>
+                        <span class="badge badge-l3">Advanced</span>
+                    </div>
+                </a>
+
+                <!-- Section 6: Response -->
+                <a href="6-1-response-actions-overview.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">⚡</span>
+                        <span class="section-card-num">06</span>
+                    </div>
+                    <h3>Response & Remediation</h3>
+                    <p>Response actions, automated remediation, IR playbooks, and forensics collection.</p>
+                    <div class="section-card-meta">
+                        <span>8 pages</span>
+                        <span class="badge badge-l2">Intermediate</span>
+                    </div>
+                </a>
+
+                <!-- Section 7: Vulnerability -->
+                <a href="7-1-tvm-overview.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">🔓</span>
+                        <span class="section-card-num">07</span>
+                    </div>
+                    <h3>Vulnerability Management</h3>
+                    <p>TVM overview, vulnerability assessment, recommendations, and exposure insights.</p>
+                    <div class="section-card-meta">
+                        <span>6 pages</span>
+                        <span class="badge badge-l2">Intermediate</span>
+                    </div>
+                </a>
+
+                <!-- Section 8: Integration -->
+                <a href="8-1-microsoft-365-defender.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">🔗</span>
+                        <span class="section-card-num">08</span>
+                    </div>
+                    <h3>Integration & Automation</h3>
+                    <p>M365 Defender, Sentinel, Intune, APIs, Logic Apps, and SIEM integration.</p>
+                    <div class="section-card-meta">
+                        <span>8 pages</span>
+                        <span class="badge badge-l3">Advanced</span>
+                    </div>
+                </a>
+
+                <!-- Section 9: Troubleshooting -->
+                <a href="9-1-sensor-health.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">🔧</span>
+                        <span class="section-card-num">09</span>
+                    </div>
+                    <h3>Troubleshooting & Health</h3>
+                    <p>Sensor health, connectivity issues, onboarding failures, and Client Analyzer.</p>
+                    <div class="section-card-meta">
+                        <span>6 pages</span>
+                        <span class="badge badge-l2">Intermediate</span>
+                    </div>
+                </a>
+
+                <!-- Section 10: Enterprise -->
+                <a href="10-1-deployment-planning.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">🏢</span>
+                        <span class="section-card-num">10</span>
+                    </div>
+                    <h3>Enterprise Deployment</h3>
+                    <p>Deployment planning, rings strategy, GPO/Intune policies, and migrations.</p>
+                    <div class="section-card-meta">
+                        <span>6 pages</span>
+                        <span class="badge badge-l3">Advanced</span>
+                    </div>
+                </a>
+
+                <!-- Section 11: SecOps -->
+                <a href="11-1-soc-workflows.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">📊</span>
+                        <span class="section-card-num">11</span>
+                    </div>
+                    <h3>Security Operations</h3>
+                    <p>SOC workflows, metrics & KPIs, stakeholder reporting, and continuous improvement.</p>
+                    <div class="section-card-meta">
+                        <span>5 pages</span>
+                        <span class="badge badge-l2">Intermediate</span>
+                    </div>
+                </a>
+
+                <!-- Section 12: Reference -->
+                <a href="12-1-mde-glossary.html" class="section-card">
+                    <div class="section-card-header">
+                        <span class="section-card-icon">📚</span>
+                        <span class="section-card-num">12</span>
+                    </div>
+                    <h3>Reference & Interview</h3>
+                    <p>Glossary, interview questions, scenario walkthroughs, and cheat sheets.</p>
+                    <div class="section-card-meta">
+                        <span>6 pages</span>
+                        <span class="badge badge-l1">All Levels</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Quick Start -->
+            <h2>Quick Start Paths</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">🆕</div>
+                    <h4>New to MDE?</h4>
+                    <p>Start with <a href="1-1-mde-overview.html">MDE Overview</a> → <a href="1-2-mde-architecture.html">Architecture</a> → <a href="2-1-security-portal-overview.html">Portal Overview</a></p>
                 </div>
-                <div class="arch-layer">
-                    <div class="arch-layer-title">📡 Sensor/Agent</div>
-                    <div class="arch-component">MDE Sensor (Built-in Win10+)</div>
-                    <div class="arch-component">MMA/AMA (Legacy Servers)</div>
-                    <div class="arch-component">Unified Agent (Modern)</div>
-                    <div class="arch-component">Real-time Telemetry</div>
-                    <div class="arch-component">Local Detection Engine</div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">🎯</div>
+                    <h4>Threat Hunter?</h4>
+                    <p>Jump to <a href="5-3-kql-fundamentals.html">KQL Fundamentals</a> → <a href="5-5-hunting-queries-processes.html">Process Hunting</a> → <a href="5-10-hunting-workflows.html">Hunting Workflows</a></p>
                 </div>
-                <div class="arch-layer">
-                    <div class="arch-layer-title">☁️ Cloud Backend</div>
-                    <div class="arch-component">Azure Security Graph</div>
-                    <div class="arch-component">ML Detection Models</div>
-                    <div class="arch-component">Threat Intelligence</div>
-                    <div class="arch-component">Behavioral Analytics</div>
-                    <div class="arch-component">Alert Correlation Engine</div>
-                </div>
-                <div class="arch-layer">
-                    <div class="arch-layer-title">🎛️ Management</div>
-                    <div class="arch-component">M365 Defender Portal</div>
-                    <div class="arch-component">Microsoft Intune</div>
-                    <div class="arch-component">Microsoft Sentinel</div>
-                    <div class="arch-component">Graph Security API</div>
-                    <div class="arch-component">Power BI Reporting</div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">💼</div>
+                    <h4>Interview Prep?</h4>
+                    <p>Check <a href="12-2-interview-questions.html">Interview Questions</a> → <a href="12-3-scenario-walkthroughs.html">Scenario Walkthroughs</a> → <a href="12-4-kql-cheat-sheet.html">KQL Cheat Sheet</a></p>
                 </div>
             </div>
-        </div>
 
-        <!-- Feature Matrix -->
-        <section class="section-header mt-4">
-            <h2>📊 MDE Feature Matrix by License</h2>
-        </section>
-
-        <div class="table-container">
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>Feature</th>
-                        <th>Business Premium</th>
-                        <th>E3 + MDE P1</th>
-                        <th>E5 / MDE P2</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Microsoft Defender Antivirus</td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Attack Surface Reduction</td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Device Control</td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Endpoint Firewall</td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Network Protection</td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Web Content Filtering</td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Endpoint Detection & Response (EDR)</td>
-                        <td><span class="check-no">✗</span></td>
-                        <td><span class="check-partial">~</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Advanced Hunting (KQL)</td>
-                        <td><span class="check-no">✗</span></td>
-                        <td><span class="check-no">✗</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Threat & Vulnerability Management</td>
-                        <td><span class="check-partial">~</span></td>
-                        <td><span class="check-partial">~</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Automated Investigation & Response</td>
-                        <td><span class="check-no">✗</span></td>
-                        <td><span class="check-no">✗</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                    <tr>
-                        <td>Microsoft Threat Experts</td>
-                        <td><span class="check-no">✗</span></td>
-                        <td><span class="check-no">✗</span></td>
-                        <td><span class="check-yes">✓</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <p class="text-muted text-center">
-            <span class="check-yes">✓</span> Full Feature | 
-            <span class="check-partial">~</span> Limited/Basic | 
-            <span class="check-no">✗</span> Not Included
-        </p>
-
-        <!-- Alert Info Box -->
-        <div class="alert alert-info">
-            <div class="alert-icon">💡</div>
-            <div class="alert-content">
-                <div class="alert-title">Pro Tip</div>
-                <p>
-                    For interview preparation, focus on understanding the <strong>data flow</strong> from endpoint to cloud, 
-                    the distinction between <strong>prevention</strong> (ASR, AV) and <strong>detection/response</strong> (EDR), 
-                    and how MDE integrates with the broader Microsoft security ecosystem (Sentinel, Entra ID, Intune).
-                </p>
-            </div>
-        </div>
-
-        <!-- References Section -->
-        <section class="section-header mt-4">
-            <h2>📖 References & Further Reading</h2>
-        </section>
-
-        <div class="card">
-            <div class="card-body">
-                <h4>Official Microsoft Documentation</h4>
-                <ul>
-                    <li>Microsoft Defender for Endpoint Documentation - docs.microsoft.com/microsoft-365/security/defender-endpoint</li>
-                    <li>Microsoft 365 Defender Documentation - docs.microsoft.com/microsoft-365/security/defender</li>
-                    <li>Microsoft Sentinel Documentation - docs.microsoft.com/azure/sentinel</li>
-                    <li>Microsoft Intune Documentation - docs.microsoft.com/mem/intune</li>
-                </ul>
-                
-                <h4 class="mt-3">Security Blogs & Resources</h4>
-                <ul>
-                    <li>Microsoft Security Blog - microsoft.com/security/blog</li>
-                    <li>Microsoft Tech Community - Security - techcommunity.microsoft.com/t5/security-compliance-and-identity</li>
-                    <li>MITRE ATT&CK Framework - attack.mitre.org</li>
-                </ul>
-
-                <h4 class="mt-3">Training & Certifications</h4>
-                <ul>
-                    <li>SC-200: Microsoft Security Operations Analyst</li>
-                    <li>SC-400: Microsoft Information Protection Administrator</li>
-                    <li>AZ-500: Microsoft Azure Security Technologies</li>
-                    <li>Microsoft Learn Security Paths</li>
-                </ul>
+            <!-- Callout -->
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Pro Tip</h5>
+                    <p>Use <kbd>⌘</kbd>+<kbd>K</kbd> (or <kbd>Ctrl</kbd>+<kbd>K</kbd>) to quickly search and navigate to any page in this guide.</p>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="index.html">Home</a>
-                <a href="architecture.html">Architecture</a>
-                <a href="kql-rules.html">KQL Rules</a>
-                <a href="best-practices.html">Best Practices</a>
+    <!-- Search Modal -->
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
             </div>
-            <p class="footer-text">
-                Microsoft Defender for Endpoint Ultimate Guide | Created for Security Analysts & Engineers
-                <br>
-                <small>This guide is for educational and interview preparation purposes.</small>
-            </p>
+            <div class="search-results">
+                <!-- Results populated by JavaScript -->
+            </div>
         </div>
-    </footer>
+    </div>
 
-    <script src="js/main.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

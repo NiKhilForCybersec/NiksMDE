@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Rings | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to deployment rings for MDE rollouts. Learn how to structure phased deployments, define ring criteria, and safely roll out configurations to production.</p>
+            </div>
+
+            <h1>Deployment Rings</h1>
+
+            <p>Deployment rings enable phased rollouts of MDE configurations and policies. By testing with small groups first, you can identify issues before they impact the entire organization.</p>
+
+            <h2>Ring Strategy Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Deployment Ring Structure</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    DEPLOYMENT RING STRATEGY                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  RING 0: PILOT (1-5%)           RING 1: EARLY ADOPTERS (5-15%)         │
+│  ┌─────────────────────────┐   ┌─────────────────────────┐             │
+│  │ • IT Security team      │   │ • IT department         │             │
+│  │ • Test devices          │   │ • Power users           │             │
+│  │ • Lab environment       │   │ • Volunteer testers     │             │
+│  │                         │   │                         │             │
+│  │ Duration: 1-2 weeks     │   │ Duration: 1-2 weeks     │             │
+│  │ Goal: Initial testing   │   │ Goal: Broader validation│             │
+│  └─────────────────────────┘   └─────────────────────────┘             │
+│            │                              │                             │
+│            ▼                              ▼                             │
+│  RING 2: BROAD (15-50%)         RING 3: PRODUCTION (100%)              │
+│  ┌─────────────────────────┐   ┌─────────────────────────┐             │
+│  │ • Business units        │   │ • All remaining devices │             │
+│  │ • Mixed workloads       │   │ • Full organization     │             │
+│  │ • Representative sample │   │ • Complete coverage     │             │
+│  │                         │   │                         │             │
+│  │ Duration: 2-4 weeks     │   │ Goal: Full deployment   │             │
+│  │ Goal: Production ready  │   │                         │             │
+│  └─────────────────────────┘   └─────────────────────────┘             │
+│                                                                          │
+│  PROGRESSION CRITERIA:                                                  │
+│  ├── No critical issues in current ring                                │
+│  ├── False positive rate acceptable                                    │
+│  ├── Performance impact within limits                                  │
+│  └── Stakeholder approval to proceed                                   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Ring Definitions</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ring</th>
+                            <th>Scope</th>
+                            <th>Members</th>
+                            <th>Duration</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Ring 0 (Pilot)</strong></td>
+                            <td>1-5%</td>
+                            <td>IT Security, Test Lab</td>
+                            <td>1-2 weeks</td>
+                            <td>Initial testing, find blockers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ring 1 (Early)</strong></td>
+                            <td>5-15%</td>
+                            <td>IT, Power Users</td>
+                            <td>1-2 weeks</td>
+                            <td>Broader validation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ring 2 (Broad)</strong></td>
+                            <td>15-50%</td>
+                            <td>Business Units</td>
+                            <td>2-4 weeks</td>
+                            <td>Production readiness</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ring 3 (Prod)</strong></td>
+                            <td>100%</td>
+                            <td>All Devices</td>
+                            <td>Ongoing</td>
+                            <td>Full deployment</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Implementing Rings in Intune</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Intune Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>STEP 1: CREATE DEVICE GROUPS
+
+Azure AD → Groups → New group
+├── Group type: Security
+├── Group name: MDE-Ring0-Pilot
+├── Membership type: Assigned or Dynamic
+└── Add members (IT Security devices)
+
+Create groups:
+├── MDE-Ring0-Pilot
+├── MDE-Ring1-EarlyAdopters  
+├── MDE-Ring2-Broad
+└── MDE-Ring3-Production
+
+STEP 2: CREATE POLICIES PER RING
+
+For each configuration (e.g., ASR rules):
+
+Ring 0 Policy:
+├── Name: ASR Rules - Ring 0
+├── Assignment: MDE-Ring0-Pilot
+├── Settings: New configuration to test
+└── Deploy immediately
+
+Ring 1 Policy:
+├── Name: ASR Rules - Ring 1
+├── Assignment: MDE-Ring1-EarlyAdopters
+├── Settings: Same as Ring 0 (if validated)
+└── Deploy after Ring 0 success
+
+STEP 3: MONITOR AND PROGRESS
+
+After each ring:
+├── Review alerts and false positives
+├── Check performance impact
+├── Gather user feedback
+├── Get approval to proceed
+└── Clone/extend policy to next ring</code></pre>
+                </div>
+            </div>
+
+            <h2>Progression Criteria</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Ring Advancement Checklist</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>BEFORE MOVING TO NEXT RING:
+
+TECHNICAL VALIDATION:
+☐ No critical errors or failures
+☐ False positive rate &lt; threshold (e.g., &lt;30%)
+☐ No significant performance degradation
+☐ No application compatibility issues
+☐ Detection working as expected
+☐ Logs/telemetry flowing correctly
+
+OPERATIONAL VALIDATION:
+☐ Support team trained on new feature
+☐ Documentation updated
+☐ Runbooks created for common issues
+☐ Rollback procedure tested
+☐ Escalation path defined
+
+STAKEHOLDER APPROVAL:
+☐ IT Security sign-off
+☐ IT Operations sign-off
+☐ Business stakeholder awareness
+☐ Change advisory board approval (if required)
+
+ROLLBACK TRIGGERS:
+├── Critical application failure
+├── FP rate exceeds 50%
+├── Performance degradation &gt;20%
+├── Security incident caused by change
+└── Executive directive</code></pre>
+                </div>
+            </div>
+
+            <h2>ASR Rule Rollout Example</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Phased ASR Deployment</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXAMPLE: ROLLING OUT ASR RULES
+
+WEEK 1-2: RING 0 (AUDIT MODE)
+├── Deploy all ASR rules in Audit mode to pilot
+├── Collect telemetry on would-be blocks
+├── Identify applications that would be blocked
+├── Create exclusions for legitimate FPs
+└── Validate no critical issues
+
+WEEK 3-4: RING 0 (BLOCK MODE)
+├── Enable Block mode for validated rules
+├── Monitor for user-reported issues
+├── Fine-tune exclusions
+├── Document resolved issues
+└── Prepare for Ring 1
+
+WEEK 5-6: RING 1 (AUDIT → BLOCK)
+├── Deploy Audit mode to early adopters
+├── Quick validation (rules already tested)
+├── Enable Block mode after 3-5 days
+├── Monitor for new FPs (different apps)
+└── Update exclusion policy
+
+WEEK 7-10: RING 2 + 3
+├── Broader rollout with confidence
+├── Audit period shortened (2-3 days)
+├── Enable Block mode
+├── Continue monitoring
+└── Full production deployment</code></pre>
+                </div>
+            </div>
+
+            <h2>Monitoring Ring Health</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Ring Monitoring</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Alerts by device group (ring)</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind=inner</span> (
+    <span class="variable">DeviceInfo</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+    <span class="operator">|</span> <span class="keyword">summarize</span> <span class="function">arg_max</span>(Timestamp, *) <span class="keyword">by</span> DeviceId
+) <span class="keyword">on</span> DeviceId
+<span class="operator">|</span> <span class="keyword">summarize</span> AlertCount = <span class="function">count</span>() <span class="keyword">by</span> MachineGroup
+<span class="operator">|</span> <span class="keyword">order by</span> AlertCount <span class="keyword">desc</span>
+
+<span class="comment">// ASR blocks by group</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">startswith</span> <span class="string">"Asr"</span>
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind=inner</span> <span class="variable">DeviceInfo</span> <span class="keyword">on</span> DeviceId
+<span class="operator">|</span> <span class="keyword">summarize</span> Blocks = <span class="function">count</span>() <span class="keyword">by</span> MachineGroup, ActionType</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Always start with Audit mode</strong> for new features</li>
+                        <li><strong>Include diverse workloads</strong> in early rings</li>
+                        <li><strong>Document everything</strong> - issues found, resolutions, exclusions</li>
+                        <li><strong>Have rollback ready</strong> before each ring progression</li>
+                        <li><strong>Communicate changes</strong> to affected users</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                <ul>
+                    <li>Monitor ring health metrics</li>
+                    <li>Review feedback from ring participants</li>
+                    <li>Create exclusions for legitimate FPs</li>
+                    <li>Prepare progression documentation</li>
+                    <li>Coordinate with change management</li>
+                </ul>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Phased rollouts to catch issues early</li>
+                    <li><strong>Typical rings</strong>: Pilot → Early Adopters → Broad → Production</li>
+                    <li><strong>Ring 0 members</strong>: IT Security, test devices, volunteers</li>
+                    <li><strong>Progression criteria</strong>: No blockers, FP rate acceptable, stakeholder approval</li>
+                    <li><strong>Audit first</strong>: Always deploy new features in Audit mode first</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="10-1-deployment-planning.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Deployment Planning</span>
+                </a>
+                <a href="10-3-group-policy-settings.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Group Policy Settings</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

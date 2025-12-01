@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Hunting Overview | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Advanced Hunting in Microsoft 365 Defender. Learn the hunting interface, available data tables, schema exploration, query building, saving and sharing queries, and turning queries into custom detections.</p>
+            </div>
+
+            <h1>Advanced Hunting Overview</h1>
+
+            <p>Advanced Hunting is a query-based threat hunting tool that lets you explore up to 30 days of raw telemetry data from across Microsoft 365 Defender. It uses Kusto Query Language (KQL) to find threats that automated detections might miss.</p>
+
+            <h2>Why Use Advanced Hunting?</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Use Case</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Threat Hunting</strong></td>
+                            <td>Proactively search for threats</td>
+                            <td>Hunt for IOCs from threat intel report</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Incident Investigation</strong></td>
+                            <td>Deep dive into alert context</td>
+                            <td>Find all activity by compromised account</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hypothesis Testing</strong></td>
+                            <td>Validate security assumptions</td>
+                            <td>"Is anyone using unauthorized VPNs?"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Scope Assessment</strong></td>
+                            <td>Determine breach impact</td>
+                            <td>Find all devices that connected to C2</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom Detections</strong></td>
+                            <td>Create org-specific alerts</td>
+                            <td>Alert on internal tool misuse</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Accessing Advanced Hunting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Navigation and Access</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PORTAL ACCESS:
+security.microsoft.com → Hunting → Advanced hunting
+
+DIRECT URL:
+https://security.microsoft.com/hunting
+
+REQUIRED PERMISSIONS:
+• View-data (read-only hunting)
+• Security Operator or Security Admin (full access)
+
+LICENSING:
+• Included with Microsoft Defender for Endpoint P2
+• Included with Microsoft 365 E5 Security
+• Included with Microsoft 365 Defender</code></pre>
+                </div>
+            </div>
+
+            <h2>Hunting Interface</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Advanced Hunting Interface</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      ADVANCED HUNTING INTERFACE                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌───────────────────────────────────────────────────────────────────┐  │
+│  │  TOOLBAR                                                          │  │
+│  │  [▶ Run query] [Save] [Save as] [Share] [Schema] [Queries] [Docs] │  │
+│  └───────────────────────────────────────────────────────────────────┘  │
+│                                                                          │
+│  ┌─────────────────────────────┐  ┌─────────────────────────────────┐  │
+│  │  SCHEMA PANEL               │  │  QUERY EDITOR                   │  │
+│  │  (Left side - collapsible)  │  │                                 │  │
+│  │                             │  │  DeviceProcessEvents            │  │
+│  │  ▼ DeviceProcessEvents      │  │  | where Timestamp > ago(1d)    │  │
+│  │    ├─ Timestamp             │  │  | where FileName =~ "cmd.exe"  │  │
+│  │    ├─ DeviceId              │  │  | project Timestamp,           │  │
+│  │    ├─ DeviceName            │  │           DeviceName,           │  │
+│  │    ├─ ActionType            │  │           ProcessCommandLine    │  │
+│  │    ├─ FileName              │  │                                 │  │
+│  │    ├─ ProcessCommandLine    │  │                                 │  │
+│  │    └─ ...                   │  │                                 │  │
+│  │                             │  │                                 │  │
+│  │  ▶ DeviceNetworkEvents      │  │  [Ctrl+Enter to run]            │  │
+│  │  ▶ DeviceFileEvents         │  │                                 │  │
+│  │  ▶ DeviceRegistryEvents     │  │                                 │  │
+│  │  ▶ AlertInfo                │  │                                 │  │
+│  │  ▶ ...                      │  │                                 │  │
+│  └─────────────────────────────┘  └─────────────────────────────────┘  │
+│                                                                          │
+│  ┌───────────────────────────────────────────────────────────────────┐  │
+│  │  RESULTS PANEL                                                    │  │
+│  │  ┌─────────────────────────────────────────────────────────────┐ │  │
+│  │  │ Timestamp           │ DeviceName │ ProcessCommandLine      │ │  │
+│  │  ├─────────────────────────────────────────────────────────────┤ │  │
+│  │  │ 2024-01-15 14:32:00 │ DESKTOP-01 │ cmd.exe /c whoami       │ │  │
+│  │  │ 2024-01-15 14:33:00 │ SERVER-02  │ cmd.exe /c net user     │ │  │
+│  │  │ ...                 │ ...        │ ...                     │ │  │
+│  │  └─────────────────────────────────────────────────────────────┘ │  │
+│  │  [Export] [Link to incident] [Create detection rule] [Take action]│  │
+│  └───────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Available Data Tables</h2>
+
+            <h3>Endpoint Tables (MDE)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">MDE Data Tables</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROCESS DATA:
+├── DeviceProcessEvents
+│   └── Process creation and termination events
+│   └── Command lines, parent processes, user context
+
+NETWORK DATA:
+├── DeviceNetworkEvents
+│   └── Network connections, DNS queries
+│   └── Remote IPs, ports, protocols
+
+FILE DATA:
+├── DeviceFileEvents
+│   └── File create, modify, delete, rename
+│   └── File hashes, paths, sizes
+
+REGISTRY DATA:
+├── DeviceRegistryEvents
+│   └── Registry key and value changes
+│   └── Persistence detection
+
+LOGON DATA:
+├── DeviceLogonEvents
+│   └── Authentication events
+│   └── Logon types, source IPs
+
+IMAGE LOAD DATA:
+├── DeviceImageLoadEvents
+│   └── DLL and driver loads
+│   └── DLL injection detection
+
+MISCELLANEOUS:
+├── DeviceEvents
+│   └── ASR, Tamper Protection, AMSI, CFA events
+│   └── Catch-all for other security events
+
+DEVICE INFO:
+├── DeviceInfo
+│   └── Device inventory and properties
+│   └── OS version, logged-on users
+
+VULNERABILITY DATA:
+├── DeviceTvmSoftwareInventory
+├── DeviceTvmSoftwareVulnerabilities
+└── DeviceTvmSecureConfigurationAssessment</code></pre>
+                </div>
+            </div>
+
+            <h3>Alert and Incident Tables</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Alert Tables</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ALERT DATA:
+├── AlertInfo
+│   └── Alert metadata, severity, categories
+│   └── MITRE techniques, titles
+
+├── AlertEvidence
+│   └── Entities linked to alerts
+│   └── Files, processes, IPs, users
+
+THREAT INTELLIGENCE:
+└── ThreatIntelligenceIndicator
+    └── Custom indicators (IOCs)
+    └── File hashes, IPs, domains</code></pre>
+                </div>
+            </div>
+
+            <h3>Identity Tables (MDI)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Identity Tables</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>IDENTITY DATA (if MDI licensed):
+├── IdentityLogonEvents
+│   └── Domain controller authentication
+│   └── Kerberos, NTLM events
+
+├── IdentityQueryEvents
+│   └── LDAP queries
+│   └── Reconnaissance detection
+
+├── IdentityDirectoryEvents
+│   └── AD object changes
+│   └── User/group modifications
+
+└── AADSignInEventsBeta
+    └── Azure AD sign-ins
+    └── Cloud authentication</code></pre>
+                </div>
+            </div>
+
+            <h2>Query Building Basics</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Basic Query Structure</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// BASIC QUERY STRUCTURE</span>
+<span class="variable">TableName</span>                           <span class="comment">// Start with a table</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)       <span class="comment">// Filter by time (ALWAYS DO THIS FIRST)</span>
+<span class="operator">|</span> <span class="keyword">where</span> ColumnName <span class="operator">==</span> <span class="string">"value"</span>      <span class="comment">// Filter by condition</span>
+<span class="operator">|</span> <span class="keyword">project</span> Column1, Column2         <span class="comment">// Select columns to display</span>
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">desc</span>          <span class="comment">// Sort results</span>
+
+<span class="comment">// EXAMPLE: Find PowerShell executions in last 24 hours</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, AccountName, ProcessCommandLine
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">desc</span>
+
+<span class="comment">// EXAMPLE: Find network connections to specific IP</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> RemoteIP <span class="operator">==</span> <span class="string">"185.123.45.67"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName</code></pre>
+                </div>
+            </div>
+
+            <h2>Query Examples by Use Case</h2>
+
+            <h3>IOC Hunting</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Hunt for IOCs</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Hunt for file hash (SHA256)</span>
+<span class="keyword">let</span> targetHash <span class="operator">=</span> <span class="string">"a1b2c3d4e5f6..."</span>;
+<span class="variable">DeviceFileEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> SHA256 <span class="operator">==</span> targetHash
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, FolderPath, ActionType
+
+<span class="comment">// Hunt for multiple IPs</span>
+<span class="keyword">let</span> badIPs <span class="operator">=</span> <span class="function">dynamic</span>([<span class="string">"1.2.3.4"</span>, <span class="string">"5.6.7.8"</span>, <span class="string">"9.10.11.12"</span>]);
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> RemoteIP <span class="function">in</span> (badIPs)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteIP, InitiatingProcessFileName
+
+<span class="comment">// Hunt for domain</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> RemoteUrl <span class="function">contains</span> <span class="string">"malicious-domain.com"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteUrl, InitiatingProcessFileName</code></pre>
+                </div>
+            </div>
+
+            <h3>Incident Investigation</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Investigation Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// All activity by specific user (scope assessment)</span>
+<span class="keyword">let</span> targetUser <span class="operator">=</span> <span class="string">"john.smith"</span>;
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> AccountName <span class="operator">=~</span> targetUser
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, ProcessCommandLine
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">asc</span>
+
+<span class="comment">// All activity on compromised device</span>
+<span class="keyword">let</span> targetDevice <span class="operator">=</span> <span class="string">"DESKTOP-ABC123"</span>;
+<span class="keyword">let</span> startTime <span class="operator">=</span> <span class="function">datetime</span>(<span class="number">2024</span>-<span class="number">01</span>-<span class="number">15</span> <span class="number">14</span>:<span class="number">00</span>);
+<span class="keyword">let</span> endTime <span class="operator">=</span> <span class="function">datetime</span>(<span class="number">2024</span>-<span class="number">01</span>-<span class="number">15</span> <span class="number">16</span>:<span class="number">00</span>);
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="keyword">between</span> (startTime .. endTime)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">=~</span> targetDevice
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, FileName, ProcessCommandLine, AccountName
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">asc</span>
+
+<span class="comment">// Find lateral movement from device</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">=~</span> <span class="string">"COMPROMISED-PC"</span>
+<span class="operator">|</span> <span class="keyword">where</span> RemotePort <span class="function">in</span> (<span class="number">445</span>, <span class="number">135</span>, <span class="number">5985</span>, <span class="number">3389</span>)  <span class="comment">// SMB, RPC, WinRM, RDP</span>
+<span class="operator">|</span> <span class="keyword">where</span> RemoteIPType <span class="operator">==</span> <span class="string">"Private"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, RemoteIP, RemotePort, InitiatingProcessFileName</code></pre>
+                </div>
+            </div>
+
+            <h2>Saving and Sharing Queries</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Query Management</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SAVING QUERIES:
+1. Click "Save" or "Save as"
+2. Enter query name and description
+3. Choose folder (My queries or Shared)
+4. Add tags for organization
+
+QUERY FOLDERS:
+├── My queries (private to you)
+├── Shared queries (visible to team)
+└── Community queries (Microsoft samples)
+
+SHARING OPTIONS:
+• Share query link (view-only)
+• Share to team folder
+• Export as file (.kql)
+
+ORGANIZING QUERIES:
+• Use folders for categories (Hunting, IR, Compliance)
+• Add descriptive tags
+• Include comments in query explaining purpose
+
+BEST PRACTICES:
+• Name queries descriptively: "Hunt_C2_Beaconing_Detection"
+• Include time filter in saved queries
+• Document what the query detects
+• Version queries when updating</code></pre>
+                </div>
+            </div>
+
+            <h2>Creating Custom Detections</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Custom Detection Rules</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CREATING A CUSTOM DETECTION:
+
+1. Write and test your query
+2. Click "Create detection rule"
+3. Configure rule settings:
+
+RULE DETAILS:
+├── Name: Descriptive name
+├── Description: What it detects and why
+├── Severity: High/Medium/Low/Informational
+└── Category: MITRE category
+
+QUERY REQUIREMENTS:
+├── Must include Timestamp column
+├── Should include DeviceId or DeviceName
+├── Should include identifying entity columns
+└── Return results for action mapping
+
+FREQUENCY:
+├── Every hour (most common)
+├── Every 3 hours
+├── Every 12 hours
+└── Every 24 hours
+
+IMPACTED ENTITIES (Map columns):
+├── Devices: DeviceId
+├── Users: AccountSid, AccountName
+├── Files: SHA256, FileName
+└── IPs: RemoteIP
+
+ACTIONS (Optional):
+├── Isolate device
+├── Collect investigation package
+├── Run antivirus scan
+├── Quarantine file
+└── No action (alert only)
+
+EXAMPLE DETECTION QUERY:
+<span class="comment">// Detect mimikatz-like behavior</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"sekurlsa"</span>, <span class="string">"lsadump"</span>, <span class="string">"kerberos::"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceId, DeviceName, FileName, ProcessCommandLine, AccountName</code></pre>
+                </div>
+            </div>
+
+            <h2>Keyboard Shortcuts</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Shortcut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td>
+                            <td>Run query</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>Space</kbd></td>
+                            <td>Trigger autocomplete</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>S</kbd></td>
+                            <td>Save query</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>/</kbd></td>
+                            <td>Toggle comment</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>F</kbd></td>
+                            <td>Find in editor</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>F1</kbd></td>
+                            <td>Open help/docs</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Data Retention</h2>
+
+            <div class="callout info">
+                <div class="callout-icon">ℹ️</div>
+                <div class="callout-content">
+                    <h5>Data Retention Limits</h5>
+                    <ul>
+                        <li><strong>Default retention</strong>: 30 days</li>
+                        <li><strong>Extended retention</strong>: Up to 180 days (configure in Settings)</li>
+                        <li><strong>Query timeout</strong>: 10 minutes maximum</li>
+                        <li><strong>Result limit</strong>: 10,000 rows displayed, 100,000 exported</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Hunting Operations</h4>
+                <ul>
+                    <li>Hunt for IOCs from threat intelligence feeds</li>
+                    <li>Investigate alert context with deeper queries</li>
+                    <li>Scope incidents to find all affected assets</li>
+                    <li>Build and maintain custom detection library</li>
+                    <li>Create queries for specific threat hypotheses</li>
+                    <li>Export results for reporting and documentation</li>
+                </ul>
+
+                <h4>Common Tasks</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Hunt for new threat intel IOCs"</span>
+                    <span class="ticket-solution">→ Build query with file hashes, IPs, domains from report. Search 30 days.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Find scope of compromised account"</span>
+                    <span class="ticket-solution">→ Query all tables for AccountName, join results, timeline activity.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Create detection for internal threat"</span>
+                    <span class="ticket-solution">→ Write query, test, create custom detection rule with appropriate actions.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Query-based proactive threat hunting across 30 days of data</li>
+                    <li><strong>Language</strong>: Kusto Query Language (KQL) - same as Azure Data Explorer</li>
+                    <li><strong>Key tables</strong>: DeviceProcessEvents, DeviceNetworkEvents, DeviceFileEvents, DeviceRegistryEvents</li>
+                    <li><strong>Custom detections</strong>: Turn hunting queries into automated alerts</li>
+                    <li><strong>Best practice</strong>: Always filter by time first for performance</li>
+                    <li><strong>Retention</strong>: 30 days default, up to 180 days extended</li>
+                    <li><strong>Run shortcut</strong>: Ctrl+Enter to execute query</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-7-custom-detections.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Custom Detections</span>
+                </a>
+                <a href="5-2-schema-reference.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Schema Reference</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

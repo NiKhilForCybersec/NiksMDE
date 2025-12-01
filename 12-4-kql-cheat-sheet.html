@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KQL Cheat Sheet | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Quick reference cheat sheet for KQL (Kusto Query Language) in MDE Advanced Hunting. Copy-paste ready queries, operator reference, and common patterns for threat hunting.</p>
+            </div>
+
+            <h1>KQL Cheat Sheet</h1>
+
+            <h2>Essential Operators</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Purpose</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>where</code></td>
+                            <td>Filter rows</td>
+                            <td><code>| where FileName =~ "cmd.exe"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>project</code></td>
+                            <td>Select columns</td>
+                            <td><code>| project Timestamp, DeviceName, FileName</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>extend</code></td>
+                            <td>Add calculated column</td>
+                            <td><code>| extend Length = strlen(CommandLine)</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>summarize</code></td>
+                            <td>Aggregate data</td>
+                            <td><code>| summarize count() by DeviceName</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>order by</code></td>
+                            <td>Sort results</td>
+                            <td><code>| order by Timestamp desc</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>take</code> / <code>limit</code></td>
+                            <td>Limit results</td>
+                            <td><code>| take 100</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>join</code></td>
+                            <td>Combine tables</td>
+                            <td><code>| join kind=inner (Table2) on DeviceId</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>union</code></td>
+                            <td>Combine results</td>
+                            <td><code>Table1 | union Table2</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>let</code></td>
+                            <td>Define variable</td>
+                            <td><code>let timeframe = 7d;</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>render</code></td>
+                            <td>Visualize results</td>
+                            <td><code>| render timechart</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>String Operators</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Case Sensitive</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>==</code></td>
+                            <td>Yes</td>
+                            <td>Exact match</td>
+                        </tr>
+                        <tr>
+                            <td><code>=~</code></td>
+                            <td>No</td>
+                            <td>Exact match (case-insensitive)</td>
+                        </tr>
+                        <tr>
+                            <td><code>!=</code></td>
+                            <td>Yes</td>
+                            <td>Not equal</td>
+                        </tr>
+                        <tr>
+                            <td><code>contains</code></td>
+                            <td>No</td>
+                            <td>Substring match</td>
+                        </tr>
+                        <tr>
+                            <td><code>contains_cs</code></td>
+                            <td>Yes</td>
+                            <td>Substring match (case-sensitive)</td>
+                        </tr>
+                        <tr>
+                            <td><code>has</code></td>
+                            <td>No</td>
+                            <td>Word/token match (FASTER)</td>
+                        </tr>
+                        <tr>
+                            <td><code>has_cs</code></td>
+                            <td>Yes</td>
+                            <td>Word match (case-sensitive)</td>
+                        </tr>
+                        <tr>
+                            <td><code>startswith</code></td>
+                            <td>No</td>
+                            <td>Prefix match</td>
+                        </tr>
+                        <tr>
+                            <td><code>endswith</code></td>
+                            <td>No</td>
+                            <td>Suffix match</td>
+                        </tr>
+                        <tr>
+                            <td><code>matches regex</code></td>
+                            <td>Configurable</td>
+                            <td>Regular expression</td>
+                        </tr>
+                        <tr>
+                            <td><code>in</code></td>
+                            <td>Yes</td>
+                            <td>Match any in list</td>
+                        </tr>
+                        <tr>
+                            <td><code>in~</code></td>
+                            <td>No</td>
+                            <td>Match any (case-insensitive)</td>
+                        </tr>
+                        <tr>
+                            <td><code>has_any</code></td>
+                            <td>No</td>
+                            <td>Has any word from list</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Time Functions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Relative time</span>
+<span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)      <span class="comment">// Last hour</span>
+<span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)      <span class="comment">// Last 7 days</span>
+<span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>m)     <span class="comment">// Last 30 minutes</span>
+
+<span class="comment">// Time range</span>
+<span class="keyword">where</span> Timestamp <span class="keyword">between</span> (<span class="function">ago</span>(<span class="number">7</span>d) .. <span class="function">ago</span>(<span class="number">1</span>d))
+
+<span class="comment">// Specific date</span>
+<span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">datetime</span>(<span class="number">2024</span>-<span class="number">01</span>-<span class="number">15</span>)
+
+<span class="comment">// Time bucketing</span>
+<span class="keyword">summarize</span> <span class="function">count</span>() <span class="keyword">by</span> <span class="function">bin</span>(Timestamp, <span class="number">1</span>h)
+
+<span class="comment">// Extract components</span>
+<span class="keyword">extend</span> Hour <span class="operator">=</span> <span class="function">hourofday</span>(Timestamp)
+<span class="keyword">extend</span> DayOfWeek <span class="operator">=</span> <span class="function">dayofweek</span>(Timestamp)</code></pre>
+                </div>
+            </div>
+
+            <h2>Aggregation Functions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="function">count</span>()                    <span class="comment">// Number of rows</span>
+<span class="function">dcount</span>(ColumnName)         <span class="comment">// Distinct count</span>
+<span class="function">sum</span>(ColumnName)            <span class="comment">// Sum of values</span>
+<span class="function">avg</span>(ColumnName)            <span class="comment">// Average</span>
+<span class="function">min</span>(ColumnName)            <span class="comment">// Minimum value</span>
+<span class="function">max</span>(ColumnName)            <span class="comment">// Maximum value</span>
+<span class="function">percentile</span>(Column, <span class="number">95</span>)     <span class="comment">// 95th percentile</span>
+<span class="function">make_set</span>(ColumnName)       <span class="comment">// Unique values as array</span>
+<span class="function">make_list</span>(ColumnName)      <span class="comment">// All values as array</span>
+<span class="function">arg_max</span>(Timestamp, *)      <span class="comment">// Row with max timestamp</span>
+<span class="function">arg_min</span>(Timestamp, *)      <span class="comment">// Row with min timestamp</span></code></pre>
+                </div>
+            </div>
+
+            <h2>MDE Hunting Tables</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Contents</th>
+                            <th>Key Columns</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>DeviceProcessEvents</code></td>
+                            <td>Process execution</td>
+                            <td>FileName, ProcessCommandLine, InitiatingProcessFileName</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceNetworkEvents</code></td>
+                            <td>Network connections</td>
+                            <td>RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFileName</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceFileEvents</code></td>
+                            <td>File operations</td>
+                            <td>FileName, FolderPath, ActionType, SHA256</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceRegistryEvents</code></td>
+                            <td>Registry changes</td>
+                            <td>RegistryKey, RegistryValueName, ActionType</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceLogonEvents</code></td>
+                            <td>Logon activity</td>
+                            <td>AccountName, LogonType, RemoteIP</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceImageLoadEvents</code></td>
+                            <td>DLL loads</td>
+                            <td>FileName, FolderPath, InitiatingProcessFileName</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceEvents</code></td>
+                            <td>Misc events (ASR, etc.)</td>
+                            <td>ActionType, FileName, AdditionalFields</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceInfo</code></td>
+                            <td>Device metadata</td>
+                            <td>DeviceName, OSPlatform, PublicIP</td>
+                        </tr>
+                        <tr>
+                            <td><code>AlertInfo</code></td>
+                            <td>Alert details</td>
+                            <td>AlertId, Title, Severity, Category</td>
+                        </tr>
+                        <tr>
+                            <td><code>AlertEvidence</code></td>
+                            <td>Alert evidence</td>
+                            <td>AlertId, EntityType, EvidenceRole</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Copy-Paste Ready Queries</h2>
+
+            <h3>🔍 Process Hunting</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Encoded PowerShell Commands</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DeviceProcessEvents
+| where Timestamp > ago(7d)
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+| where ProcessCommandLine has_any ("-enc", "-EncodedCommand", "FromBase64")
+| project Timestamp, DeviceName, AccountName, ProcessCommandLine, 
+         InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Office Spawning Suspicious Processes</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DeviceProcessEvents
+| where Timestamp > ago(7d)
+| where InitiatingProcessFileName in~ ("winword.exe", "excel.exe", "powerpnt.exe", "outlook.exe")
+| where FileName in~ ("cmd.exe", "powershell.exe", "wscript.exe", "cscript.exe", "mshta.exe", "certutil.exe")
+| project Timestamp, DeviceName, InitiatingProcessFileName, FileName, ProcessCommandLine
+| order by Timestamp desc</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">LOLBins Execution</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>let lolbins = dynamic(["certutil.exe", "mshta.exe", "regsvr32.exe", "rundll32.exe", 
+                       "msiexec.exe", "wmic.exe", "cmstp.exe", "msxsl.exe"]);
+DeviceProcessEvents
+| where Timestamp > ago(7d)
+| where FileName in~ (lolbins)
+| where ProcessCommandLine has_any ("http", "ftp", "/i:", "-decode", "javascript:", "vbscript:")
+| project Timestamp, DeviceName, FileName, ProcessCommandLine, InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                </div>
+            </div>
+
+            <h3>🌐 Network Hunting</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Beaconing Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DeviceNetworkEvents
+| where Timestamp > ago(24h)
+| where RemoteIPType == "Public"
+| summarize 
+    ConnectionCount = count(),
+    BytesSent = sum(SentBytes),
+    BytesReceived = sum(ReceivedBytes),
+    FirstSeen = min(Timestamp),
+    LastSeen = max(Timestamp)
+    by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName
+| where ConnectionCount > 50
+| extend Duration = LastSeen - FirstSeen
+| where Duration > 1h
+| order by ConnectionCount desc</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Connections to Rare Ports</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>let commonPorts = dynamic([80, 443, 8080, 8443, 53, 22, 21, 25, 110, 143, 993, 995]);
+DeviceNetworkEvents
+| where Timestamp > ago(7d)
+| where RemoteIPType == "Public"
+| where RemotePort !in (commonPorts)
+| summarize 
+    Connections = count(),
+    Devices = dcount(DeviceName)
+    by RemoteIP, RemotePort
+| where Connections < 10  // Rare
+| order by Connections asc</code></pre>
+                </div>
+            </div>
+
+            <h3>🔐 Credential Access Hunting</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">LSASS Access Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DeviceProcessEvents
+| where Timestamp > ago(7d)
+| where FileName =~ "lsass.exe"
+| where ActionType == "ProcessAccessed"
+| where InitiatingProcessFileName !in~ ("svchost.exe", "csrss.exe", "MsMpEng.exe", "MsSense.exe")
+| project Timestamp, DeviceName, InitiatingProcessFileName, 
+         InitiatingProcessCommandLine, InitiatingProcessAccountName
+| order by Timestamp desc</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Credential Dumping Tools</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DeviceProcessEvents
+| where Timestamp > ago(7d)
+| where ProcessCommandLine has_any ("mimikatz", "sekurlsa", "procdump", "lsass", 
+                                    "comsvcs.dll", "MiniDump", "pypykatz")
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine
+| order by Timestamp desc</code></pre>
+                </div>
+            </div>
+
+            <h3>📁 Persistence Hunting</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Registry Run Key Modifications</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DeviceRegistryEvents
+| where Timestamp > ago(7d)
+| where ActionType == "RegistryValueSet"
+| where RegistryKey has_any ("CurrentVersion\\Run", "CurrentVersion\\RunOnce")
+| project Timestamp, DeviceName, RegistryKey, RegistryValueName, 
+         RegistryValueData, InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Scheduled Task Creation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DeviceProcessEvents
+| where Timestamp > ago(7d)
+| where FileName =~ "schtasks.exe"
+| where ProcessCommandLine has "/create"
+| project Timestamp, DeviceName, AccountName, ProcessCommandLine
+| order by Timestamp desc</code></pre>
+                </div>
+            </div>
+
+            <h3>📊 Statistical Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Rare Processes (Stacking)</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DeviceProcessEvents
+| where Timestamp > ago(7d)
+| summarize 
+    ExecutionCount = count(),
+    DeviceCount = dcount(DeviceName),
+    Users = make_set(AccountName)
+    by FileName, FolderPath
+| where ExecutionCount < 5 and DeviceCount == 1
+| order by ExecutionCount asc</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">First-Time Process Execution</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>let lookback = 30d;
+let timeframe = 1d;
+let baseline = DeviceProcessEvents
+    | where Timestamp between (ago(lookback) .. ago(timeframe))
+    | distinct FileName, DeviceName;
+DeviceProcessEvents
+| where Timestamp > ago(timeframe)
+| join kind=leftanti baseline on FileName, DeviceName
+| summarize FirstSeen = min(Timestamp), Count = count() by DeviceName, FileName, FolderPath
+| order by FirstSeen desc</code></pre>
+                </div>
+            </div>
+
+            <h2>Performance Tips</h2>
+
+            <div class="callout tip">
+                <div class="callout-icon">⚡</div>
+                <div class="callout-content">
+                    <h5>Query Optimization</h5>
+                    <ul>
+                        <li><strong>Filter time first</strong>: Always start with <code>where Timestamp > ago()</code></li>
+                        <li><strong>Use <code>has</code> over <code>contains</code></strong>: <code>has</code> uses indexing, much faster</li>
+                        <li><strong>Use <code>in~</code> for multiple values</strong>: Instead of multiple OR conditions</li>
+                        <li><strong>Project early</strong>: Remove unnecessary columns before joins</li>
+                        <li><strong>Avoid regex when possible</strong>: Use string operators instead</li>
+                        <li><strong>Use <code>let</code> statements</strong>: Define reusable values/tables</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Page Navigation -->
+            <nav class="page-nav">
+                <a href="12-3-scenario-walkthroughs.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Scenario Walkthroughs</span>
+                </a>
+                <a href="12-5-powershell-reference.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">PowerShell Reference</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

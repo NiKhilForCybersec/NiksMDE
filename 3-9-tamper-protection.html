@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamper Protection | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Tamper Protection in MDE. Learn how it prevents attackers from disabling security features, what it protects, how to manage it, and troubleshoot tamper protection issues.</p>
+            </div>
+
+            <h1>Tamper Protection</h1>
+
+            <p>Tamper Protection prevents malicious apps and attackers from disabling Microsoft Defender Antivirus security features. It locks down critical settings so they can only be changed through authorized management channels.</p>
+
+            <h2>What Tamper Protection Protects</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Tamper Protection Coverage</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    TAMPER PROTECTION COVERAGE                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  PROTECTED SETTINGS (Cannot be changed locally when enabled)            │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                  │   │
+│  │  ┌──────────────────────┐  ┌──────────────────────┐            │   │
+│  │  │ Real-time Protection │  │ Cloud Protection     │            │   │
+│  │  │ • Cannot be disabled │  │ • Cannot be disabled │            │   │
+│  │  │   via PowerShell     │  │   locally            │            │   │
+│  │  │ • Cannot be disabled │  │                      │            │   │
+│  │  │   via registry       │  │                      │            │   │
+│  │  └──────────────────────┘  └──────────────────────┘            │   │
+│  │                                                                  │   │
+│  │  ┌──────────────────────┐  ┌──────────────────────┐            │   │
+│  │  │ Behavior Monitoring  │  │ Virus Definitions    │            │   │
+│  │  │ • Protected          │  │ • Cannot be deleted  │            │   │
+│  │  │                      │  │ • Cannot be reverted │            │   │
+│  │  └──────────────────────┘  └──────────────────────┘            │   │
+│  │                                                                  │   │
+│  │  ┌──────────────────────┐  ┌──────────────────────┐            │   │
+│  │  │ IOAV Protection      │  │ MDE Sensor           │            │   │
+│  │  │ (Office files)       │  │ • Service protected  │            │   │
+│  │  │ • Protected          │  │ • Cannot be stopped  │            │   │
+│  │  └──────────────────────┘  └──────────────────────┘            │   │
+│  │                                                                  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  WHAT'S BLOCKED:                                                        │
+│  ├── PowerShell: Set-MpPreference -DisableRealtimeMonitoring $true     │
+│  ├── Registry: HKLM\...\Windows Defender modifications                  │
+│  ├── Services: Stopping WinDefend, Sense services                       │
+│  ├── Group Policy: Local GP overrides (when cloud-managed)              │
+│  └── WMI: Attempting to modify settings via WMI                         │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>How It Works</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Tamper Protection Mechanism</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROTECTION MECHANISM:
+
+LOCAL LOCKDOWN:
+├── Registry keys are protected from modification
+├── Service control is blocked for protected services
+├── PowerShell cmdlets are intercepted and blocked
+├── Group Policy local overrides are ignored
+└── WMI modifications are blocked
+
+MANAGEMENT CHANNELS (Still work):
+├── Microsoft Endpoint Manager (Intune)
+├── Microsoft Defender Security Center portal
+├── Configuration Manager with tenant attach
+└── Microsoft 365 Defender settings
+
+ATTACK SCENARIO PREVENTED:
+Attacker gains access
+    ↓
+Tries: Set-MpPreference -DisableRealtimeMonitoring $true
+    ↓
+Result: Operation BLOCKED - Tamper protection active
+    ↓
+Defender stays enabled
+    ↓
+Attacker's malware is detected and blocked
+
+WITHOUT TAMPER PROTECTION:
+Attacker gains access
+    ↓
+Runs: Set-MpPreference -DisableRealtimeMonitoring $true
+    ↓
+Result: Defender DISABLED
+    ↓
+Attacker drops malware undetected
+    ↓
+Full compromise</code></pre>
+                </div>
+            </div>
+
+            <h2>Enabling Tamper Protection</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Configuration Methods</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>METHOD 1: MICROSOFT 365 DEFENDER PORTAL (Recommended)
+────────────────────────────────────────────────────────
+security.microsoft.com → Settings → Endpoints → Advanced features
+└── Tamper protection: ON
+
+This enables for ALL onboarded devices automatically.
+
+METHOD 2: INTUNE
+────────────────────────────────────────────────────────
+Endpoint security → Antivirus → Create policy
+Platform: Windows 10 and later
+Profile: Windows Security experience
+
+Settings:
+└── Tamper Protection: Enabled
+
+METHOD 3: WINDOWS SECURITY (Individual device)
+────────────────────────────────────────────────────────
+Windows Security → Virus & threat protection
+→ Virus & threat protection settings → Manage settings
+→ Tamper Protection: ON
+
+Note: This can be managed by Intune/SCCM to prevent local changes.
+
+CHECK CURRENT STATUS:
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> IsTamperProtected
+<span class="comment"># True = Enabled, False = Disabled</span>
+
+REGISTRY CHECK:
+<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Defender\Features"</span> <span class="variable">-Name</span> TamperProtection
+<span class="comment"># 5 = Enabled, 4 = Disabled, 0 = Not configured</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Management Considerations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Operational Impact</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>THINGS THAT STILL WORK:
+
+LEGITIMATE MANAGEMENT:
+├── Intune policies apply normally
+├── SCCM with tenant attach works
+├── Microsoft 365 Defender portal settings work
+├── Windows Security app (when allowed)
+└── Exclusions via Intune/SCCM still work
+
+THINGS THAT ARE BLOCKED:
+
+LOCAL CHANGES:
+├── PowerShell Set-MpPreference (protected settings)
+├── Registry modifications to Defender keys
+├── Service stop/disable commands
+├── Local Group Policy for protected settings
+└── Third-party tools trying to disable Defender
+
+IMPACT ON IT OPERATIONS:
+├── Cannot disable Defender locally for troubleshooting
+├── Must use cloud management for changes
+├── Scripts that modify Defender settings may fail
+└── Some third-party tools may report errors
+
+WORKAROUNDS FOR LEGITIMATE NEEDS:
+├── Use Intune/SCCM for configuration changes
+├── Create proper exclusion policies
+├── Use device groups for different configurations
+└── Temporarily disable via portal if absolutely necessary</code></pre>
+                </div>
+            </div>
+
+            <h2>Tamper Protection Events</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Monitoring Tamper Attempts</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EVENT LOG:
+Microsoft-Windows-Windows Defender/Operational
+
+KEY EVENT IDS:
+├── 5013: Tamper protection blocked a change
+├── 5014: Tamper protection audit (would have blocked)
+└── 5007: Configuration changed
+
+POWERSHELL - VIEW TAMPER EVENTS:
+<span class="function">Get-WinEvent</span> <span class="variable">-LogName</span> <span class="string">"Microsoft-Windows-Windows Defender/Operational"</span> <span class="operator">|</span>
+    <span class="function">Where-Object</span> { <span class="variable">$_</span>.Id <span class="operator">-in</span> @(<span class="number">5013</span>, <span class="number">5014</span>) } <span class="operator">|</span>
+    <span class="function">Select-Object</span> TimeCreated, Id, Message
+
+KQL - TAMPER ATTEMPTS IN MDE:
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"TamperProtection"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, InitiatingProcessFileName, 
+         InitiatingProcessCommandLine, AccountName
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">desc</span>
+
+ALERT ON TAMPER ATTEMPTS:
+├── MDE generates alerts for tamper attempts
+├── High severity - indicates active attack
+├── Investigate immediately
+└── Check what process attempted the tampering</code></pre>
+                </div>
+            </div>
+
+            <h2>Troubleshooting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Issues</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ISSUE: Can't disable Defender for testing
+SOLUTION:
+├── Use Intune/SCCM to create test policy
+├── Create exclusion for test file/folder
+├── Use dedicated test device group
+└── If urgent, temporarily disable via portal
+
+ISSUE: Third-party security tool conflicts
+SOLUTION:
+├── Check if tool is compatible with tamper protection
+├── Contact vendor for updated version
+├── May need to configure tool to work with Defender
+└── Don't disable tamper protection as workaround
+
+ISSUE: IT script failing to run
+SOLUTION:
+├── Review what the script is trying to do
+├── If modifying Defender settings, use Intune instead
+├── If creating exclusions, use proper policy
+└── Update script to work with tamper protection
+
+ISSUE: Tamper protection not enabling
+CHECK:
+├── Device onboarded to MDE?
+├── Cloud connectivity working?
+├── Conflicting Group Policy?
+├── Third-party AV blocking?
+└── Check event logs for errors
+
+ISSUE: Need to disable for break/fix
+PROCESS:
+├── Portal: Settings → Endpoints → Advanced features
+├── Temporarily disable
+├── Fix the issue
+├── Re-enable IMMEDIATELY
+└── Document the change</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Security Warning</h5>
+                    <ul>
+                        <li><strong>Never disable tamper protection permanently</strong></li>
+                        <li><strong>Tamper attempts = active attack indicator</strong></li>
+                        <li><strong>Investigate all tamper alerts immediately</strong></li>
+                        <li><strong>If disabled, re-enable within minutes</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Tamper Protection Operations</h4>
+                <ul>
+                    <li>Verify tamper protection is enabled org-wide</li>
+                    <li>Monitor and investigate tamper attempts</li>
+                    <li>Handle IT requests that conflict with tamper protection</li>
+                    <li>Educate teams on proper management channels</li>
+                    <li>Document any temporary disabling with justification</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Tamper protection alert generated"</span>
+                    <span class="ticket-solution">→ INVESTIGATE IMMEDIATELY. Check what process attempted tampering. Likely attack.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"IT can't modify Defender settings"</span>
+                    <span class="ticket-solution">→ Explain tamper protection. Guide them to use Intune/SCCM for changes.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Need to disable for vendor testing"</span>
+                    <span class="ticket-solution">→ Create isolated test group. Use exclusions if possible. If must disable, document and time-limit.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Prevents attackers from disabling security features</li>
+                    <li><strong>What's protected</strong>: Real-time protection, cloud protection, behavior monitoring, services</li>
+                    <li><strong>Management</strong>: Intune/SCCM/Portal still work, local changes blocked</li>
+                    <li><strong>Attacks blocked</strong>: Set-MpPreference, registry changes, service stops</li>
+                    <li><strong>Enable via</strong>: Microsoft 365 Defender portal → Settings → Advanced features</li>
+                    <li><strong>Tamper alerts</strong>: High priority - indicates active attack attempt</li>
+                    <li><strong>Best practice</strong>: Always enabled, never disable except emergency</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="3-8-firewall-integration.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Firewall Integration</span>
+                </a>
+                <a href="3-10-exclusions-management.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Exclusions Management</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

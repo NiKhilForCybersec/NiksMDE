@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Inventory | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to MDE Software Inventory. Learn to track installed software, identify vulnerable applications, manage software lifecycle, and maintain security hygiene.</p>
+            </div>
+
+            <h1>Software Inventory</h1>
+
+            <p>MDE's Software Inventory provides visibility into all applications installed across your endpoints, enabling vulnerability management and software lifecycle tracking.</p>
+
+            <h2>Software Inventory Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Software Inventory Capabilities</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    SOFTWARE INVENTORY                                   │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  Location: Defender Portal → Endpoints → Software inventory            │
+│                                                                          │
+│  COLLECTED DATA:                                                        │
+│  ├── Application name and vendor                                        │
+│  ├── Version information                                                │
+│  ├── Installation date                                                  │
+│  ├── Number of devices with software                                   │
+│  ├── Associated vulnerabilities (CVEs)                                 │
+│  ├── Exposure score impact                                             │
+│  └── End of support status                                             │
+│                                                                          │
+│  INVENTORY VIEWS:                                                       │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐         │
+│  │   BY SOFTWARE   │  │   BY DEVICE     │  │ BY VULNERABILITY│         │
+│  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤         │
+│  │ All apps across │  │ Apps on single  │  │ Apps with known │         │
+│  │ organization    │  │ device          │  │ CVEs            │         │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘         │
+│                                                                          │
+│  SUPPORTED PLATFORMS:                                                   │
+│  ├── Windows 10/11                                                      │
+│  ├── Windows Server 2012 R2+                                           │
+│  ├── macOS                                                              │
+│  └── Linux                                                              │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Accessing Software Inventory</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Navigation and Views</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SOFTWARE INVENTORY ACCESS:
+
+ORGANIZATION VIEW:
+Path: Endpoints → Software inventory
+Shows: All software across all devices
+├── Software name
+├── Vendor
+├── Weaknesses (CVE count)
+├── Threats (linked to active threats)
+├── Installed devices count
+├── Exposure score impact
+└── Version distribution
+
+DEVICE VIEW:
+Path: Device inventory → [Device] → Software inventory
+Shows: Software on specific device
+├── Installed software list
+├── Version on this device
+├── Install date
+├── Vulnerabilities
+└── Compare to org baseline
+
+SOFTWARE DETAIL PAGE:
+Click any software → Detail view
+├── Version distribution chart
+├── Devices with this software
+├── Known vulnerabilities (CVEs)
+├── Security recommendations
+├── End of support information
+└── Update availability
+
+FILTERS AVAILABLE:
+├── Vendor
+├── Has vulnerabilities
+├── Threat insights
+├── End of support
+├── Version
+└── Platform</code></pre>
+                </div>
+            </div>
+
+            <h2>Vulnerability Correlation</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Software-Vulnerability Mapping</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>VULNERABILITY CORRELATION:
+
+HOW IT WORKS:
+├── MDE collects installed software and versions
+├── Correlates with CVE database
+├── Identifies vulnerable versions
+├── Calculates exposure impact
+└── Generates remediation recommendations
+
+VULNERABILITY INFORMATION:
+├── CVE ID
+├── Severity (Critical, High, Medium, Low)
+├── CVSS score
+├── Affected versions
+├── Remediation (update version)
+└── Exploit availability
+
+PRIORITIZATION:
+Based on:
+├── Severity score
+├── Exploit availability (higher priority if exploited)
+├── Exposure (number of devices)
+├── Asset value (critical servers weighted higher)
+└── Threat intelligence (actively exploited)
+
+EXAMPLE OUTPUT:
+┌─────────────────────────────────────────────────────────────┐
+│ Software: Adobe Reader                                      │
+│ Version: 2021.001.20155                                     │
+│ Devices: 450                                                │
+│ Vulnerabilities: 12 (3 Critical, 5 High, 4 Medium)         │
+│ Exposure Impact: High                                       │
+│ Recommendation: Update to version 2023.008.20421           │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h2>Advanced Hunting - Software</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Software Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Find all devices with specific software</span>
+<span class="variable">DeviceTvmSoftwareInventory</span>
+<span class="operator">|</span> <span class="keyword">where</span> SoftwareName <span class="function">has</span> <span class="string">"Chrome"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Devices = <span class="function">dcount</span>(DeviceName) <span class="keyword">by</span> SoftwareName, SoftwareVersion
+<span class="operator">|</span> <span class="keyword">order by</span> Devices <span class="keyword">desc</span>
+
+<span class="comment">// Find outdated software versions</span>
+<span class="variable">DeviceTvmSoftwareInventory</span>
+<span class="operator">|</span> <span class="keyword">where</span> SoftwareName <span class="function">has</span> <span class="string">"Java"</span>
+<span class="operator">|</span> <span class="keyword">where</span> SoftwareVersion <span class="operator">!</span><span class="function">startswith</span> <span class="string">"17"</span> <span class="comment">// Not latest major</span>
+<span class="operator">|</span> <span class="keyword">project</span> DeviceName, SoftwareName, SoftwareVersion
+
+<span class="comment">// Software with known vulnerabilities</span>
+<span class="variable">DeviceTvmSoftwareVulnerabilities</span>
+<span class="operator">|</span> <span class="keyword">where</span> VulnerabilitySeverityLevel <span class="operator">==</span> <span class="string">"Critical"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Devices = <span class="function">dcount</span>(DeviceName), 
+            CVEs = <span class="function">dcount</span>(CveId) <span class="keyword">by</span> SoftwareName
+<span class="operator">|</span> <span class="keyword">order by</span> Devices <span class="keyword">desc</span>
+
+<span class="comment">// End of support software</span>
+<span class="variable">DeviceTvmSoftwareInventory</span>
+<span class="operator">|</span> <span class="keyword">where</span> EndOfSupportStatus <span class="operator">==</span> <span class="string">"EOS Version"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Devices = <span class="function">dcount</span>(DeviceName) <span class="keyword">by</span> SoftwareName, SoftwareVersion
+<span class="operator">|</span> <span class="keyword">order by</span> Devices <span class="keyword">desc</span>
+
+<span class="comment">// Browser version distribution</span>
+<span class="variable">DeviceTvmSoftwareInventory</span>
+<span class="operator">|</span> <span class="keyword">where</span> SoftwareName <span class="function">in</span> (<span class="string">"google_chrome"</span>, <span class="string">"microsoft_edge"</span>, <span class="string">"firefox"</span>)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> SoftwareName, SoftwareVersion
+<span class="operator">|</span> <span class="keyword">order by</span> SoftwareName, SoftwareVersion <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>API Access</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Software Inventory API</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SOFTWARE INVENTORY API:
+
+LIST ALL SOFTWARE:
+GET /api/Software
+Response: List of all software in organization
+
+GET SPECIFIC SOFTWARE:
+GET /api/Software/{softwareId}
+Response: Details for specific software
+
+GET SOFTWARE BY DEVICE:
+GET /api/machines/{deviceId}/software
+Response: Software installed on device
+
+GET VULNERABLE SOFTWARE:
+GET /api/Software?$filter=vulnerabilitiesCount gt 0
+Response: Software with known CVEs
+
+EXAMPLE RESPONSE:
+{
+  "id": "microsoft-_-edge",
+  "name": "Edge",
+  "vendor": "Microsoft",
+  "weaknesses": 5,
+  "publicExploit": true,
+  "activeAlert": false,
+  "exposedMachines": 1250,
+  "impactScore": 7.8
+}
+
+EXPORT TO CSV:
+# PowerShell example
+$token = Get-MdeToken
+$headers = @{ Authorization = "Bearer $token" }
+$software = Invoke-RestMethod -Uri "https://api.securitycenter.microsoft.com/api/Software" `
+    -Headers $headers
+$software.value | Export-Csv -Path "software_inventory.csv"</code></pre>
+                </div>
+            </div>
+
+            <h2>Security Use Cases</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Practical Applications</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SECURITY USE CASES:
+
+1. VULNERABILITY PRIORITIZATION
+   ├── Identify software with critical CVEs
+   ├── Prioritize by device count
+   ├── Consider exploit availability
+   └── Focus patching efforts
+
+2. SHADOW IT DETECTION
+   ├── Find unapproved software
+   ├── Identify unauthorized tools
+   ├── Detect personal software
+   └── Enforce software policies
+
+3. LICENSE COMPLIANCE
+   ├── Count software installations
+   ├── Compare to license entitlements
+   ├── Identify over-deployment
+   └── Track version distribution
+
+4. END OF SUPPORT TRACKING
+   ├── Identify EOS software
+   ├── Plan upgrade projects
+   ├── Track Windows versions
+   └── Prioritize legacy removal
+
+5. INCIDENT RESPONSE
+   ├── Check for vulnerable software on compromised devices
+   ├── Identify attack surface
+   ├── Correlate with exploitation
+   └── Plan remediation
+
+6. COMPLIANCE REPORTING
+   ├── Generate software reports
+   ├── Show patching progress
+   ├── Document security posture
+   └── Track improvement over time</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Regular review</strong>: Check software inventory weekly for new vulnerabilities</li>
+                        <li><strong>Prioritize critical</strong>: Focus on software with critical CVEs and exploits</li>
+                        <li><strong>Track EOS</strong>: Plan upgrades before software reaches end of support</li>
+                        <li><strong>Automate reports</strong>: Use API to generate regular compliance reports</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Data collected</strong>: Name, vendor, version, install date, CVEs</li>
+                    <li><strong>Vulnerability correlation</strong>: Automatic CVE mapping to installed versions</li>
+                    <li><strong>Tables</strong>: DeviceTvmSoftwareInventory, DeviceTvmSoftwareVulnerabilities</li>
+                    <li><strong>Use cases</strong>: Vuln prioritization, shadow IT, license compliance</li>
+                    <li><strong>EOS tracking</strong>: Identifies end-of-support software automatically</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="7-3-security-recommendations.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Security Recommendations</span>
+                </a>
+                <a href="7-5-security-baselines.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Security Baselines</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

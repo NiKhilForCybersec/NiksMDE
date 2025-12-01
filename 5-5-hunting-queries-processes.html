@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Hunting Queries | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Ready-to-use KQL hunting queries for process-based threat detection. Copy and customize these queries to hunt for suspicious execution, LOLBAS abuse, and malicious process behaviors.</p>
+            </div>
+
+            <h1>Process Hunting Queries</h1>
+
+            <p>Process analysis is fundamental to threat hunting. These queries help identify suspicious executions, command-line abuse, and attack techniques involving process creation.</p>
+
+            <h2>Suspicious PowerShell Execution</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - PowerShell Hunting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Encoded PowerShell commands</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span> <span class="keyword">or</span> FileName <span class="operator">=~</span> <span class="string">"pwsh.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"-enc"</span>, <span class="string">"-e "</span>, <span class="string">"-EncodedCommand"</span>, <span class="string">"FromBase64"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, AccountName, ProcessCommandLine, 
+         InitiatingProcessFileName, InitiatingProcessCommandLine
+
+<span class="comment">// PowerShell download cradles</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"Invoke-WebRequest"</span>, <span class="string">"IWR"</span>, <span class="string">"wget"</span>, <span class="string">"curl"</span>,
+    <span class="string">"DownloadString"</span>, <span class="string">"DownloadFile"</span>, <span class="string">"Net.WebClient"</span>,
+    <span class="string">"Start-BitsTransfer"</span>, <span class="string">"Invoke-RestMethod"</span>, <span class="string">"IEX"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName
+
+<span class="comment">// PowerShell spawned by Office</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="function">in~</span> (
+    <span class="string">"winword.exe"</span>, <span class="string">"excel.exe"</span>, <span class="string">"powerpnt.exe"</span>, <span class="string">"outlook.exe"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, 
+         InitiatingProcessFileName, AccountName</code></pre>
+                </div>
+            </div>
+
+            <h2>LOLBAS Detection</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Living Off the Land</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Certutil abuse (download, decode, encode)</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"certutil.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"-urlcache"</span>, <span class="string">"-decode"</span>, <span class="string">"-encode"</span>, <span class="string">"split"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName
+
+<span class="comment">// Mshta abuse</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"mshta.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"http"</span>, <span class="string">"javascript"</span>, <span class="string">"vbscript"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName
+
+<span class="comment">// Regsvr32 abuse (Squiblydoo)</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"regsvr32.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"/s"</span>, <span class="string">"/i:"</span>, <span class="string">"scrobj"</span>, <span class="string">"http"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName
+
+<span class="comment">// Rundll32 with suspicious arguments</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"rundll32.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"javascript"</span>, <span class="string">"http"</span>, <span class="string">"shell32"</span>, <span class="string">"comsvcs"</span>, <span class="string">"MiniDump"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName
+
+<span class="comment">// BITSAdmin abuse</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"bitsadmin.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"/transfer"</span>, <span class="string">"http"</span>, <span class="string">"/create"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName</code></pre>
+                </div>
+            </div>
+
+            <h2>Reconnaissance Detection</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Discovery Commands</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Domain reconnaissance commands</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"net user /domain"</span>, <span class="string">"net group /domain"</span>, 
+    <span class="string">"nltest /dclist"</span>, <span class="string">"nltest /domain_trusts"</span>,
+    <span class="string">"dsquery"</span>, <span class="string">"Get-ADUser"</span>, <span class="string">"Get-ADComputer"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName
+
+<span class="comment">// Local system enumeration</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"whoami /all"</span>, <span class="string">"whoami /priv"</span>, <span class="string">"systeminfo"</span>,
+    <span class="string">"net localgroup administrators"</span>, <span class="string">"net user"</span>,
+    <span class="string">"ipconfig /all"</span>, <span class="string">"netstat -ano"</span>
+)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName
+
+<span class="comment">// Multiple recon commands from same device (suspicious)</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"whoami"</span>, <span class="string">"net user"</span>, <span class="string">"net group"</span>, <span class="string">"systeminfo"</span>,
+    <span class="string">"ipconfig"</span>, <span class="string">"netstat"</span>, <span class="string">"nltest"</span>, <span class="string">"dsquery"</span>
+)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    ReconCommands = <span class="function">count</span>(),
+    Commands = <span class="function">make_set</span>(ProcessCommandLine)
+    <span class="keyword">by</span> DeviceName, AccountName, <span class="function">bin</span>(Timestamp, <span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ReconCommands <span class="operator">></span> <span class="number">3</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Suspicious Parent-Child Relationships</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Process Lineage</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Unusual parent-child relationships</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> 
+    <span class="comment">// Office spawning suspicious processes</span>
+    (InitiatingProcessFileName <span class="function">in~</span> (<span class="string">"winword.exe"</span>, <span class="string">"excel.exe"</span>, <span class="string">"powerpnt.exe"</span>) 
+     <span class="keyword">and</span> FileName <span class="function">in~</span> (<span class="string">"cmd.exe"</span>, <span class="string">"powershell.exe"</span>, <span class="string">"wscript.exe"</span>, <span class="string">"cscript.exe"</span>))
+    <span class="keyword">or</span>
+    <span class="comment">// Browser spawning cmd/powershell</span>
+    (InitiatingProcessFileName <span class="function">in~</span> (<span class="string">"chrome.exe"</span>, <span class="string">"msedge.exe"</span>, <span class="string">"firefox.exe"</span>)
+     <span class="keyword">and</span> FileName <span class="function">in~</span> (<span class="string">"cmd.exe"</span>, <span class="string">"powershell.exe"</span>))
+    <span class="keyword">or</span>
+    <span class="comment">// WMI spawning processes</span>
+    (InitiatingProcessFileName <span class="operator">=~</span> <span class="string">"wmiprvse.exe"</span>
+     <span class="keyword">and</span> FileName <span class="function">in~</span> (<span class="string">"cmd.exe"</span>, <span class="string">"powershell.exe"</span>))
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, InitiatingProcessFileName, 
+         FileName, ProcessCommandLine, AccountName
+
+<span class="comment">// Scripting engines spawning network tools</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="function">in~</span> (<span class="string">"wscript.exe"</span>, <span class="string">"cscript.exe"</span>, <span class="string">"mshta.exe"</span>)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="function">in~</span> (<span class="string">"powershell.exe"</span>, <span class="string">"cmd.exe"</span>, <span class="string">"net.exe"</span>, <span class="string">"net1.exe"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, InitiatingProcessFileName, 
+         FileName, ProcessCommandLine</code></pre>
+                </div>
+            </div>
+
+            <h2>Execution from Suspicious Locations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Suspicious Paths</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Executables running from Temp folders</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FolderPath <span class="function">has_any</span> (<span class="string">"\\Temp\\"</span>, <span class="string">"\\tmp\\"</span>, <span class="string">"\\Downloads\\"</span>)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="function">endswith</span> <span class="string">".exe"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> FileName, FolderPath, SHA256
+<span class="operator">|</span> <span class="keyword">where</span> Count <span class="operator"><</span> <span class="number">5</span>  <span class="comment">// Rare executions</span>
+
+<span class="comment">// Executables from user-writable locations</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FolderPath <span class="function">has_any</span> (
+    <span class="string">"\\AppData\\Local\\"</span>, <span class="string">"\\AppData\\Roaming\\"</span>,
+    <span class="string">"\\ProgramData\\"</span>, <span class="string">"\\Users\\Public\\"</span>
+)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="function">endswith</span> <span class="string">".exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> FolderPath <span class="operator">!</span><span class="function">has</span> <span class="string">"Microsoft"</span>  <span class="comment">// Exclude known MS apps</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> FileName, FolderPath
+<span class="operator">|</span> <span class="keyword">where</span> Count <span class="operator"><</span> <span class="number">10</span></code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Query Tips</h5>
+                    <ul>
+                        <li><strong>Adjust timeframes</strong> based on your retention and investigation needs</li>
+                        <li><strong>Add exclusions</strong> for known legitimate tools in your environment</li>
+                        <li><strong>Correlate with network</strong> events for complete picture</li>
+                        <li><strong>Save as custom detections</strong> for automated alerting</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>LOLBAS</strong>: Certutil, mshta, regsvr32, rundll32, bitsadmin</li>
+                    <li><strong>Encoded PS</strong>: -enc, -e, FromBase64String indicators</li>
+                    <li><strong>Suspicious parents</strong>: Office → cmd/PS, browser → cmd/PS</li>
+                    <li><strong>Recon commands</strong>: whoami, net user, systeminfo, nltest</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="5-4-kql-advanced.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">KQL Advanced</span>
+                </a>
+                <a href="5-6-hunting-queries-network.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Network Hunting</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exposure Insights | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo"><div class="logo-icon">MDE</div><div class="logo-text"><span>MDE</span> Ultimate Guide</div></a>
+        </div>
+        <div class="search-container"><button class="search-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg><span>Search...</span></button></div>
+        <div class="header-right"><a href="12-2-interview-questions.html" class="header-link">Interview Prep</a></div>
+    </header>
+    <div class="sidebar-overlay"></div><aside class="sidebar"></aside>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box"><h4>🎯 What This Page Covers</h4><p>Complete guide to exposure score and risk insights. Learn how to measure, understand, and reduce your organization's attack surface.</p></div>
+            <h1>Exposure Insights</h1>
+            <p>Exposure insights provide visibility into your organization's security posture, vulnerability exposure, and attack surface risk.</p>
+            
+            <h2>Understanding Exposure Score</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Exposure Score Overview</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>EXPOSURE SCORE:
+
+SCORE RANGES:
+├── 0-29: Low exposure (Excellent)
+│   └── Well-patched, properly configured
+├── 30-69: Medium exposure (Needs attention)
+│   └── Some vulnerabilities or misconfigs
+└── 70-100: High exposure (Critical)
+    └── Significant risk, urgent action needed
+
+FACTORS AFFECTING SCORE:
+├── Unpatched vulnerabilities (CVEs)
+│   ├── Critical CVEs: Highest impact
+│   ├── High severity: Significant impact
+│   ├── Medium/Low: Lower impact
+│   └── Exploit availability increases weight
+├── Security misconfigurations
+│   ├── Disabled security features
+│   ├── Weak settings
+│   └── Non-compliant configurations
+├── End-of-support software
+│   ├── Unsupported OS versions
+│   ├── Legacy applications
+│   └── No security updates available
+├── Missing security controls
+│   ├── ASR rules not enabled
+│   ├── Network protection disabled
+│   └── Cloud protection off
+└── High-risk applications
+    ├── Vulnerable software versions
+    ├── Unnecessary risky apps
+    └── Shadow IT applications
+
+SCORE CALCULATION:
+├── Vulnerability severity weighted
+├── Number of affected devices
+├── Exploit availability considered
+├── Asset criticality factored
+├── Remediation difficulty included
+└── Continuously updated</code></pre></div></div>
+
+            <h2>Exposure Dashboard</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Dashboard Components</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>EXPOSURE DASHBOARD:
+Location: Vulnerability management → Dashboard
+
+DASHBOARD COMPONENTS:
+
+EXPOSURE SCORE CARD:
+├── Current score (0-100)
+├── Trend direction (up/down)
+├── Change from last period
+└── Comparison to similar orgs
+
+TOP SECURITY RECOMMENDATIONS:
+├── Highest impact actions
+├── Estimated score improvement
+├── Effort required
+├── Affected device count
+└── Click to view details
+
+VULNERABLE DEVICES:
+├── Devices with critical CVEs
+├── Devices with misconfigurations
+├── High exposure devices
+└── Quick filters
+
+EXPOSURE BY CATEGORY:
+├── Operating system vulnerabilities
+├── Application vulnerabilities
+├── Security configurations
+├── Browser vulnerabilities
+└── End-of-support software
+
+EXPOSURE OVER TIME:
+├── 30-day trend chart
+├── Correlation with patching
+├── Identify improvement/regression
+└── Export for reporting
+
+TOP VULNERABLE SOFTWARE:
+├── Applications with most CVEs
+├── Affected device count
+├── Remediation availability
+└── Prioritize updates</code></pre></div></div>
+
+            <h2>Reducing Exposure</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Improvement Actions</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>REDUCING EXPOSURE SCORE:
+
+PRIORITY ACTIONS:
+
+1. PATCH CRITICAL CVEs (Highest impact)
+   ├── Focus on exploited vulnerabilities
+   ├── CISA KEV catalog alignment
+   ├── Target: <14 days for critical
+   └── Automate where possible
+
+2. FIX SECURITY MISCONFIGURATIONS
+   ├── Enable ASR rules
+   ├── Enable network protection
+   ├── Configure cloud protection
+   └── Review security baselines
+
+3. UPDATE END-OF-SUPPORT SOFTWARE
+   ├── Upgrade legacy OS
+   ├── Replace unsupported apps
+   ├── Plan migration projects
+   └── Isolate if can't update
+
+4. ENABLE SECURITY FEATURES
+   ├── ASR rules in block mode
+   ├── Controlled folder access
+   ├── Tamper protection
+   └── Full cloud protection
+
+5. REMOVE UNNECESSARY SOFTWARE
+   ├── Uninstall unused apps
+   ├── Remove high-risk software
+   ├── Consolidate similar tools
+   └── Reduce attack surface
+
+TRACKING PROGRESS:
+├── Monitor exposure score weekly
+├── Track recommendation completion
+├── Measure time to patch
+├── Report to stakeholders
+└── Set improvement targets</code></pre></div></div>
+
+            <h2>Advanced Hunting for Exposure</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">KQL Queries</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>// Devices with critical vulnerabilities
+DeviceTvmSoftwareVulnerabilities
+| where VulnerabilitySeverityLevel == "Critical"
+| summarize CriticalCVEs = dcount(CveId) by DeviceName, DeviceId
+| order by CriticalCVEs desc
+
+// Most common critical CVEs
+DeviceTvmSoftwareVulnerabilities
+| where VulnerabilitySeverityLevel == "Critical"
+| summarize AffectedDevices = dcount(DeviceId) by CveId, SoftwareName
+| order by AffectedDevices desc
+| take 20
+
+// Devices with end-of-support software
+DeviceTvmSoftwareInventory
+| where EndOfSupportStatus == "EOS Version" or EndOfSupportStatus == "EOS Software"
+| summarize by DeviceName, SoftwareName, SoftwareVersion, EndOfSupportDate
+
+// Security configuration compliance
+DeviceTvmSecureConfigurationAssessment
+| where IsCompliant == false
+| summarize NonCompliantCount = count() by ConfigurationId, ConfigurationName
+| order by NonCompliantCount desc
+
+// Exposure score trend (requires custom tracking)
+// Track score weekly in external system</code></pre></div></div>
+
+            <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-content"><h5>Best Practices</h5><ul>
+                <li><strong>Weekly review</strong>: Check exposure score and recommendations weekly</li>
+                <li><strong>Critical first</strong>: Prioritize critical CVEs, especially with exploits</li>
+                <li><strong>Track as KPI</strong>: Report exposure score to leadership</li>
+                <li><strong>Automate patching</strong>: Use automated deployment where possible</li>
+                <li><strong>Set targets</strong>: Define exposure score goals (e.g., below 30)</li>
+            </ul></div></div>
+
+            <div class="interview-tips"><h3>💡 Key Interview Points</h3><ul>
+                <li><strong>Score range</strong>: 0-100 (lower is better)</li>
+                <li><strong>Factors</strong>: CVEs, misconfigurations, EOS software, missing controls</li>
+                <li><strong>Location</strong>: TVM Dashboard</li>
+                <li><strong>Reduce by</strong>: Patching, enabling security features, updating software</li>
+                <li><strong>Target</strong>: Below 30 for good posture</li>
+            </ul></div>
+
+            <nav class="page-nav"><a href="7-5-security-baselines.html" class="page-nav-link prev"><span class="page-nav-label">← Previous</span></a><a href="8-1-m365-defender.html" class="page-nav-link next"><span class="page-nav-label">Next →</span></a></nav>
+        </div>
+    </main>
+    <script src="main.js"></script>
+</body>
+</html>

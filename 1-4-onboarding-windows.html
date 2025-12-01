@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Windows | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to onboarding Windows devices to MDE. Learn all deployment methods including local script, Group Policy, Intune, SCCM, and VDI environments.</p>
+            </div>
+
+            <h1>Onboarding Windows Devices</h1>
+
+            <p>Windows is the primary platform for MDE. Multiple onboarding methods are available to support different enterprise management scenarios.</p>
+
+            <h2>Onboarding Methods Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Windows Onboarding Options</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    WINDOWS ONBOARDING METHODS                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  METHOD              SCALE        USE CASE                              │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │ Local Script      Single       Testing, POC, small deployments │    │
+│  ├────────────────────────────────────────────────────────────────┤    │
+│  │ Group Policy      Large        AD-joined, on-premises managed  │    │
+│  ├────────────────────────────────────────────────────────────────┤    │
+│  │ Microsoft Intune  Large        Cloud-managed, hybrid Azure AD  │    │
+│  ├────────────────────────────────────────────────────────────────┤    │
+│  │ SCCM/MECM         Large        On-premises, ConfigMgr managed  │    │
+│  ├────────────────────────────────────────────────────────────────┤    │
+│  │ VDI Script        Special      Non-persistent VDI environments │    │
+│  ├────────────────────────────────────────────────────────────────┤    │
+│  │ Defender for Cloud Special     Azure VMs, Arc-enabled servers  │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+│                                                                          │
+│  SUPPORTED VERSIONS:                                                    │
+│  ├── Windows 10 (1607+)                                                │
+│  ├── Windows 11                                                        │
+│  ├── Windows Server 2012 R2 (with unified agent)                       │
+│  ├── Windows Server 2016 (with unified agent)                          │
+│  ├── Windows Server 2019                                               │
+│  ├── Windows Server 2022                                               │
+│  └── Windows Server Core editions                                      │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Prerequisites</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Onboarding Prerequisites</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PREREQUISITES FOR WINDOWS ONBOARDING:
+
+LICENSING:
+├── Microsoft Defender for Endpoint P1 or P2
+├── Microsoft 365 E5/A5/G5
+├── Microsoft 365 E5/A5/G5 Security
+├── Microsoft 365 Business Premium
+└── Standalone MDE license
+
+SYSTEM REQUIREMENTS:
+├── Windows 10 version 1607 or later
+├── Windows 11 any version
+├── Windows Server 2012 R2+ (unified agent required for older)
+├── .NET Framework 4.5+ (for older servers)
+└── Internet connectivity to Microsoft cloud
+
+NETWORK REQUIREMENTS:
+URLs to allow (HTTPS 443):
+├── *.securitycenter.windows.com
+├── *.security.microsoft.com
+├── *.wdcp.microsoft.com
+├── *.wd.microsoft.com
+├── *.blob.core.windows.net
+├── *.smartscreen.microsoft.com
+├── *.smartscreen-prod.microsoft.com
+├── login.microsoftonline.com
+├── login.live.com
+└── settings-win.data.microsoft.com
+
+VERIFY CONNECTIVITY:
+# PowerShell connectivity test
+Invoke-WebRequest -Uri "https://x.cp.wd.microsoft.com/api/report" -UseBasicParsing
+
+# Or use Microsoft Connectivity Analyzer
+# Download from Microsoft</code></pre>
+                </div>
+            </div>
+
+            <h2>Local Script Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Local Script Method</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>LOCAL SCRIPT ONBOARDING:
+Best for: Testing, small deployments, individual devices
+
+STEP 1: DOWNLOAD PACKAGE
+├── Defender Portal → Settings → Endpoints → Onboarding
+├── Select: Windows 10 and 11
+├── Deployment method: Local Script
+├── Download package (ZIP file)
+└── Extract to get: WindowsDefenderATPLocalOnboardingScript.cmd
+
+STEP 2: RUN SCRIPT
+├── Open Command Prompt as Administrator
+├── Navigate to script location
+├── Run: WindowsDefenderATPLocalOnboardingScript.cmd
+└── Wait for completion message
+
+STEP 3: VERIFY ONBOARDING
+# Check registry
+reg query "HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"
+# OnboardingState should be 1
+
+# Check service
+sc query sense
+# State should be RUNNING
+
+# Check in portal
+# Device appears in Device inventory within 5-20 minutes
+
+SCRIPT CONTENTS (what it does):
+├── Sets onboarding configuration in registry
+├── Configures organization ID
+├── Sets datacenter geo preferences
+├── Enables and starts SENSE service
+└── Configures sample sharing settings
+
+TROUBLESHOOTING:
+├── Run as Administrator
+├── Check for third-party AV conflicts
+├── Verify internet connectivity
+├── Check Windows version compatibility
+└── Review event logs for errors</code></pre>
+                </div>
+            </div>
+
+            <h2>Group Policy Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Group Policy Method</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>GROUP POLICY ONBOARDING:
+Best for: AD-joined devices, enterprise deployments
+
+STEP 1: DOWNLOAD PACKAGE
+├── Defender Portal → Settings → Endpoints → Onboarding
+├── Select: Windows 10 and 11
+├── Deployment method: Group Policy
+├── Download package (ZIP file)
+└── Extract: WindowsDefenderATPOnboardingScript.cmd
+
+STEP 2: COPY TO NETWORK SHARE
+├── Copy script to: \\domain\NETLOGON\MDE\
+├── Or: \\fileserver\shares\MDE\
+├── Ensure: Domain Computers have Read access
+└── Ensure: Authenticated Users can access
+
+STEP 3: CREATE GPO
+├── Open: Group Policy Management Console
+├── Create new GPO: "MDE Onboarding"
+├── Link to: Target OU (Computers)
+└── Configure settings below
+
+STEP 4: CONFIGURE STARTUP SCRIPT
+Path: Computer Configuration → Policies → 
+      Windows Settings → Scripts → Startup
+
+├── Click "Add"
+├── Script Name: WindowsDefenderATPOnboardingScript.cmd
+├── Script Path: \\domain\NETLOGON\MDE\
+└── Click OK
+
+STEP 5: CONFIGURE TELEMETRY (Required)
+Path: Computer Configuration → Administrative Templates → 
+      Windows Components → Data Collection and Preview Builds
+
+├── Allow Telemetry: Enabled
+├── Value: 1 (Basic) or higher
+└── Required for MDE functionality
+
+STEP 6: DEPLOY
+├── gpupdate /force on target devices
+├── Or wait for next GP refresh (90 min)
+├── Reboot required to run startup script
+└── Devices appear in portal within 20-30 minutes
+
+VERIFICATION:
+# On target device
+gpresult /r /scope computer | findstr "MDE"</code></pre>
+                </div>
+            </div>
+
+            <h2>Microsoft Intune Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Intune Method (Recommended)</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INTUNE ONBOARDING:
+Best for: Cloud-managed devices, modern management
+
+PREREQUISITE: ENABLE MDE-INTUNE CONNECTION
+1. MDE Portal → Settings → Endpoints → Advanced features
+   └── Microsoft Intune connection: ON
+2. Intune → Endpoint security → Microsoft Defender for Endpoint
+   └── Connect Windows devices: ON
+3. Wait for connection status: Enabled
+
+AUTOMATIC ONBOARDING (Recommended):
+Location: Intune → Endpoint security → 
+         Endpoint detection and response → Create policy
+
+1. Platform: Windows 10, Windows 11, and Windows Server
+2. Profile: Endpoint detection and response
+3. Settings:
+   ├── Microsoft Defender for Endpoint client configuration 
+   │   package type: Auto from connector
+   ├── Sample sharing: All files
+   └── Expedite telemetry reporting: Yes
+4. Assignments: All devices or specific groups
+5. Create
+
+RESULT:
+├── Devices automatically onboard when enrolled in Intune
+├── No manual package deployment needed
+├── Configuration managed centrally
+└── Compliance integration available
+
+MANUAL PACKAGE METHOD:
+1. Download onboarding package from MDE portal
+2. Intune → Endpoint security → EDR → Create policy
+3. Package type: Onboard
+4. Upload: Onboarding package file
+5. Assign to device groups
+
+VERIFICATION:
+├── Intune → Devices → [Device] → Device compliance
+├── MDE portal → Device inventory
+└── Check onboarding status in Intune reports</code></pre>
+                </div>
+            </div>
+
+            <h2>SCCM/MECM Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">ConfigMgr Method</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SCCM/MECM ONBOARDING:
+Best for: ConfigMgr-managed environments
+
+PREREQUISITES:
+├── SCCM/MECM Current Branch 1606+
+├── Configuration Manager client on devices
+└── SCCM ATP connector configured
+
+NATIVE INTEGRATION (Recommended):
+Location: SCCM Console → Assets and Compliance → 
+         Endpoint Protection → Microsoft Defender ATP Policies
+
+1. Create Microsoft Defender ATP Policy
+2. Configure settings:
+   ├── Onboarding: Use configuration from portal
+   ├── Sample sharing: All files
+   └── Telemetry: Expedited
+3. Deploy to device collection
+4. Monitor deployment status
+
+SCRIPT-BASED METHOD:
+1. Download onboarding package (SCCM option)
+2. Create package in SCCM:
+   ├── Source: Onboarding script location
+   ├── Program: WindowsDefenderATPOnboardingScript.cmd
+   └── Run: Hidden, with administrative rights
+3. Deploy to collection
+4. Monitor deployment
+
+CO-MANAGEMENT SCENARIO:
+├── If co-managed with Intune, choose one method
+├── Intune workload: Use Intune EDR policy
+├── SCCM workload: Use SCCM ATP policy
+└── Avoid duplicate onboarding attempts
+
+VERIFICATION:
+├── SCCM → Monitoring → Deployments
+├── Client: Check registry and service
+└── MDE portal: Device inventory</code></pre>
+                </div>
+            </div>
+
+            <h2>VDI Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">VDI Environment Method</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>VDI ONBOARDING:
+For non-persistent virtual desktop environments
+
+CHALLENGES:
+├── Non-persistent VDI resets on logoff
+├── Standard onboarding creates duplicate devices
+├── Need consistent device identity
+└── Golden image management required
+
+VDI ONBOARDING SCRIPT:
+Download: VDI-specific package from portal
+├── Settings → Endpoints → Onboarding
+├── Deployment method: VDI onboarding scripts
+└── For non-persistent machines
+
+GOLDEN IMAGE PREPARATION:
+1. Create base VM image
+2. Run VDI onboarding script
+3. Important: Do NOT run standard onboarding
+4. Seal image for deployment
+5. Deploy to VDI infrastructure
+
+SCRIPT BEHAVIOR:
+├── Configures device for VDI mode
+├── Uses session-based identification
+├── Prevents duplicate device entries
+└── Handles non-persistence correctly
+
+PERSISTENT VDI:
+├── Use standard onboarding methods
+├── Each VM maintains identity
+└── No special handling needed
+
+AZURE VIRTUAL DESKTOP (AVD):
+├── Use Intune for onboarding (if Intune-managed)
+├── Or use VDI script for non-persistent
+├── Host pool configuration matters
+└── Consider session host vs personal desktop
+
+CITRIX/VMWARE:
+├── Use VDI onboarding script
+├── Include in golden image
+├── Test with provisioning system
+└── Verify device reporting correctly</code></pre>
+                </div>
+            </div>
+
+            <h2>Windows Server Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Server-Specific Considerations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WINDOWS SERVER ONBOARDING:
+
+WINDOWS SERVER 2019/2022:
+├── Native MDE support (same as Windows 10/11)
+├── Use any standard onboarding method
+├── Full EDR capabilities
+└── No additional agent required
+
+WINDOWS SERVER 2016:
+├── Requires: Unified agent installation
+├── Download: MDE for Down-level Servers package
+├── Install unified agent first
+├── Then run onboarding script
+└── Full EDR capabilities after agent
+
+WINDOWS SERVER 2012 R2:
+├── Requires: Unified agent installation
+├── Download: MDE for Down-level Servers package
+├── Install unified agent first
+├── Then run onboarding script
+└── Some feature limitations
+
+UNIFIED AGENT INSTALLATION:
+1. Download: md4ws.msi from Microsoft
+2. Install: msiexec /i md4ws.msi /quiet
+3. Wait for installation to complete
+4. Run onboarding script
+5. Verify service running
+
+SERVER CORE:
+├── Fully supported
+├── Use command-line onboarding
+├── No GUI-specific requirements
+└── Same methods as full server
+
+DEFENDER FOR CLOUD INTEGRATION:
+├── Azure VMs: Enable via Defender for Cloud
+├── Automatic onboarding option
+├── Unified agent deployed automatically
+└── Billing through Azure</code></pre>
+                </div>
+            </div>
+
+            <h2>Verification & Troubleshooting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Verification Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>VERIFICATION COMMANDS:
+
+# Check onboarding state
+reg query "HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"
+# OnboardingState = 1 means onboarded
+
+# Check SENSE service
+sc query sense
+# State should be RUNNING
+
+# Check organization ID
+reg query "HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection" /v OnboardingInfo
+
+# Run detection test
+powershell.exe -NoExit -ExecutionPolicy Bypass -WindowStyle Hidden 
+$ErrorActionPreference= 'silentlycontinue';
+(New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Microsoft/WindowsDefenderATP-Onboarding-Scripts/master/live_response_test.ps1') | IEX
+
+TROUBLESHOOTING CHECKLIST:
+├── Verify script ran as Administrator
+├── Check internet connectivity to MDE URLs
+├── Verify Windows version is supported
+├── Check for third-party AV conflicts
+├── Review Event Viewer logs
+├── Run MDE Client Analyzer tool
+└── Check firewall/proxy settings
+
+EVENT LOG LOCATIONS:
+├── Applications and Services Logs →
+│   Microsoft → Windows → SENSE → Operational
+├── Applications and Services Logs →
+│   Microsoft → Windows → Windows Defender → Operational
+└── System log for service errors
+
+COMMON ISSUES:
+├── Service won't start: Check dependencies
+├── No data in portal: Check connectivity
+├── Duplicate devices: VDI configuration issue
+└── Partial functionality: Check license assignment</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Use Intune</strong>: Preferred for cloud-managed environments</li>
+                        <li><strong>Test first</strong>: Always test onboarding on pilot devices</li>
+                        <li><strong>Verify connectivity</strong>: Ensure URLs are accessible before deployment</li>
+                        <li><strong>Use deployment rings</strong>: Gradual rollout to catch issues early</li>
+                        <li><strong>Monitor health</strong>: Check sensor health after onboarding</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Methods</strong>: Local script, GPO, Intune, SCCM, VDI script</li>
+                    <li><strong>Intune auto-onboard</strong>: "Auto from connector" with MDE-Intune connection</li>
+                    <li><strong>Older servers</strong>: 2012 R2/2016 require unified agent first</li>
+                    <li><strong>VDI</strong>: Special script for non-persistent environments</li>
+                    <li><strong>Verification</strong>: OnboardingState=1 in registry, SENSE service running</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="1-3-deployment-options.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Deployment Options</span>
+                </a>
+                <a href="1-5-onboarding-macos.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Onboarding macOS</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

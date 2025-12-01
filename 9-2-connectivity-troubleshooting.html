@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connectivity Troubleshooting | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to troubleshooting MDE connectivity issues. Learn required URLs, proxy configuration, certificate requirements, diagnostic tools, and common connectivity problems with solutions.</p>
+            </div>
+
+            <h1>Connectivity Troubleshooting</h1>
+
+            <p>MDE requires outbound HTTPS connectivity to Microsoft cloud services. Connectivity issues prevent telemetry upload, cloud protection, and management functions. This guide helps diagnose and resolve connectivity problems.</p>
+
+            <h2>Required URLs</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">MDE Cloud Endpoints</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MICROSOFT DEFENDER FOR ENDPOINT URLS:
+
+CORE MDE SERVICES:
+├── *.securitycenter.windows.com       - Security center
+├── *.security.microsoft.com           - M365 Defender portal
+├── *.wdcp.microsoft.com               - Windows Defender cloud
+├── *.wdcpalt.microsoft.com            - Cloud protection alternate
+└── *.wd.microsoft.com                 - Windows Defender
+
+TELEMETRY AND DIAGNOSTICS:
+├── *.events.data.microsoft.com        - Telemetry
+├── *.blob.core.windows.net            - Storage
+├── settings-win.data.microsoft.com    - Settings
+└── *.ods.opinsights.azure.com         - Operations insights
+
+SMARTSCREEN:
+├── *.smartscreen.microsoft.com        - URL reputation
+├── *.smartscreen-prod.microsoft.com   - SmartScreen production
+└── checkappexec.microsoft.com         - App execution check
+
+CERTIFICATE VALIDATION:
+├── crl.microsoft.com                  - Certificate revocation
+├── ctldl.windowsupdate.com            - Certificate trust list
+├── www.microsoft.com/pkiops           - PKI operations
+└── ocsp.digicert.com                  - OCSP validation
+
+WINDOWS UPDATE (for signatures):
+├── *.update.microsoft.com             - Windows Update
+├── *.delivery.mp.microsoft.com        - Delivery optimization
+└── *.windowsupdate.com                - Windows Update
+
+PORT: 443 (HTTPS) for all URLs
+PROTOCOL: TLS 1.2 or higher required</code></pre>
+                </div>
+            </div>
+
+            <h2>Connectivity Test Commands</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Connectivity Tests</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Test MDE cloud connectivity</span>
+<span class="variable">$urls</span> = @(
+    <span class="string">"https://x.cp.wd.microsoft.com/api/report"</span>,
+    <span class="string">"https://winatp-gw-cus.microsoft.com/test"</span>,
+    <span class="string">"https://eu-v20.events.data.microsoft.com/ping"</span>,
+    <span class="string">"https://settings-win.data.microsoft.com/settings/v2.0/endpoints"</span>
+)
+
+<span class="keyword">foreach</span> (<span class="variable">$url</span> <span class="keyword">in</span> <span class="variable">$urls</span>) {
+    <span class="keyword">try</span> {
+        <span class="variable">$response</span> = <span class="function">Invoke-WebRequest</span> <span class="variable">-Uri</span> <span class="variable">$url</span> <span class="variable">-UseBasicParsing</span> <span class="variable">-TimeoutSec</span> <span class="number">10</span>
+        Write-Host <span class="string">"[OK] $url - Status: $($response.StatusCode)"</span> <span class="variable">-ForegroundColor</span> Green
+    } <span class="keyword">catch</span> {
+        Write-Host <span class="string">"[FAIL] $url - Error: $($_.Exception.Message)"</span> <span class="variable">-ForegroundColor</span> Red
+    }
+}
+
+<span class="comment"># Test specific URL</span>
+<span class="function">Invoke-WebRequest</span> <span class="string">"https://x.cp.wd.microsoft.com/api/report"</span> <span class="variable">-UseBasicParsing</span>
+
+<span class="comment"># Test with proxy</span>
+<span class="function">Invoke-WebRequest</span> <span class="string">"https://x.cp.wd.microsoft.com/api/report"</span> `
+    <span class="variable">-Proxy</span> <span class="string">"http://proxy.company.com:8080"</span> `
+    <span class="variable">-ProxyUseDefaultCredentials</span>
+
+<span class="comment"># Check TLS version</span>
+[Net.ServicePointManager]::SecurityProtocol
+
+<span class="comment"># Enable TLS 1.2</span>
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12</code></pre>
+                </div>
+            </div>
+
+            <h2>MDE Client Analyzer</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Client Analyzer Tool</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MDE CLIENT ANALYZER:
+
+DOWNLOAD:
+https://aka.ms/MDEClientAnalyzer
+
+USAGE:
+1. Download and extract MDEClientAnalyzer.zip
+2. Run as Administrator: MDEClientAnalyzer.cmd
+3. Wait for analysis to complete
+4. Review results in MDEClientAnalyzerResult folder
+
+WHAT IT CHECKS:
+├── Sensor service status
+├── Onboarding state
+├── Cloud connectivity
+├── Proxy settings
+├── Certificate chain
+├── DNS resolution
+├── TLS configuration
+├── Firewall rules
+├── Third-party AV conflicts
+└── General health
+
+OUTPUT FILES:
+├── MDEClientAnalyzer.htm     - Summary report
+├── Connectivity checks       - URL test results
+├── Event logs               - Relevant logs
+├── Configuration            - Settings dump
+└── Recommendations          - Suggested fixes
+
+COMMON FINDINGS:
+├── Proxy not configured
+├── URLs blocked
+├── Certificate issues
+├── TLS version too low
+├── DNS resolution failure
+└── Firewall blocking traffic</code></pre>
+                </div>
+            </div>
+
+            <h2>Proxy Configuration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Proxy Settings</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROXY CONFIGURATION OPTIONS:
+
+OPTION 1: SYSTEM PROXY (WinHTTP)
+<span class="comment"># View current WinHTTP proxy</span>
+netsh winhttp show proxy
+
+<span class="comment"># Set WinHTTP proxy</span>
+netsh winhttp set proxy proxy-server=<span class="string">"http://proxy.company.com:8080"</span>
+
+<span class="comment"># Import from IE settings</span>
+netsh winhttp import proxy source=ie
+
+<span class="comment"># Reset proxy</span>
+netsh winhttp reset proxy
+
+OPTION 2: REGISTRY (Per-machine)
+HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Windows Defender ATP
+├── ProxyServer (REG_SZ): http://proxy.company.com:8080
+├── ProxyPacUrl (REG_SZ): http://proxy.company.com/proxy.pac
+└── ProxySetting (REG_DWORD): 1 (enabled)
+
+OPTION 3: GROUP POLICY
+Computer Configuration → Administrative Templates
+→ Windows Components → Data Collection and Preview Builds
+→ Configure Authenticated Proxy usage
+→ Configure connected user experiences
+
+OPTION 4: INTUNE
+Endpoint security → Attack surface reduction
+→ Create policy → Proxy settings
+
+PROXY REQUIREMENTS:
+├── Must support HTTPS (443)
+├── Must allow TLS 1.2
+├── No SSL inspection recommended (or whitelist MDE URLs)
+├── Authentication supported (NTLM, Kerberos)
+└── Bypass local addresses typically needed</code></pre>
+                </div>
+            </div>
+
+            <h2>Common Connectivity Issues</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Troubleshooting Guide</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ISSUE: Device shows "No sensor data" in portal
+CAUSES:
+├── Device offline
+├── Sensor service not running
+├── Network connectivity blocked
+├── Proxy misconfiguration
+└── Onboarding failed
+
+SOLUTION:
+1. Check device is online
+2. Verify Sense service: sc query sense
+3. Run MDEClientAnalyzer
+4. Check proxy settings
+5. Re-run onboarding if needed
+
+─────────────────────────────────────────
+
+ISSUE: Cloud protection not working
+CAUSES:
+├── Cannot reach MAPS endpoints
+├── Proxy blocking cloud lookup
+├── SSL inspection breaking connection
+└── Certificate issues
+
+SOLUTION:
+1. Test: Invoke-WebRequest "https://x.cp.wd.microsoft.com/api/report"
+2. Check proxy allows *.wdcp.microsoft.com
+3. Exempt MDE URLs from SSL inspection
+4. Verify certificates are trusted
+
+─────────────────────────────────────────
+
+ISSUE: Signature updates failing
+CAUSES:
+├── Windows Update blocked
+├── Proxy not configured for WSUS
+├── DNS resolution failing
+└── Firewall blocking update URLs
+
+SOLUTION:
+1. Check: Update-MpSignature
+2. Verify *.update.microsoft.com reachable
+3. Check Windows Update service running
+4. Review proxy exclusions
+
+─────────────────────────────────────────
+
+ISSUE: Alerts not appearing in portal
+CAUSES:
+├── Telemetry upload blocked
+├── Events not reaching cloud
+├── Sensor misconfigured
+└── Network latency/timeouts
+
+SOLUTION:
+1. Check *.events.data.microsoft.com reachable
+2. Verify OnboardingState = 1
+3. Review sensor event logs
+4. Check data retention settings</code></pre>
+                </div>
+            </div>
+
+            <h2>Certificate Issues</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Certificate Troubleshooting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CERTIFICATE REQUIREMENTS:
+
+TRUSTED ROOT CAs:
+├── Baltimore CyberTrust Root
+├── DigiCert Global Root CA
+├── DigiCert Global Root G2
+├── Microsoft Root Certificate Authority
+└── Microsoft Root Certificate Authority 2011
+
+CHECK CERTIFICATE CHAIN:
+<span class="comment"># Test certificate validation</span>
+<span class="variable">$url</span> = <span class="string">"https://x.cp.wd.microsoft.com"</span>
+<span class="variable">$request</span> = [System.Net.WebRequest]::Create(<span class="variable">$url</span>)
+<span class="variable">$request</span>.GetResponse() <span class="operator">|</span> <span class="function">Out-Null</span>
+<span class="variable">$cert</span> = <span class="variable">$request</span>.ServicePoint.Certificate
+<span class="variable">$chain</span> = <span class="function">New-Object</span> System.Security.Cryptography.X509Certificates.X509Chain
+<span class="variable">$chain</span>.Build(<span class="variable">$cert</span>)
+<span class="variable">$chain</span>.ChainStatus
+
+COMMON CERTIFICATE ISSUES:
+
+SSL INSPECTION:
+├── Proxy replacing certificates
+├── MDE URLs should be exempted
+├── May break cloud protection
+└── Causes certificate trust errors
+
+SOLUTION:
+├── Exempt MDE URLs from SSL inspection
+├── Or add inspection CA to trusted roots
+├── Test connectivity after changes
+
+EXPIRED/MISSING ROOT CAs:
+├── Old Windows without updates
+├── Corporate CA not trusted
+└── Root store not updated
+
+SOLUTION:
+├── Run Windows Update
+├── Import missing root CAs
+├── Check proxy certificate</code></pre>
+                </div>
+            </div>
+
+            <h2>Event Logs for Connectivity</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Relevant Event Logs</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EVENT LOGS TO CHECK:
+
+SENSE (MDE Sensor):
+Applications and Services Logs → Microsoft → Windows → SENSE → Operational
+
+KEY EVENTS:
+├── Event 1 - Service started
+├── Event 5 - Connectivity issue
+├── Event 6 - Failed to reach cloud
+├── Event 15 - Onboarding failed
+└── Event 23 - Proxy error
+
+WINDOWS DEFENDER:
+Applications and Services Logs → Microsoft → Windows → Windows Defender → Operational
+
+KEY EVENTS:
+├── Event 2001 - Cloud protection failed
+├── Event 2010 - Signature update failed
+├── Event 5007 - Configuration changed
+└── Event 1116 - Detection
+
+POWERSHELL - VIEW SENSE EVENTS:
+<span class="function">Get-WinEvent</span> <span class="variable">-LogName</span> <span class="string">"Microsoft-Windows-SENSE/Operational"</span> <span class="operator">|</span>
+    <span class="function">Where-Object</span> { <span class="variable">$_</span>.Id <span class="operator">-in</span> @(<span class="number">5</span>, <span class="number">6</span>, <span class="number">15</span>, <span class="number">23</span>) } <span class="operator">|</span>
+    <span class="function">Select-Object</span> <span class="variable">-First</span> <span class="number">20</span> TimeCreated, Id, Message</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>SSL Inspection Warning</h5>
+                    <p>SSL inspection (HTTPS decryption) by proxies or firewalls can break MDE cloud connectivity. Always exempt MDE URLs from SSL inspection or ensure the inspection CA is trusted by endpoints.</p>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Connectivity Operations</h4>
+                <ul>
+                    <li>Troubleshoot devices showing "No sensor data"</li>
+                    <li>Verify proxy settings for new deployments</li>
+                    <li>Work with network team on firewall rules</li>
+                    <li>Run MDEClientAnalyzer on problem devices</li>
+                    <li>Document connectivity requirements for IT</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Device not reporting to MDE"</span>
+                    <span class="ticket-solution">→ Run MDEClientAnalyzer. Check Sense service. Verify proxy. Test URLs.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Cloud protection not working"</span>
+                    <span class="ticket-solution">→ Test cloud endpoints. Check SSL inspection. Verify proxy allows MDE URLs.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Signatures not updating"</span>
+                    <span class="ticket-solution">→ Check Windows Update connectivity. Verify proxy for update URLs. Manual update test.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Port</strong>: 443 (HTTPS) for all MDE communication</li>
+                    <li><strong>Key URLs</strong>: *.securitycenter.windows.com, *.wdcp.microsoft.com</li>
+                    <li><strong>Diagnostic tool</strong>: MDEClientAnalyzer (download from aka.ms/MDEClientAnalyzer)</li>
+                    <li><strong>Proxy options</strong>: WinHTTP, registry, Group Policy, Intune</li>
+                    <li><strong>Common issue</strong>: SSL inspection breaking cloud connectivity</li>
+                    <li><strong>TLS requirement</strong>: TLS 1.2 or higher</li>
+                    <li><strong>Logs</strong>: SENSE/Operational, Windows Defender/Operational</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="9-1-sensor-health.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Sensor Health</span>
+                </a>
+                <a href="9-3-onboarding-troubleshooting.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Onboarding Troubleshooting</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

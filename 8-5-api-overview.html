@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDE API Overview | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to the Microsoft Defender for Endpoint API. Learn authentication, key endpoints, common API operations, and integration patterns for automating security operations.</p>
+            </div>
+
+            <h1>MDE API Overview</h1>
+
+            <p>The MDE API enables programmatic access to Defender for Endpoint capabilities, allowing automation of security operations, integration with SOAR platforms, and building custom security tooling.</p>
+
+            <h2>API Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE API Architecture</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           YOUR APPLICATION                               │
+│                    (SOAR, Script, Custom App)                           │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ 1. Request Token
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         AZURE AD / ENTRA ID                              │
+│                                                                          │
+│   App Registration with API Permissions                                 │
+│   └─ WindowsDefenderATP (Delegated or Application)                     │
+│                                                                          │
+│   Authentication Flows:                                                 │
+│   └─ Client Credentials (App-only)                                     │
+│   └─ On-behalf-of (User context)                                       │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ 2. Bearer Token
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          MDE API ENDPOINT                                │
+│                                                                          │
+│   Base URL: https://api.securitycenter.microsoft.com                   │
+│   (or regional: api-us.securitycenter.microsoft.com)                   │
+│                                                                          │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  │
+│   │  Machines   │  │   Alerts    │  │  Indicators │  │   Hunting   │  │
+│   │    API      │  │    API      │  │     API     │  │     API     │  │
+│   └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Authentication Setup</h2>
+
+            <h3>Step 1: Register Application in Azure AD</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Azure Portal Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>1. Navigate to Azure Portal → Azure Active Directory → App registrations
+2. Click "New registration"
+3. Configure:
+   Name: MDE-API-Integration
+   Supported account types: Single tenant
+   Redirect URI: (leave blank for daemon apps)
+4. Note the Application (client) ID
+5. Note the Directory (tenant) ID
+
+6. Create Client Secret:
+   Certificates & secrets → New client secret
+   Description: MDE API Secret
+   Expiration: 24 months (or as per policy)
+   Note the secret value immediately (shown only once)
+
+7. Add API Permissions:
+   API permissions → Add permission → APIs my organization uses
+   Search: WindowsDefenderATP
+   Select: Application permissions (for daemon) or Delegated (for user context)
+   
+   Common permissions:
+   ├── Machine.Read.All - Read machine information
+   ├── Machine.ReadWrite.All - Full machine access
+   ├── Alert.Read.All - Read alerts
+   ├── Alert.ReadWrite.All - Manage alerts
+   ├── AdvancedQuery.Read.All - Run hunting queries
+   ├── Ti.ReadWrite.All - Manage indicators
+   └── Software.Read.All - Read software inventory
+
+8. Grant admin consent (requires Global Admin)</code></pre>
+                </div>
+            </div>
+
+            <h3>Step 2: Get Access Token</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Get Token</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Configuration</span>
+<span class="variable">$tenantId</span> = <span class="string">"your-tenant-id"</span>
+<span class="variable">$clientId</span> = <span class="string">"your-client-id"</span>
+<span class="variable">$clientSecret</span> = <span class="string">"your-client-secret"</span>
+
+<span class="comment"># Get OAuth token</span>
+<span class="variable">$body</span> = @{
+    grant_type    = <span class="string">"client_credentials"</span>
+    client_id     = <span class="variable">$clientId</span>
+    client_secret = <span class="variable">$clientSecret</span>
+    scope         = <span class="string">"https://api.securitycenter.microsoft.com/.default"</span>
+}
+
+<span class="variable">$tokenResponse</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Post `
+    <span class="variable">-Uri</span> <span class="string">"https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token"</span> `
+    <span class="variable">-Body</span> <span class="variable">$body</span>
+
+<span class="variable">$accessToken</span> = <span class="variable">$tokenResponse</span>.access_token
+
+<span class="comment"># Create auth header</span>
+<span class="variable">$headers</span> = @{
+    <span class="string">"Authorization"</span> = <span class="string">"Bearer $accessToken"</span>
+    <span class="string">"Content-Type"</span>  = <span class="string">"application/json"</span>
+}</code></pre>
+                </div>
+            </div>
+
+            <h2>Key API Endpoints</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Resource</th>
+                            <th>Endpoint</th>
+                            <th>Methods</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Machines</strong></td>
+                            <td><code>/api/machines</code></td>
+                            <td>GET</td>
+                            <td>List all devices</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Machine</strong></td>
+                            <td><code>/api/machines/{id}</code></td>
+                            <td>GET</td>
+                            <td>Get specific device</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alerts</strong></td>
+                            <td><code>/api/alerts</code></td>
+                            <td>GET</td>
+                            <td>List alerts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Isolate</strong></td>
+                            <td><code>/api/machines/{id}/isolate</code></td>
+                            <td>POST</td>
+                            <td>Isolate device</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Unisolate</strong></td>
+                            <td><code>/api/machines/{id}/unisolate</code></td>
+                            <td>POST</td>
+                            <td>Release isolation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Run AV Scan</strong></td>
+                            <td><code>/api/machines/{id}/runAntiVirusScan</code></td>
+                            <td>POST</td>
+                            <td>Trigger scan</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Indicators</strong></td>
+                            <td><code>/api/indicators</code></td>
+                            <td>GET, POST, DELETE</td>
+                            <td>Manage IOCs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Advanced Hunting</strong></td>
+                            <td><code>/api/advancedqueries/run</code></td>
+                            <td>POST</td>
+                            <td>Run KQL queries</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Common API Operations</h2>
+
+            <h3>List All Devices</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Get all machines</span>
+<span class="variable">$machines</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Get `
+    <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/machines"</span> `
+    <span class="variable">-Headers</span> <span class="variable">$headers</span>
+
+<span class="variable">$machines</span>.value <span class="operator">|</span> <span class="function">Select-Object</span> computerDnsName, healthStatus, riskScore
+
+<span class="comment"># Filter with OData</span>
+<span class="variable">$filter</span> = <span class="string">"healthStatus eq 'Active' and riskScore eq 'High'"</span>
+<span class="variable">$uri</span> = <span class="string">"https://api.securitycenter.microsoft.com/api/machines?`$filter=$filter"</span>
+<span class="variable">$highRiskMachines</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Get <span class="variable">-Uri</span> <span class="variable">$uri</span> <span class="variable">-Headers</span> <span class="variable">$headers</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Isolate a Device</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Isolate device</span>
+<span class="variable">$machineId</span> = <span class="string">"abc123-device-id"</span>
+<span class="variable">$body</span> = @{
+    Comment = <span class="string">"Isolated due to ransomware alert - INC-2024-001"</span>
+    IsolationType = <span class="string">"Full"</span>  <span class="comment"># or "Selective"</span>
+} <span class="operator">|</span> <span class="function">ConvertTo-Json</span>
+
+<span class="variable">$response</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Post `
+    <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/machines/$machineId/isolate"</span> `
+    <span class="variable">-Headers</span> <span class="variable">$headers</span> `
+    <span class="variable">-Body</span> <span class="variable">$body</span>
+
+<span class="comment"># Check action status</span>
+<span class="variable">$actionId</span> = <span class="variable">$response</span>.id
+<span class="variable">$status</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Get `
+    <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/machineactions/$actionId"</span> `
+    <span class="variable">-Headers</span> <span class="variable">$headers</span>
+<span class="variable">$status</span>.status  <span class="comment"># Pending, InProgress, Succeeded, Failed</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Add IOC Indicator</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Block a malicious file hash</span>
+<span class="variable">$indicator</span> = @{
+    indicatorValue = <span class="string">"a1b2c3d4e5f6..."</span>  <span class="comment"># SHA256 hash</span>
+    indicatorType = <span class="string">"FileSha256"</span>
+    action = <span class="string">"AlertAndBlock"</span>  <span class="comment"># or "Alert", "Allowed"</span>
+    title = <span class="string">"Malware - Emotet variant"</span>
+    description = <span class="string">"Blocked per INC-2024-001"</span>
+    severity = <span class="string">"High"</span>
+    recommendedActions = <span class="string">"Isolate and investigate affected devices"</span>
+} <span class="operator">|</span> <span class="function">ConvertTo-Json</span>
+
+<span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Post `
+    <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/indicators"</span> `
+    <span class="variable">-Headers</span> <span class="variable">$headers</span> `
+    <span class="variable">-Body</span> <span class="variable">$indicator</span>
+
+<span class="comment"># Block a domain</span>
+<span class="variable">$domainIndicator</span> = @{
+    indicatorValue = <span class="string">"malicious-domain.com"</span>
+    indicatorType = <span class="string">"DomainName"</span>
+    action = <span class="string">"AlertAndBlock"</span>
+    title = <span class="string">"C2 Domain"</span>
+    description = <span class="string">"Cobalt Strike C2 infrastructure"</span>
+    severity = <span class="string">"High"</span>
+} <span class="operator">|</span> <span class="function">ConvertTo-Json</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Run Advanced Hunting Query</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Run KQL query via API</span>
+<span class="variable">$query</span> = @{
+    Query = @<span class="string">"
+DeviceProcessEvents
+| where Timestamp > ago(1d)
+| where FileName =~ "powershell.exe"
+| where ProcessCommandLine has "-enc"
+| project Timestamp, DeviceName, AccountName, ProcessCommandLine
+| limit 100
+"</span>@
+} <span class="operator">|</span> <span class="function">ConvertTo-Json</span>
+
+<span class="variable">$results</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Method</span> Post `
+    <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/advancedqueries/run"</span> `
+    <span class="variable">-Headers</span> <span class="variable">$headers</span> `
+    <span class="variable">-Body</span> <span class="variable">$query</span>
+
+<span class="comment"># Process results</span>
+<span class="variable">$results</span>.Results <span class="operator">|</span> <span class="function">Format-Table</span></code></pre>
+                </div>
+            </div>
+
+            <h2>API Rate Limits</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Limit Type</th>
+                            <th>Limit</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Calls per minute</td>
+                            <td>100</td>
+                            <td>Per app registration</td>
+                        </tr>
+                        <tr>
+                            <td>Calls per hour</td>
+                            <td>1,500</td>
+                            <td>Per app registration</td>
+                        </tr>
+                        <tr>
+                            <td>Hunting query timeout</td>
+                            <td>10 minutes</td>
+                            <td>Optimize queries for performance</td>
+                        </tr>
+                        <tr>
+                            <td>Hunting results</td>
+                            <td>100,000 rows</td>
+                            <td>Use pagination for large results</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Handling Rate Limits</h5>
+                    <p>Check the <code>Retry-After</code> header when you receive HTTP 429. Implement exponential backoff for production integrations.</p>
+                </div>
+            </div>
+
+            <h2>Integration Patterns</h2>
+
+            <h3>SOAR Integration Example</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Workflow Pattern</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>AUTOMATED RESPONSE WORKFLOW:
+
+Trigger: SIEM alert "High Severity MDE Alert"
+    │
+    ▼
+Step 1: Get alert details
+    GET /api/alerts/{alertId}
+    │
+    ▼
+Step 2: Get affected machine
+    GET /api/machines/{machineId}
+    │
+    ▼
+Step 3: Assess risk
+    IF machine.riskScore == "High" AND alert.severity == "High"
+    │
+    ▼
+Step 4: Isolate device
+    POST /api/machines/{id}/isolate
+    │
+    ▼
+Step 5: Collect investigation package
+    POST /api/machines/{id}/collectInvestigationPackage
+    │
+    ▼
+Step 6: Block IOCs
+    POST /api/indicators (file hash, domain)
+    │
+    ▼
+Step 7: Create ticket
+    Call ticketing system API
+    │
+    ▼
+Step 8: Notify SOC
+    Send Teams/Slack notification</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>API Operations</h4>
+                <ul>
+                    <li>Build automation scripts for repetitive tasks</li>
+                    <li>Integrate MDE with SOAR platforms</li>
+                    <li>Create custom reporting dashboards</li>
+                    <li>Automate IOC ingestion from threat intel feeds</li>
+                    <li>Troubleshoot API authentication issues</li>
+                </ul>
+
+                <h4>Common Issues</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"API returns 401 Unauthorized"</span>
+                    <span class="ticket-solution">→ Token expired (refresh), missing permissions, admin consent needed</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"API returns 429 Too Many Requests"</span>
+                    <span class="ticket-solution">→ Rate limited; implement retry with exponential backoff</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Hunting query timeout"</span>
+                    <span class="ticket-solution">→ Optimize query, reduce time range, add filters earlier</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Authentication</strong>: Azure AD app registration with WindowsDefenderATP permissions</li>
+                    <li><strong>Base URL</strong>: <code>api.securitycenter.microsoft.com</code></li>
+                    <li><strong>Key endpoints</strong>: /machines, /alerts, /indicators, /advancedqueries/run</li>
+                    <li><strong>Rate limits</strong>: 100/min, 1500/hour per app</li>
+                    <li><strong>Use cases</strong>: SOAR integration, automated response, custom reporting</li>
+                    <li><strong>Permissions</strong>: Application (daemon) vs Delegated (user context)</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="8-4-defender-cloud-apps.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Defender for Cloud Apps</span>
+                </a>
+                <a href="8-6-api-use-cases.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">API Use Cases</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

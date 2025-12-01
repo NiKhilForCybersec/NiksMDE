@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Workflows | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Operational SOC workflows for managing MDE in enterprise environments. Covers tiered analyst responsibilities, shift handoff procedures, escalation paths, and daily/weekly/monthly operational routines.</p>
+            </div>
+
+            <h1>SOC Workflows</h1>
+
+            <p>Effective security operations require well-defined workflows, clear responsibilities, and consistent procedures. This guide covers how to operationalize MDE within a Security Operations Center.</p>
+
+            <h2>SOC Tier Structure</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Tiered SOC Model</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         SOC TIER STRUCTURE                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐    │
+│  │  TIER 3: THREAT HUNTERS / SENIOR ANALYSTS                       │    │
+│  │  • Proactive threat hunting                                     │    │
+│  │  • Advanced malware analysis                                    │    │
+│  │  • Detection engineering (custom rules)                         │    │
+│  │  • Incident commander for major events                          │    │
+│  └─────────────────────────────────────────────────────────────────┘    │
+│                              ▲                                           │
+│                              │ Escalation                                │
+│  ┌─────────────────────────────────────────────────────────────────┐    │
+│  │  TIER 2: INCIDENT RESPONDERS                                    │    │
+│  │  • Deep investigation of escalated alerts                       │    │
+│  │  • Incident response execution                                  │    │
+│  │  • Containment and remediation actions                          │    │
+│  │  • Cross-platform correlation                                   │    │
+│  └─────────────────────────────────────────────────────────────────┘    │
+│                              ▲                                           │
+│                              │ Escalation                                │
+│  ┌─────────────────────────────────────────────────────────────────┐    │
+│  │  TIER 1: ALERT ANALYSTS                                         │    │
+│  │  • Initial alert triage                                         │    │
+│  │  • Quick assessment and classification                          │    │
+│  │  • False positive identification                                │    │
+│  │  • Escalation of true positives                                 │    │
+│  └─────────────────────────────────────────────────────────────────┘    │
+│                              ▲                                           │
+│                              │                                           │
+│  ┌─────────────────────────────────────────────────────────────────┐    │
+│  │  AUTOMATED: MDE AIR (Automated Investigation & Response)        │    │
+│  │  • Auto-investigation of alerts                                 │    │
+│  │  • Automated remediation (configured threats)                   │    │
+│  │  • Evidence collection                                          │    │
+│  └─────────────────────────────────────────────────────────────────┘    │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Tier Responsibilities in MDE</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tier</th>
+                            <th>MDE Activities</th>
+                            <th>Time per Alert</th>
+                            <th>Escalation Criteria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tier 1</strong></td>
+                            <td>Triage alerts, review alert story, check FP indicators, classify obvious benign/malicious</td>
+                            <td>5-10 minutes</td>
+                            <td>Confirmed TP, unclear intent, high severity</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tier 2</strong></td>
+                            <td>Deep timeline analysis, Live Response investigation, containment actions, incident coordination</td>
+                            <td>30-60 minutes</td>
+                            <td>Active breach, APT indicators, need for hunting</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tier 3</strong></td>
+                            <td>Proactive hunting, detection rule creation, malware reverse engineering, major incident command</td>
+                            <td>Hours-days</td>
+                            <td>Executive escalation, external communication</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Daily SOC Operations</h2>
+
+            <h3>Shift Start Checklist</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Shift Start Procedure</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>□ Review shift handoff notes from previous shift
+□ Check incident queue for any ongoing incidents
+□ Review high-severity alerts generated during handoff
+□ Check MDE service health (any degradation notices)
+□ Review any new threat intelligence bulletins
+□ Check sensor health dashboard for offline devices
+□ Attend shift start briefing (if applicable)
+
+Priority Order for Queue Review:
+1. High severity, unassigned alerts (newest first)
+2. In-progress incidents assigned to you
+3. Medium severity alerts
+4. Low/Informational as time permits</code></pre>
+                </div>
+            </div>
+
+            <h3>Alert Triage Workflow</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Tier 1 Triage Process</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>FOR EACH ALERT:
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. INITIAL ASSESSMENT (2 min)                                   │
+│    • Read alert title and description                           │
+│    • Note severity and detection source                         │
+│    • Identify device and user                                   │
+└─────────────────────────────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ 2. QUICK CHECKS (3 min)                                         │
+│    • Is this a known FP pattern?                                │
+│    • Is the device a test/lab system?                           │
+│    • Is the user IT/Security (expected activity)?               │
+│    • Are there similar recent alerts (duplicate)?               │
+└─────────────────────────────────────────────────────────────────┘
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+    CLEAR FP/BENIGN     NEEDS INVESTIGATION
+          │                   │
+          ▼                   ▼
+┌─────────────────┐  ┌─────────────────────────────────────────────┐
+│ Classify as:    │  │ 3. INVESTIGATION (5+ min)                   │
+│ • False Positive│  │    • Review alert story/process tree        │
+│ • Benign TP     │  │    • Check device timeline                  │
+│ Document reason │  │    • Analyze file/URL reputation            │
+│ Close alert     │  │    • Determine true positive?               │
+└─────────────────┘  └────────────────────────────────────────────┬┘
+                                                                   │
+                            ┌──────────────────────────────────────┴┐
+                            │                                       │
+                     NOT CONFIRMED                           CONFIRMED TP
+                            │                                       │
+                            ▼                                       ▼
+                  ┌─────────────────┐                    ┌─────────────────┐
+                  │ Document findings│                    │ ESCALATE TO T2  │
+                  │ Close as unclear │                    │ Create incident │
+                  │ or FP            │                    │ Document IOCs   │
+                  └─────────────────┘                    └─────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h3>Shift Handoff Procedure</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Handoff Template</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SHIFT HANDOFF - [Date] [Shift Time]
+Outgoing Analyst: [Name]
+Incoming Analyst: [Name]
+
+═══════════════════════════════════════════════════════════════════
+
+ACTIVE INCIDENTS:
+┌─────────────────────────────────────────────────────────────────┐
+│ INC-2024-0542 | Ransomware | HIGH | In Progress                 │
+│ Status: Device isolated, waiting for IT to reimage              │
+│ Next Action: Confirm reimaging complete, release isolation      │
+│ Assigned: [Analyst Name]                                        │
+├─────────────────────────────────────────────────────────────────┤
+│ INC-2024-0540 | Phishing | MEDIUM | Investigation               │
+│ Status: 3 users clicked link, credentials reset                 │
+│ Next Action: Complete mailbox review for all 3 users            │
+│ Assigned: [Analyst Name]                                        │
+└─────────────────────────────────────────────────────────────────┘
+
+PENDING ALERTS:
+• 12 High severity alerts (oldest: 2 hours)
+• 34 Medium severity alerts
+• Note: Spike in "Suspicious PowerShell" - pen test running
+
+NOTABLE EVENTS:
+• MDE had 15-min reporting delay at 14:30 UTC (resolved)
+• New hunting query deployed for Log4j variants
+• IT deploying Chrome update this weekend
+
+FOLLOW-UPS NEEDED:
+• Check if suppression rule for IT tools is working
+• Verify Device XYZ123 came back online after maintenance
+
+═══════════════════════════════════════════════════════════════════</code></pre>
+                </div>
+            </div>
+
+            <h2>Weekly SOC Tasks</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Weekly Checklist</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WEEKLY SOC REVIEW TASKS:
+
+□ ALERT METRICS REVIEW
+  • Total alerts by severity
+  • Mean time to triage (MTTT)
+  • Mean time to respond (MTTR)
+  • False positive rate by detection
+  • Top 10 noisy detections
+
+□ SENSOR HEALTH
+  • Devices offline > 7 days (investigate/cleanup)
+  • Onboarding failures
+  • Sensor health issues trend
+
+□ DETECTION COVERAGE
+  • Review new detections from Microsoft
+  • Test custom detection rules are firing
+  • Review suppression rules (still needed?)
+
+□ THREAT INTELLIGENCE
+  • New CVEs relevant to our environment
+  • Active campaigns targeting our industry
+  • Update IOC lists if needed
+
+□ PROCESS IMPROVEMENT
+  • Review escalated incidents (lessons learned)
+  • Update runbooks if gaps found
+  • Training needs identification</code></pre>
+                </div>
+            </div>
+
+            <h2>Monthly SOC Tasks</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Monthly Checklist</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MONTHLY SOC OPERATIONS:
+
+□ METRICS REPORTING
+  • Generate monthly security metrics report
+  • Compare to previous month and trends
+  • Highlight significant incidents
+  • Calculate SLA compliance
+
+□ COVERAGE ASSESSMENT
+  • Device onboarding status (% coverage)
+  • ASR rules deployment status
+  • TVM exposure score trend
+  • Detection coverage gaps
+
+□ RULE MAINTENANCE
+  • Audit suppression rules (remove expired/unnecessary)
+  • Review custom detection rule effectiveness
+  • Update indicator lists
+  • Archive closed incidents
+
+□ TEAM DEVELOPMENT
+  • Review analyst performance metrics
+  • Identify training opportunities
+  • Update documentation and runbooks
+  • Plan purple team exercises
+
+□ STAKEHOLDER REPORTING
+  • Executive security summary
+  • Risk metrics and trends
+  • Resource needs assessment</code></pre>
+                </div>
+            </div>
+
+            <h2>Escalation Matrix</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Escalate To</th>
+                            <th>Timeline</th>
+                            <th>Communication</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Confirmed ransomware</td>
+                            <td>SOC Manager → CISO</td>
+                            <td>Immediate</td>
+                            <td>Phone call + incident bridge</td>
+                        </tr>
+                        <tr>
+                            <td>Data exfiltration detected</td>
+                            <td>T2 → SOC Manager → Legal</td>
+                            <td>< 30 minutes</td>
+                            <td>Secure channel</td>
+                        </tr>
+                        <tr>
+                            <td>Executive device compromised</td>
+                            <td>T2 → SOC Manager</td>
+                            <td>Immediate</td>
+                            <td>Phone call</td>
+                        </tr>
+                        <tr>
+                            <td>Active lateral movement</td>
+                            <td>T2 → T3</td>
+                            <td>< 15 minutes</td>
+                            <td>Incident channel</td>
+                        </tr>
+                        <tr>
+                            <td>Multiple devices same malware</td>
+                            <td>T1 → T2</td>
+                            <td>< 30 minutes</td>
+                            <td>Ticket + message</td>
+                        </tr>
+                        <tr>
+                            <td>Unusual T1 alert (not sure)</td>
+                            <td>T1 → T2</td>
+                            <td>Within SLA</td>
+                            <td>Ticket</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>KQL Queries for SOC Operations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - SOC Metrics Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Daily alert volume by severity</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> <span class="function">bin</span>(Timestamp, <span class="number">1</span>d), Severity
+<span class="operator">|</span> <span class="keyword">render</span> columnchart
+
+<span class="comment">// Top alert generators (noisy devices)</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">join</span> <span class="variable">AlertEvidence</span> <span class="keyword">on</span> AlertId
+<span class="operator">|</span> <span class="keyword">where</span> EntityType <span class="operator">==</span> <span class="string">"Machine"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> AlertCount <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> DeviceName
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">20</span> <span class="keyword">by</span> AlertCount
+
+<span class="comment">// Detection rule effectiveness</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Total <span class="operator">=</span> <span class="function">count</span>(),
+    TP <span class="operator">=</span> <span class="function">countif</span>(Classification <span class="operator">==</span> <span class="string">"TruePositive"</span>),
+    FP <span class="operator">=</span> <span class="function">countif</span>(Classification <span class="operator">==</span> <span class="string">"FalsePositive"</span>)
+    <span class="keyword">by</span> Title
+<span class="operator">|</span> <span class="keyword">extend</span> FPRate <span class="operator">=</span> <span class="function">round</span>(<span class="number">100.0</span> <span class="operator">*</span> FP <span class="operator">/</span> Total, <span class="number">1</span>)
+<span class="operator">|</span> <span class="keyword">where</span> Total <span class="operator">></span> <span class="number">10</span>
+<span class="operator">|</span> <span class="keyword">order by</span> FPRate <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>SOC Leadership Tasks</h4>
+                <ul>
+                    <li>Monitor queue health and analyst workload</li>
+                    <li>Review escalations and provide guidance</li>
+                    <li>Ensure shift coverage and handoffs</li>
+                    <li>Track metrics and identify improvements</li>
+                    <li>Coordinate with other teams (IT, Dev, Management)</li>
+                </ul>
+
+                <h4>Process Improvement</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Alert fatigue from detection X"</span>
+                    <span class="ticket-solution">→ Analyze FP rate, create suppression rule or tune detection</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Analysts missing context"</span>
+                    <span class="ticket-solution">→ Create runbook for alert type, add to wiki</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Slow response times"</span>
+                    <span class="ticket-solution">→ Review workload distribution, consider automation opportunities</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Tiered model</strong>: T1 (triage), T2 (investigation/response), T3 (hunting/engineering)</li>
+                    <li><strong>Shift handoff</strong>: Critical for 24/7 operations; document active incidents and pending items</li>
+                    <li><strong>Escalation criteria</strong>: Severity, confidence, impact, time-sensitivity</li>
+                    <li><strong>Metrics</strong>: MTTT (mean time to triage), MTTR (mean time to respond), FP rate</li>
+                    <li><strong>Continuous improvement</strong>: Weekly reviews, suppression tuning, runbook updates</li>
+                    <li><strong>Automation</strong>: Use MDE AIR to handle routine investigations</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="10-6-multi-tenant-management.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Multi-Tenant Management</span>
+                </a>
+                <a href="11-2-metrics-kpis.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Metrics & KPIs</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offboarding Devices | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to offboarding devices from MDE. Learn proper procedures for removing devices from management across all platforms.</p>
+            </div>
+
+            <h1>Offboarding Devices</h1>
+
+            <p>Offboarding removes devices from MDE management. This is needed when decommissioning hardware, changing tenants, or removing devices from security scope.</p>
+
+            <h2>When to Offboard</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Offboarding Scenarios</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WHEN TO OFFBOARD DEVICES:
+
+COMMON SCENARIOS:
+├── Device decommissioning/retirement
+├── Device reassignment to different tenant
+├── Employee offboarding (device wipe)
+├── Migration to different EDR solution
+├── Testing/lab device cleanup
+├── Duplicate device cleanup
+└── Compliance requirement (data removal)
+
+WHAT HAPPENS AFTER OFFBOARDING:
+├── Device stops sending telemetry
+├── No new alerts generated
+├── Existing data retained for 180 days
+├── Device marked as "Offboarded" in portal
+├── Device can be re-onboarded if needed
+├── Defender AV continues to function locally
+└── EDR capabilities disabled
+
+WHAT TO DO BEFORE OFFBOARDING:
+├── Collect investigation package (if needed)
+├── Document device information
+├── Release from isolation (if isolated)
+├── Remove any active restrictions
+├── Export relevant hunting data
+└── Update asset inventory</code></pre>
+                </div>
+            </div>
+
+            <h2>Windows Offboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Windows Methods</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WINDOWS OFFBOARDING METHODS:
+
+LOCAL SCRIPT:
+├── Download from: Settings → Endpoints → Offboarding
+├── Select: Windows 10/11
+├── Download: WindowsDefenderATPOffboardingScript.cmd
+├── Run as Administrator on device
+├── Script valid for 30 days after download
+└── Best for: Individual devices, testing
+
+GROUP POLICY:
+├── Download offboarding package
+├── Extract WindowsDefenderATPOffboarding.cmd
+├── Copy to NETLOGON share
+├── Create GPO: Computer Config → Policies → 
+│   Windows Settings → Scripts → Startup
+├── Add offboarding script
+├── Link GPO to target OU
+└── Best for: Bulk offboarding AD-joined devices
+
+MICROSOFT INTUNE:
+├── Intune admin center → Endpoint security
+├── Endpoint detection and response
+├── Create new EDR policy (or modify existing)
+├── Configuration type: Offboarding
+├── Upload offboarding package
+├── Assign to device group
+└── Best for: Cloud-managed devices
+
+SCCM/MECM:
+├── Download offboarding package
+├── Create package with script
+├── Create task sequence or deploy as program
+├── Target collection of devices
+└── Best for: ConfigMgr-managed environments
+
+SCRIPT CONTENT EXAMPLE:
+# Offboarding sets registry key to 0
+reg add "HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status" /v OnboardingState /t REG_DWORD /d 0 /f</code></pre>
+                </div>
+            </div>
+
+            <h2>macOS and Linux Offboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Cross-Platform Offboarding</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MACOS OFFBOARDING:
+
+MANUAL METHOD:
+# Download offboarding script from portal
+# Settings → Endpoints → Offboarding → macOS
+
+# Run offboarding script
+sudo python MicrosoftDefenderATPOffboardingMacOs.py
+
+# Verify offboarding
+mdatp health --field org_id
+# Should show empty or "unavailable"
+
+# Optional: Uninstall application
+sudo /Library/Application\ Support/Microsoft/Defender/uninstall/uninstall
+
+INTUNE/JAMF:
+├── Deploy offboarding script via MDM
+├── Create script policy
+├── Target device groups
+└── Monitor completion
+
+LINUX OFFBOARDING:
+
+MANUAL METHOD:
+# Download offboarding script from portal
+# Settings → Endpoints → Offboarding → Linux Server
+
+# Run offboarding script
+sudo python MicrosoftDefenderATPOffboardingLinuxServer.py
+
+# Verify offboarding
+mdatp health --field org_id
+# Should be empty
+
+# Optional: Uninstall package
+# RHEL/CentOS:
+sudo yum remove mdatp
+
+# Ubuntu/Debian:
+sudo apt remove mdatp
+
+# SUSE:
+sudo zypper remove mdatp</code></pre>
+                </div>
+            </div>
+
+            <h2>Mobile Offboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">iOS and Android</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MOBILE DEVICE OFFBOARDING:
+
+iOS:
+├── Remove app assignment in Intune
+├── User uninstalls Microsoft Defender app
+├── Remove app configuration policy
+├── Device stops reporting to MDE
+└── VPN profile automatically removed
+
+ANDROID:
+├── Remove app assignment in Intune
+├── App automatically removed (managed devices)
+├── Or user uninstalls from work profile
+├── Remove app configuration policy
+└── VPN profile removed
+
+VIA INTUNE:
+1. Apps → iOS/Android apps
+2. Find Microsoft Defender
+3. Edit assignments
+4. Remove target groups (or add exclusion)
+5. Save
+6. App removed on next sync
+
+FULL DEVICE OFFBOARDING (MDM):
+├── Intune → Devices → All devices
+├── Select device
+├── Retire or Wipe
+├── All corporate data removed
+└── MDE offboarded automatically</code></pre>
+                </div>
+            </div>
+
+            <h2>Verification</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Verify Offboarding</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>VERIFICATION METHODS:
+
+WINDOWS - REGISTRY:
+reg query "HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"
+# OnboardingState should be 0
+
+WINDOWS - SERVICE:
+sc query sense
+# Service may still run but won't report
+
+WINDOWS - POWERSHELL:
+Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"
+# OnboardingState = 0
+
+MACOS/LINUX:
+mdatp health
+# org_id should be empty
+# licensed should be false
+
+MDE PORTAL:
+├── Devices → Device inventory
+├── Find device
+├── Status shows: Offboarded
+├── Last seen timestamp stops updating
+└── Historical data still visible
+
+ADVANCED HUNTING:
+DeviceInfo
+| where DeviceName == "DEVICENAME"
+| summarize LastSeen = max(Timestamp)
+# No new records after offboarding
+
+COMMON ISSUES:
+├── Device still shows Active: Wait 24 hours
+├── Offboarding failed: Check admin rights
+├── Script expired: Download fresh package
+└── Re-onboarding: Wait 24h, then re-onboard</code></pre>
+                </div>
+            </div>
+
+            <h2>Data Retention</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Post-Offboarding Data</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DATA RETENTION AFTER OFFBOARDING:
+
+RETENTION PERIOD:
+├── Device data retained for 180 days
+├── Alerts and incidents preserved
+├── Timeline data accessible
+├── Advanced hunting queries still work
+└── After 180 days: Data automatically purged
+
+WHAT'S RETAINED:
+├── Historical alerts
+├── Investigation data
+├── Timeline events
+├── File analysis results
+├── Network connection logs
+└── User activity associated with device
+
+WHAT STOPS:
+├── New telemetry collection
+├── Real-time protection reporting
+├── New alert generation
+├── Vulnerability assessment updates
+└── Software inventory updates
+
+RE-ONBOARDING:
+├── Device can be re-onboarded anytime
+├── Wait 24 hours after offboarding
+├── Run onboarding script/package
+├── New device record created
+├── Historical data NOT linked to new record
+└── Treated as new device</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Collect evidence first</strong>: Get investigation package before offboarding</li>
+                        <li><strong>Use fresh scripts</strong>: Offboarding packages expire after 30 days</li>
+                        <li><strong>Wait 24 hours</strong>: Before re-onboarding a device</li>
+                        <li><strong>Document reason</strong>: Track why devices are offboarded</li>
+                        <li><strong>Clean up duplicates</strong>: Offboard duplicate/stale device records</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Data retention</strong>: 180 days after offboarding</li>
+                    <li><strong>Methods</strong>: Script, GPO, Intune, SCCM</li>
+                    <li><strong>Verification</strong>: OnboardingState = 0 in registry</li>
+                    <li><strong>Re-onboarding</strong>: Wait 24 hours, then run onboarding</li>
+                    <li><strong>Script expiry</strong>: Offboarding packages valid 30 days</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="1-7-onboarding-mobile.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Onboarding Mobile</span>
+                </a>
+                <a href="2-1-security-portal-overview.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Security Portal</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>

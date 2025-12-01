@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Tuning | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to tuning MDE detections for optimal signal-to-noise ratio. Learn to reduce false positives, suppress benign alerts, and improve detection quality.</p>
+            </div>
+
+            <h1>Detection Tuning</h1>
+
+            <p>Detection tuning is the process of reducing false positives while maintaining detection of true threats. Well-tuned detections improve SOC efficiency and reduce alert fatigue.</p>
+
+            <h2>Tuning Workflow</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Detection Tuning Process</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    DETECTION TUNING WORKFLOW                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                 │
+│  │   ALERT     │───►│  ANALYZE    │───►│  CLASSIFY   │                 │
+│  │  RECEIVED   │    │  CONTEXT    │    │  TP or FP   │                 │
+│  └─────────────┘    └─────────────┘    └──────┬──────┘                 │
+│                                               │                         │
+│                    ┌──────────────────────────┼──────────────────┐      │
+│                    ▼                          ▼                  ▼      │
+│             ┌─────────────┐           ┌─────────────┐    ┌───────────┐ │
+│             │ TRUE        │           │ FALSE       │    │ BENIGN    │ │
+│             │ POSITIVE    │           │ POSITIVE    │    │ TRUE POS  │ │
+│             └──────┬──────┘           └──────┬──────┘    └─────┬─────┘ │
+│                    │                         │                  │       │
+│                    ▼                         ▼                  ▼       │
+│             ┌─────────────┐           ┌─────────────┐    ┌───────────┐ │
+│             │ Investigate │           │ Create      │    │ Suppress  │ │
+│             │ & Respond   │           │ Suppression │    │ for Scope │ │
+│             └─────────────┘           │ Rule        │    └───────────┘ │
+│                                       └──────┬──────┘                   │
+│                                              │                          │
+│                    ┌─────────────────────────┼─────────────────────┐   │
+│                    ▼                         ▼                     ▼    │
+│             ┌─────────────┐           ┌─────────────┐       ┌────────┐ │
+│             │ Global      │           │ Scoped      │       │ Custom │ │
+│             │ Suppression │           │ Suppression │       │ IOC    │ │
+│             └─────────────┘           └─────────────┘       │ Allow  │ │
+│                                                             └────────┘ │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Alert Classification</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Alert Classifications</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CLASSIFICATION OPTIONS:
+
+TRUE POSITIVE (TP):
+├── Definition: Alert correctly identified a threat
+├── Action: Investigate and remediate
+├── Determination options:
+│   ├── Security test - Authorized testing
+│   ├── Line of business application - Known software
+│   ├── Confirmed activity - Verified malicious
+│   └── Other - Miscellaneous true positive
+└── Impact: No tuning needed, detection working
+
+FALSE POSITIVE (FP):
+├── Definition: Alert triggered on benign activity
+├── Action: Create suppression rule
+├── Determination options:
+│   ├── Not malicious - Activity is legitimate
+│   ├── Not enough data to validate - Inconclusive
+│   └── Other - Miscellaneous false positive
+└── Impact: Tuning needed to prevent recurrence
+
+BENIGN TRUE POSITIVE:
+├── Definition: Detection is accurate but activity is authorized
+├── Examples:
+│   ├── Penetration testing
+│   ├── Security tool execution
+│   ├── Administrative scripts
+│   └── Legitimate IT operations
+├── Action: Suppress for specific scope
+└── Impact: Targeted suppression, keep detection for others
+
+INFORMATIONAL:
+├── Definition: Low-severity observation
+├── Action: Review, may not require response
+└── Impact: Consider suppression if too noisy</code></pre>
+                </div>
+            </div>
+
+            <h2>Suppression Rules</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Creating Suppression Rules</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SUPPRESSION RULES:
+Location: Settings → Endpoints → Alert suppression
+
+CREATING FROM ALERT:
+1. Open alert details
+2. Click "Create suppression rule"
+3. System pre-fills conditions based on alert
+4. Review and adjust conditions
+5. Set scope (organization or device group)
+6. Add comment explaining suppression
+7. Save rule
+
+MANUAL CREATION:
+1. Settings → Endpoints → Alert suppression
+2. Click "Add suppression rule"
+3. Configure conditions:
+   ├── Title contains
+   ├── IOC (hash, IP, URL, file path)
+   ├── File name
+   ├── Folder path
+   ├── User name
+   ├── Device name
+   └── Command line
+4. Set scope and expiration
+5. Save
+
+SUPPRESSION CONDITIONS:
+
+BY FILE HASH:
+├── Most specific, lowest FP risk
+├── Use for: Known legitimate files
+└── Example: Hash of authorized admin tool
+
+BY FILE PATH:
+├── Moderately specific
+├── Use for: Known application directories
+├── Example: C:\Program Files\CompanyApp\*.exe
+└── Risk: Malware could use same path
+
+BY FILE NAME:
+├── Less specific, higher risk
+├── Use for: Well-known benign file names
+├── Example: certutil.exe (be careful!)
+└── Risk: Attackers use same names
+
+BY COMMAND LINE:
+├── Very specific
+├── Use for: Specific command patterns
+├── Example: powershell.exe -File C:\Scripts\backup.ps1
+└── Good for: Authorized scripts
+
+SCOPE OPTIONS:
+├── Organization-wide: All devices
+├── Device group: Specific group only
+└── Single device: One device only (rare)
+
+EXPIRATION:
+├── No expiration: Permanent (use carefully)
+├── Set date: Time-limited suppression
+└── Recommendation: Review expiring rules regularly</code></pre>
+                </div>
+            </div>
+
+            <h2>Finding False Positives</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - FP Analysis Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Most common alerts - potential FP candidates</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> Title
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+<span class="operator">|</span> <span class="keyword">take</span> <span class="number">20</span>
+
+<span class="comment">// Alerts resolved as False Positive</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> Classification <span class="operator">==</span> <span class="string">"FalsePositive"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> FPCount = <span class="function">count</span>() <span class="keyword">by</span> Title
+<span class="operator">|</span> <span class="keyword">order by</span> FPCount <span class="keyword">desc</span>
+
+<span class="comment">// Alerts with same file generating multiple alerts</span>
+<span class="variable">AlertEvidence</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> EntityType <span class="operator">==</span> <span class="string">"File"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> AlertCount = <span class="function">dcount</span>(AlertId) <span class="keyword">by</span> FileName, SHA256
+<span class="operator">|</span> <span class="keyword">where</span> AlertCount <span class="operator">></span> <span class="number">5</span>
+<span class="operator">|</span> <span class="keyword">order by</span> AlertCount <span class="keyword">desc</span>
+
+<span class="comment">// Repetitive alerts from same device</span>
+<span class="variable">AlertEvidence</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> EntityType <span class="operator">==</span> <span class="string">"Machine"</span>
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind=inner</span> <span class="variable">AlertInfo</span> <span class="keyword">on</span> AlertId
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> DeviceName, Title
+<span class="operator">|</span> <span class="keyword">where</span> Count <span class="operator">></span> <span class="number">10</span>
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// FP rate by alert title</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> Classification <span class="function">in</span> (<span class="string">"TruePositive"</span>, <span class="string">"FalsePositive"</span>)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    Total = <span class="function">count</span>(),
+    FP = <span class="function">countif</span>(Classification <span class="operator">==</span> <span class="string">"FalsePositive"</span>)
+    <span class="keyword">by</span> Title
+<span class="operator">|</span> <span class="keyword">extend</span> FPRate = <span class="function">round</span>(<span class="number">100.0</span> * FP / Total, <span class="number">1</span>)
+<span class="operator">|</span> <span class="keyword">where</span> Total <span class="operator">></span> <span class="number">5</span>
+<span class="operator">|</span> <span class="keyword">order by</span> FPRate <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Custom Detection Tuning</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Tuning Custom Detections</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>TUNING CUSTOM DETECTION RULES:
+
+REDUCE FALSE POSITIVES:
+
+1. ADD EXCLUSIONS TO QUERY:
+   // Before (noisy)
+   DeviceProcessEvents
+   | where FileName == "powershell.exe"
+   | where ProcessCommandLine has "-enc"
+   
+   // After (tuned)
+   DeviceProcessEvents
+   | where FileName == "powershell.exe"
+   | where ProcessCommandLine has "-enc"
+   | where InitiatingProcessFileName !in~ (
+       "sccm.exe", "intune.exe", "scheduled_task.exe"
+   )
+   | where FolderPath !startswith "C:\\Program Files\\IT-Tools"
+
+2. ADD TIME-BASED FILTERING:
+   // Exclude known maintenance windows
+   | where not (
+       hourofday(Timestamp) between (2 .. 4)
+       and dayofweek(Timestamp) == 0  // Sunday 2-4 AM
+   )
+
+3. ADD THRESHOLD:
+   // Require multiple occurrences
+   | summarize Count = count() by DeviceName, AccountName
+   | where Count > 3
+
+4. ADD CONTEXT CHECKS:
+   // Only alert if device is not in test group
+   | join kind=inner DeviceInfo on DeviceId
+   | where MachineGroup != "TestDevices"
+
+IMPROVE TRUE POSITIVE RATE:
+
+1. NARROW SCOPE:
+   // More specific command patterns
+   | where ProcessCommandLine has_all (
+       "-enc", "http", "invoke"
+   )
+
+2. ADD POSITIVE INDICATORS:
+   // Correlate with other suspicious activity
+   | join kind=inner (
+       DeviceNetworkEvents
+       | where RemotePort in (4444, 5555, 8080)
+   ) on DeviceId
+
+3. WEIGHT BY RISK:
+   // Higher severity for high-value assets
+   | extend RiskLevel = iff(MachineGroup == "Executives", "High", "Medium")</code></pre>
+                </div>
+            </div>
+
+            <h2>Tuning Best Practices</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Best Practices</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>TUNING BEST PRACTICES:
+
+1. DOCUMENT EVERYTHING
+   ├── Why was suppression created?
+   ├── What triggered the original alert?
+   ├── Who approved the suppression?
+   ├── When should it be reviewed?
+   └── Ticket/change number
+
+2. USE MINIMUM SCOPE
+   ├── Specific hash > file name > folder
+   ├── Device group > organization-wide
+   ├── Temporary > permanent
+   └── Avoid broad suppressions
+
+3. REGULAR REVIEW
+   ├── Monthly suppression rule audit
+   ├── Quarterly custom detection review
+   ├── Remove obsolete suppressions
+   └── Check for abuse of suppressed paths
+
+4. TRACK METRICS
+   ├── FP rate per detection
+   ├── Suppression rule count trend
+   ├── Alert volume before/after tuning
+   └── Time spent on FP investigation
+
+5. COMMUNICATE CHANGES
+   ├── Notify SOC of new suppressions
+   ├── Document in runbooks
+   ├── Update training materials
+   └── Review in team meetings
+
+6. TEST BEFORE DEPLOY
+   ├── Run custom detection in audit mode
+   ├── Review results before enabling
+   ├── Gradual rollout to device groups
+   └── Monitor for unintended consequences</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Tuning Risks</h5>
+                    <ul>
+                        <li><strong>Over-suppression</strong>: May miss real threats</li>
+                        <li><strong>Broad rules</strong>: Attackers can exploit suppressed paths</li>
+                        <li><strong>Stale rules</strong>: Old suppressions may hide new threats</li>
+                        <li><strong>No documentation</strong>: Team doesn't know why alert is suppressed</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Classifications</strong>: True Positive, False Positive, Benign True Positive</li>
+                    <li><strong>Suppression scope</strong>: Most specific (hash) to least specific (file name)</li>
+                    <li><strong>Tuning goal</strong>: Reduce noise while maintaining detection of threats</li>
+                    <li><strong>Regular review</strong>: Suppressions should be audited monthly/quarterly</li>
+                    <li><strong>Documentation</strong>: Every suppression needs justification and owner</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-9-threat-intelligence.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Threat Intelligence</span>
+                </a>
+                <a href="5-1-advanced-hunting-overview.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Advanced Hunting Overview</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

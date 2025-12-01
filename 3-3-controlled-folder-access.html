@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controlled Folder Access | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Controlled Folder Access (CFA), Microsoft's ransomware protection feature. Learn how it works, configuration options, managing allowed applications, troubleshooting blocks, and deployment strategies.</p>
+            </div>
+
+            <h1>Controlled Folder Access</h1>
+
+            <p>Controlled Folder Access (CFA) protects valuable data from malicious apps and threats, including ransomware. It works by checking apps against a list of known, trusted apps and blocking untrusted apps from making changes to protected folders.</p>
+
+            <h2>How Controlled Folder Access Works</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">CFA Protection Mechanism</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    CONTROLLED FOLDER ACCESS FLOW                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  APPLICATION ATTEMPTS TO WRITE TO PROTECTED FOLDER                      │
+│                              │                                          │
+│                              ▼                                          │
+│                    ┌─────────────────┐                                  │
+│                    │ Is CFA enabled? │                                  │
+│                    └────────┬────────┘                                  │
+│                             │                                           │
+│                    ┌────────┴────────┐                                  │
+│                    │                 │                                  │
+│                   Yes               No                                  │
+│                    │                 │                                  │
+│                    ▼                 ▼                                  │
+│         ┌──────────────────┐    ┌───────────┐                          │
+│         │ Check if folder  │    │ ALLOW     │                          │
+│         │ is protected     │    └───────────┘                          │
+│         └────────┬─────────┘                                           │
+│                  │                                                      │
+│         ┌────────┴────────┐                                            │
+│         │                 │                                            │
+│   Protected         Not Protected                                       │
+│         │                 │                                            │
+│         ▼                 ▼                                            │
+│  ┌─────────────────┐  ┌───────────┐                                    │
+│  │ Is app trusted? │  │ ALLOW     │                                    │
+│  └────────┬────────┘  └───────────┘                                    │
+│           │                                                             │
+│  ┌────────┴────────┐                                                   │
+│  │                 │                                                   │
+│ Trusted       Untrusted                                                 │
+│  │                 │                                                   │
+│  ▼                 ▼                                                   │
+│ ┌───────────┐  ┌───────────────────────────────────────┐              │
+│ │ ALLOW     │  │ BLOCK                                 │              │
+│ └───────────┘  │ • Write operation denied              │              │
+│                │ • Notification shown to user          │              │
+│                │ • Event logged                        │              │
+│                │ • Alert generated in portal           │              │
+│                └───────────────────────────────────────┘              │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+
+TRUSTED APPS:
+• Microsoft-signed applications
+• Apps with good reputation (cloud check)
+• Explicitly allowed apps (admin configured)
+</pre>
+            </div>
+
+            <h2>Default Protected Folders</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Protected Folders by Default</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SYSTEM FOLDERS (Always Protected when CFA enabled):
+
+User Folders:
+├── C:\Users\&lt;username&gt;\Documents
+├── C:\Users\&lt;username&gt;\Pictures
+├── C:\Users\&lt;username&gt;\Videos
+├── C:\Users\&lt;username&gt;\Music
+├── C:\Users\&lt;username&gt;\Favorites
+└── C:\Users\&lt;username&gt;\Desktop
+
+Public Folders:
+├── C:\Users\Public\Documents
+├── C:\Users\Public\Pictures
+├── C:\Users\Public\Videos
+└── C:\Users\Public\Music
+
+ADDITIONAL FOLDERS YOU CAN ADD:
+├── Network shares (e.g., \\server\share)
+├── OneDrive folders
+├── Custom data directories
+├── Application data folders
+└── Any folder containing sensitive data
+
+CANNOT PROTECT:
+├── C:\Windows (system folder)
+├── C:\Program Files (would break apps)
+├── C:\Program Files (x86)
+└── Temp folders</code></pre>
+                </div>
+            </div>
+
+            <h2>CFA Modes</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mode</th>
+                            <th>Value</th>
+                            <th>Behavior</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Disabled</strong></td>
+                            <td>0</td>
+                            <td>No protection</td>
+                            <td>Feature off</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enabled</strong></td>
+                            <td>1</td>
+                            <td>Block untrusted apps</td>
+                            <td>Production enforcement</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Audit</strong></td>
+                            <td>2</td>
+                            <td>Log but don't block</td>
+                            <td>Testing before enforcement</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block disk modification only</strong></td>
+                            <td>3</td>
+                            <td>Only block disk writes</td>
+                            <td>Ransomware focus only</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Audit disk modification only</strong></td>
+                            <td>4</td>
+                            <td>Log disk writes only</td>
+                            <td>Testing disk-only mode</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Configuration Methods</h2>
+
+            <h3>PowerShell Configuration</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - CFA Management</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check current CFA status</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> EnableControlledFolderAccess
+
+<span class="comment"># Enable CFA (Block mode)</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableControlledFolderAccess</span> Enabled
+
+<span class="comment"># Enable CFA in Audit mode (recommended for testing)</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableControlledFolderAccess</span> AuditMode
+
+<span class="comment"># Disable CFA</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableControlledFolderAccess</span> Disabled
+
+<span class="comment"># View protected folders</span>
+(<span class="function">Get-MpPreference</span>).ControlledFolderAccessProtectedFolders
+
+<span class="comment"># Add protected folder</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ControlledFolderAccessProtectedFolders</span> <span class="string">"D:\CompanyData"</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ControlledFolderAccessProtectedFolders</span> <span class="string">"\\server\finance"</span>
+
+<span class="comment"># Remove protected folder</span>
+<span class="function">Remove-MpPreference</span> <span class="variable">-ControlledFolderAccessProtectedFolders</span> <span class="string">"D:\OldFolder"</span>
+
+<span class="comment"># View allowed applications</span>
+(<span class="function">Get-MpPreference</span>).ControlledFolderAccessAllowedApplications
+
+<span class="comment"># Allow an application</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ControlledFolderAccessAllowedApplications</span> <span class="string">"C:\Program Files\CustomApp\app.exe"</span>
+
+<span class="comment"># Remove allowed application</span>
+<span class="function">Remove-MpPreference</span> <span class="variable">-ControlledFolderAccessAllowedApplications</span> <span class="string">"C:\Program Files\OldApp\old.exe"</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Intune Configuration</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Intune Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INTUNE CONFIGURATION PATH:
+
+Endpoint security → Attack surface reduction → Create policy
+Platform: Windows 10 and later
+Profile: Attack surface reduction rules
+
+SETTINGS:
+├── Enable controlled folder access
+│   ├── Not configured
+│   ├── Enable (Block mode)
+│   ├── Audit Mode
+│   ├── Block disk modification only
+│   └── Audit disk modification only
+│
+├── Protected folders
+│   └── Add folder paths to protect
+│
+└── Allowed applications
+    └── Add app paths to allow
+
+ALTERNATIVE PATH (Configuration profiles):
+Devices → Configuration profiles → Create profile
+Platform: Windows 10 and later
+Profile type: Endpoint protection
+Settings: Microsoft Defender Exploit Guard → Controlled folder access</code></pre>
+                </div>
+            </div>
+
+            <h3>Group Policy Configuration</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Group Policy Settings</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>GROUP POLICY PATH:
+Computer Configuration
+└── Administrative Templates
+    └── Windows Components
+        └── Microsoft Defender Antivirus
+            └── Microsoft Defender Exploit Guard
+                └── Controlled Folder Access
+
+SETTINGS:
+
+1. "Configure Controlled folder access"
+   ├── Enabled
+   │   └── Select mode: Disable, Block, Audit, Block disk only, Audit disk only
+   └── Disabled
+
+2. "Configure protected folders"
+   ├── Enabled
+   │   └── Show... → Add folder paths
+   └── Disabled
+
+3. "Configure allowed applications"
+   ├── Enabled
+   │   └── Show... → Add application paths
+   └── Disabled</code></pre>
+                </div>
+            </div>
+
+            <h2>Handling Blocked Applications</h2>
+
+            <h3>Identifying Blocked Apps</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Finding Blocked Applications</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>METHOD 1: Windows Event Log
+───────────────────────────
+Event Log: Microsoft-Windows-Windows Defender/Operational
+Event ID: 1123 (Blocked event)
+Event ID: 1124 (Audit event - would have blocked)
+
+PowerShell to find blocked apps:
+<span class="function">Get-WinEvent</span> <span class="variable">-LogName</span> <span class="string">"Microsoft-Windows-Windows Defender/Operational"</span> <span class="operator">|</span>
+    <span class="function">Where-Object</span> { <span class="variable">$_</span>.Id <span class="operator">-in</span> @(<span class="number">1123</span>, <span class="number">1124</span>) } <span class="operator">|</span>
+    <span class="function">Select-Object</span> TimeCreated, Id, Message <span class="operator">|</span>
+    <span class="function">Format-List</span>
+
+METHOD 2: Microsoft 365 Defender Portal
+───────────────────────────
+Alerts → Filter by "Controlled folder access"
+OR
+Advanced Hunting:
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ControlledFolderAccessViolationBlocked"</span>
+    <span class="keyword">or</span> ActionType <span class="operator">==</span> <span class="string">"ControlledFolderAccessViolationAudited"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, FolderPath, 
+         InitiatingProcessFileName, InitiatingProcessCommandLine
+
+METHOD 3: User Notification
+───────────────────────────
+User sees Windows toast notification:
+"Controlled folder access blocked [app] from making changes to [folder]"</code></pre>
+                </div>
+            </div>
+
+            <h3>Allowing Legitimate Applications</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">App Allowlisting Process</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>BEFORE ALLOWING AN APP - VERIFY:
+
+1. Is this a legitimate business application?
+2. Does the vendor confirm this behavior is expected?
+3. Is the file signed by a trusted publisher?
+4. Has the file been scanned (clean)?
+5. Is this the actual app path (not a temp/random location)?
+
+VERIFICATION COMMANDS:
+<span class="comment"># Check digital signature</span>
+<span class="function">Get-AuthenticodeSignature</span> <span class="string">"C:\Program Files\App\app.exe"</span>
+
+<span class="comment"># Check file hash</span>
+<span class="function">Get-FileHash</span> <span class="string">"C:\Program Files\App\app.exe"</span> <span class="variable">-Algorithm</span> SHA256
+
+ALLOW THE APP (after verification):
+<span class="comment"># PowerShell</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ControlledFolderAccessAllowedApplications</span> `
+    <span class="string">"C:\Program Files\LegitApp\legitapp.exe"</span>
+
+<span class="comment"># Verify it was added</span>
+(<span class="function">Get-MpPreference</span>).ControlledFolderAccessAllowedApplications
+
+COMMON APPS THAT NEED ALLOWING:
+• Custom line-of-business applications
+• Some backup software
+• Some sync applications
+• Legacy applications without proper signing
+• Development tools accessing project folders</code></pre>
+                </div>
+            </div>
+
+            <h2>Deployment Strategy</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Recommended Deployment Approach</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PHASED DEPLOYMENT:
+
+PHASE 1: AUDIT MODE (2-4 weeks)
+├── Enable CFA in Audit mode on pilot group
+├── Monitor Event ID 1124 (audit events)
+├── Identify legitimate apps that would be blocked
+├── No user impact (apps still work)
+└── Build allowlist
+
+PHASE 2: EXPAND AUDIT (1-2 weeks)
+├── Enable Audit mode organization-wide
+├── Continue monitoring
+├── Refine allowlist
+└── Communicate to users about upcoming change
+
+PHASE 3: ENFORCEMENT - PILOT (1 week)
+├── Enable Block mode on pilot group
+├── Monitor for issues
+├── Rapid response for missed apps
+└── Validate user experience
+
+PHASE 4: FULL ENFORCEMENT
+├── Enable Block mode organization-wide
+├── Monitor alerts for blocked apps
+├── Process allowlist requests
+└── Regular review of effectiveness
+
+SUCCESS CRITERIA:
+• &lt;5 legitimate app blocks per week (after tuning)
+• Users understand notifications
+• Helpdesk trained on escalation
+• Documented allowlist with justifications</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL Queries for CFA Monitoring</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - CFA Analysis Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// All CFA events (blocked and audited)</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">startswith</span> <span class="string">"ControlledFolderAccess"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> ActionType, FileName
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// Top blocked applications (candidates for allowlist)</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">14</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ControlledFolderAccessViolationBlocked"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    BlockCount <span class="operator">=</span> <span class="function">count</span>(),
+    AffectedDevices <span class="operator">=</span> <span class="function">dcount</span>(DeviceName),
+    Folders <span class="operator">=</span> <span class="function">make_set</span>(FolderPath)
+    <span class="keyword">by</span> InitiatingProcessFileName, InitiatingProcessFolderPath
+<span class="operator">|</span> <span class="keyword">order by</span> BlockCount <span class="keyword">desc</span>
+
+<span class="comment">// CFA blocks by folder (what's being targeted)</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ControlledFolderAccessViolationBlocked"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> FolderPath
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// Potential ransomware activity (unknown process, many files)</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ControlledFolderAccessViolationBlocked"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> BlockCount <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> DeviceName, InitiatingProcessFileName
+<span class="operator">|</span> <span class="keyword">where</span> BlockCount <span class="operator">></span> <span class="number">50</span>  <span class="comment">// Many blocks = suspicious</span>
+<span class="operator">|</span> <span class="keyword">order by</span> BlockCount <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Troubleshooting CFA</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Issues and Solutions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ISSUE: Legitimate app blocked after CFA enabled
+SOLUTION:
+1. Verify app is legitimate (signed, from vendor)
+2. Get full path from Event ID 1123
+3. Add to allowed applications list
+4. Test the app works
+
+ISSUE: CFA not blocking anything (even malware)
+CHECK:
+1. Is CFA enabled? Get-MpPreference | Select EnableControlledFolderAccess
+2. Is real-time protection on? Get-MpComputerStatus
+3. Is cloud protection enabled? Required for CFA
+4. Check for Group Policy conflicts
+
+ISSUE: Too many blocks causing user complaints
+SOLUTION:
+1. Review audit data before enforcement
+2. Pre-allowlist known business apps
+3. Deploy in phases
+4. Communicate with users
+
+ISSUE: Network folders not protected
+CHECK:
+1. Network paths must be explicitly added
+2. Use UNC path format: \\server\share
+3. User must have consistent access to path
+
+ISSUE: CFA blocks backup software
+SOLUTION:
+1. Verify backup software vendor
+2. Allow the specific executable
+3. Some backup tools need multiple exes allowed
+4. Check vendor documentation for CFA compatibility</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Security Considerations</h5>
+                    <ul>
+                        <li><strong>Allowlist carefully</strong>: Every allowed app bypasses ransomware protection</li>
+                        <li><strong>Use full paths</strong>: Allowing "app.exe" without path is risky</li>
+                        <li><strong>Review periodically</strong>: Remove apps that are no longer needed</li>
+                        <li><strong>Don't allow temp folders</strong>: Malware often runs from temp</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>CFA Operations</h4>
+                <ul>
+                    <li>Review CFA block alerts for ransomware indicators</li>
+                    <li>Process app allowlist requests from users/IT</li>
+                    <li>Monitor audit mode data before enforcement</li>
+                    <li>Investigate high-volume block events</li>
+                    <li>Maintain documented allowlist with justifications</li>
+                    <li>Report on CFA effectiveness metrics</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"App X was blocked, please allow"</span>
+                    <span class="ticket-solution">→ Verify legitimacy, check signature, add full path to allowlist, document reason</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Many CFA blocks from unknown process"</span>
+                    <span class="ticket-solution">→ RANSOMWARE ALERT! Investigate immediately, isolate device if confirmed</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"CFA causing performance issues"</span>
+                    <span class="ticket-solution">→ Check for loop (app repeatedly trying), may need exclusion or app fix</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Ransomware protection by preventing untrusted apps from modifying protected folders</li>
+                    <li><strong>Default folders</strong>: Documents, Pictures, Videos, Music, Desktop, Favorites</li>
+                    <li><strong>Modes</strong>: Disabled, Enabled (block), Audit, Block disk only, Audit disk only</li>
+                    <li><strong>Trusted apps</strong>: Microsoft-signed, good reputation, or explicitly allowed</li>
+                    <li><strong>Deployment</strong>: Start with Audit mode, build allowlist, then enforce</li>
+                    <li><strong>Event IDs</strong>: 1123 (blocked), 1124 (audited)</li>
+                    <li><strong>Prerequisite</strong>: Real-time protection and cloud protection must be enabled</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="3-2-attack-surface-reduction.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Attack Surface Reduction</span>
+                </a>
+                <a href="3-4-exploit-protection.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Exploit Protection</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

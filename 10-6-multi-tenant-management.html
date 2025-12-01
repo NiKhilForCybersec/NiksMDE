@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Tenant Management | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Guide to managing MDE across multiple tenants. Learn about multi-tenant management options, MSSP scenarios, and centralized security operations.</p>
+            </div>
+
+            <h1>Multi-Tenant Management</h1>
+
+            <p>Organizations with multiple Azure AD tenants or MSSPs managing multiple customers need multi-tenant MDE management capabilities.</p>
+
+            <h2>Multi-Tenant Scenarios</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Multi-Tenant Architecture</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MULTI-TENANT SCENARIOS                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  SCENARIO 1: ENTERPRISE (Multiple Subsidiaries)                        │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                    PARENT COMPANY SOC                            │   │
+│  │                           │                                       │   │
+│  │         ┌─────────────────┼─────────────────┐                    │   │
+│  │         ▼                 ▼                 ▼                     │   │
+│  │   ┌──────────┐     ┌──────────┐     ┌──────────┐                │   │
+│  │   │ Tenant A │     │ Tenant B │     │ Tenant C │                │   │
+│  │   │ Sub Co 1 │     │ Sub Co 2 │     │ Sub Co 3 │                │   │
+│  │   └──────────┘     └──────────┘     └──────────┘                │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  SCENARIO 2: MSSP (Managed Security Service Provider)                  │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                       MSSP SOC                                   │   │
+│  │                           │                                       │   │
+│  │         ┌─────────────────┼─────────────────┐                    │   │
+│  │         ▼                 ▼                 ▼                     │   │
+│  │   ┌──────────┐     ┌──────────┐     ┌──────────┐                │   │
+│  │   │Customer 1│     │Customer 2│     │Customer 3│                │   │
+│  │   │  Tenant  │     │  Tenant  │     │  Tenant  │                │   │
+│  │   └──────────┘     └──────────┘     └──────────┘                │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Management Options</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Multi-Tenant Options</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MULTI-TENANT MANAGEMENT OPTIONS:
+
+1. MICROSOFT 365 LIGHTHOUSE
+   ├── Purpose: SMB MSP management
+   ├── Features:
+   │   ├── Unified view of tenants
+   │   ├── Security baseline deployment
+   │   ├── Threat management
+   │   └── Device compliance
+   ├── Best for: MSPs managing SMB customers
+   └── Limitation: Not for large enterprise
+
+2. AZURE LIGHTHOUSE
+   ├── Purpose: Cross-tenant Azure management
+   ├── Features:
+   │   ├── Delegated access to customer tenants
+   │   ├── Manage Azure resources
+   │   ├── Log Analytics cross-tenant
+   │   └── Azure Sentinel multi-workspace
+   ├── Best for: Azure-centric management
+   └── MDE integration: Via Sentinel
+
+3. MULTI-TENANT PORTAL (MDE)
+   ├── Purpose: Native MDE multi-tenant
+   ├── Features:
+   │   ├── Single pane for multiple tenants
+   │   ├── Unified alert view
+   │   ├── Cross-tenant hunting
+   │   └── Tenant switching
+   ├── Access: security.microsoft.com
+   └── Best for: Large enterprise, MSSP
+
+4. API-BASED MANAGEMENT
+   ├── Purpose: Custom multi-tenant solutions
+   ├── Features:
+   │   ├── Full API access per tenant
+   │   ├── Custom dashboards
+   │   ├── Automated operations
+   │   └── Integration flexibility
+   ├── Best for: Custom requirements
+   └── Requires: Development effort</code></pre>
+                </div>
+            </div>
+
+            <h2>MSSP Access Configuration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">MSSP Setup</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MSSP ACCESS SETUP:
+
+CUSTOMER TENANT CONFIGURATION:
+1. Enable MSSP access in MDE portal
+   ├── Settings → Endpoints → General → MSSP access
+   ├── Enable MSSP access
+   └── Provide MSSP tenant ID
+
+2. Grant permissions (Azure AD)
+   ├── Create guest account for MSSP
+   ├── Assign appropriate MDE role
+   │   ├── Security Reader (view only)
+   │   ├── Security Operator (respond)
+   │   └── Security Administrator (full)
+   └── Add to required groups
+
+MSSP TENANT CONFIGURATION:
+1. Accept customer invitation
+2. Configure cross-tenant access
+3. Set up monitoring workflows
+4. Document access and SLAs
+
+PERMISSION MODELS:
+├── B2B Guest Access
+│   ├── MSSP users invited as guests
+│   ├── Direct access to customer portal
+│   └── Customer controls permissions
+├── Azure Lighthouse Delegation
+│   ├── Service principal access
+│   ├── Managed at scale
+│   └── Azure-level integration
+└── API Access
+    ├── App registration in customer tenant
+    ├── Client credentials flow
+    └── Automated operations</code></pre>
+                </div>
+            </div>
+
+            <h2>Centralized Monitoring</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Cross-Tenant Monitoring</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CENTRALIZED MONITORING APPROACHES:
+
+OPTION 1: SENTINEL MULTI-WORKSPACE
+├── Each customer has Sentinel workspace
+├── Sentinel cross-workspace queries
+├── Centralized workbooks
+└── Cost: Each workspace billed separately
+
+SETUP:
+1. Connect MDE to Sentinel per tenant
+2. Create cross-workspace queries
+3. Build unified dashboards
+
+# Cross-workspace query example
+let Customer1 = workspace("Customer1-Sentinel").SecurityAlert;
+let Customer2 = workspace("Customer2-Sentinel").SecurityAlert;
+union Customer1, Customer2
+| where TimeGenerated > ago(24h)
+| summarize count() by WorkspaceId
+
+OPTION 2: API AGGREGATION
+├── Query each tenant via API
+├── Aggregate in central platform
+├── Custom dashboards
+└── Full flexibility
+
+OPTION 3: SIEM INTEGRATION
+├── Stream alerts to central SIEM
+├── Use Event Hub per tenant
+├── Normalize and aggregate
+└── Existing SIEM investment
+
+ALERTING STRATEGY:
+├── Critical: Real-time to central SOC
+├── High: Within 15 minutes
+├── Medium: Hourly digest
+└── Low: Daily summary</code></pre>
+                </div>
+            </div>
+
+            <h2>Operational Considerations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Multi-Tenant Operations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>OPERATIONAL CONSIDERATIONS:
+
+DATA ISOLATION:
+├── Each tenant's data is isolated
+├── No cross-tenant data mixing
+├── Compliance with data residency
+└── Customer retains data ownership
+
+ACCESS MANAGEMENT:
+├── Least privilege per tenant
+├── Regular access reviews
+├── Audit trail for all actions
+└── Customer visibility into access
+
+SLA MANAGEMENT:
+├── Define response SLAs per customer
+├── Track metrics per tenant
+├── Report separately
+└── Escalation procedures
+
+INCIDENT HANDLING:
+├── Clear ownership per tenant
+├── Customer communication protocols
+├── Evidence handling per tenant
+└── Separate incident queues
+
+BILLING:
+├── License per tenant (customer pays)
+├── Or MSSP pools licenses
+├── Track usage per customer
+└── Transparent cost allocation
+
+COMPLIANCE:
+├── Document security controls
+├── Regular assessments
+├── Compliance reporting
+└── Audit support</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Standardize</strong>: Use consistent policies and baselines across tenants</li>
+                        <li><strong>Automate</strong>: Reduce manual effort with automation</li>
+                        <li><strong>Document</strong>: Clear runbooks for each customer</li>
+                        <li><strong>Audit</strong>: Regular access reviews and compliance checks</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Options</strong>: M365 Lighthouse, Azure Lighthouse, Multi-tenant portal, API</li>
+                    <li><strong>MSSP access</strong>: B2B guest, Azure delegation, API credentials</li>
+                    <li><strong>Sentinel</strong>: Cross-workspace queries for unified view</li>
+                    <li><strong>Data isolation</strong>: Each tenant's data stays isolated</li>
+                    <li><strong>Key concern</strong>: Least privilege, audit trails, customer visibility</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="10-5-migration-strategies.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Migration Strategies</span>
+                </a>
+                <a href="11-1-soc-workflows.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">SOC Workflows</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

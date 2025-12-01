@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Troubleshooting | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete troubleshooting guide for MDE onboarding issues. Diagnose and resolve common problems preventing devices from successfully onboarding to Microsoft Defender for Endpoint.</p>
+            </div>
+
+            <h1>Onboarding Troubleshooting</h1>
+
+            <p>When devices fail to onboard to MDE, systematic troubleshooting is required. This guide covers common issues, diagnostic steps, and solutions for onboarding failures.</p>
+
+            <h2>Onboarding Verification</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Verification Commands</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>STEP 1: CHECK ONBOARDING STATE
+
+Registry Check:
+<span class="function">reg query</span> <span class="string">"HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span>
+
+Expected Values:
+├── OnboardingState = 1 (Onboarded)
+├── OnboardingState = 0 (Not onboarded)
+└── OrgId = Your tenant ID
+
+PowerShell:
+<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span>
+
+STEP 2: CHECK SENSE SERVICE
+
+Command Prompt:
+<span class="function">sc query</span> sense
+
+Expected:
+├── STATE: RUNNING
+└── If not running: sc start sense
+
+PowerShell:
+<span class="function">Get-Service</span> <span class="variable">-Name</span> Sense
+
+STEP 3: CHECK EVENT LOGS
+
+Event Viewer Path:
+Applications and Services Logs → Microsoft → Windows → SENSE → Operational
+
+Key Events:
+├── Event 1: Service started successfully
+├── Event 4: Service stopped
+├── Event 5: Failed to connect to cloud
+├── Event 15: Onboarding failed
+└── Event 25: Registration successful
+
+PowerShell:
+<span class="function">Get-WinEvent</span> <span class="variable">-LogName</span> <span class="string">"Microsoft-Windows-SENSE/Operational"</span> <span class="operator">|</span> 
+    <span class="function">Select-Object</span> <span class="variable">-First</span> <span class="number">20</span> TimeCreated, Id, Message</code></pre>
+                </div>
+            </div>
+
+            <h2>Common Onboarding Issues</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Onboarding Troubleshooting Decision Tree</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    ONBOARDING TROUBLESHOOTING                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  Device not appearing in portal?                                        │
+│            │                                                             │
+│            ▼                                                             │
+│  ┌─────────────────────┐                                                │
+│  │ Check OnboardingState│                                                │
+│  └──────────┬──────────┘                                                │
+│             │                                                            │
+│      ┌──────┴──────┐                                                    │
+│      ▼             ▼                                                    │
+│  State = 0      State = 1                                               │
+│  (Not onboarded) (Onboarded)                                            │
+│      │             │                                                    │
+│      ▼             ▼                                                    │
+│  ┌─────────┐   ┌─────────────┐                                         │
+│  │Run      │   │Check        │                                         │
+│  │onboarding│   │connectivity │                                         │
+│  │script   │   │to cloud     │                                         │
+│  └────┬────┘   └──────┬──────┘                                         │
+│       │               │                                                 │
+│       ▼               ▼                                                 │
+│  Still fails?    Can't connect?                                         │
+│       │               │                                                 │
+│       ▼               ▼                                                 │
+│  Check:          Check:                                                 │
+│  • Admin rights  • Firewall/Proxy                                       │
+│  • OS version    • URL allowlist                                        │
+│  • Conflicts     • Certificates                                         │
+│  • Event logs    • DNS resolution                                       │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Issue: Device Not Appearing in Portal</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Troubleshooting Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROBLEM: Device onboarded but not visible in portal
+
+POSSIBLE CAUSES:
+├── Device still syncing (wait 20-30 minutes)
+├── Connectivity issues to cloud
+├── Device in wrong tenant
+├── Duplicate device entries
+└── Portal filtering hiding device
+
+SOLUTIONS:
+
+1. WAIT FOR SYNC
+   └── New devices can take 20-30 minutes to appear
+   └── Check back after 30 minutes
+
+2. VERIFY CORRECT TENANT
+   <span class="function">reg query</span> <span class="string">"HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span> <span class="variable">/v</span> OrgId
+   └── Compare OrgId with your tenant ID in portal
+   └── If wrong, offboard and re-onboard with correct package
+
+3. CHECK CONNECTIVITY
+   └── Run MDEClientAnalyzer
+   └── Test cloud endpoints manually
+   └── Verify proxy settings
+
+4. RUN DETECTION TEST
+   <span class="comment"># PowerShell detection test</span>
+   powershell.exe <span class="variable">-NoExit</span> <span class="variable">-ExecutionPolicy</span> Bypass <span class="variable">-WindowStyle</span> Hidden <span class="string">"$ErrorActionPreference= 'silentlycontinue';(New-Object System.Net.WebClient).DownloadString('https://winatp-gw-cus.microsoft.com/test') | Out-Null"</span>
+   └── Should generate test alert within 10-20 minutes
+
+5. CHECK PORTAL FILTERS
+   └── Remove all filters in Device Inventory
+   └── Search by device name directly
+   └── Check "All devices" not just "Computers"</code></pre>
+                </div>
+            </div>
+
+            <h2>Issue: Onboarding Script Fails</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Script Failure Troubleshooting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROBLEM: Onboarding script returns error
+
+ERROR: "Access Denied"
+SOLUTION:
+├── Run as Administrator
+├── Check UAC settings
+└── Verify account has local admin rights
+
+ERROR: "Script execution is disabled"
+SOLUTION:
+├── Set-ExecutionPolicy RemoteSigned -Scope Process
+├── Or run: powershell -ExecutionPolicy Bypass -File script.ps1
+└── Check Group Policy for script restrictions
+
+ERROR: "Cannot connect to server"
+SOLUTION:
+├── Check internet connectivity
+├── Verify proxy settings
+├── Test MDE URLs manually
+└── Check firewall rules
+
+ERROR: "Onboarding blob invalid"
+SOLUTION:
+├── Download fresh onboarding package
+├── Package may have expired
+├── Verify correct package for deployment method
+└── Check for file corruption during download
+
+ERROR: "Service failed to start"
+SOLUTION:
+├── Check Windows Defender service status
+├── Verify no conflicting AV software
+├── Check for corrupted Windows components
+└── Run: sfc /scannow
+
+GENERAL TROUBLESHOOTING:
+1. Check event logs for specific error
+2. Run MDEClientAnalyzer for diagnostics
+3. Verify OS version is supported
+4. Check for pending reboots
+5. Ensure Windows is activated</code></pre>
+                </div>
+            </div>
+
+            <h2>Issue: Sense Service Not Starting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Service Troubleshooting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROBLEM: Sense service won't start or keeps stopping
+
+CHECK SERVICE STATUS:
+<span class="function">sc query</span> sense
+<span class="function">sc qc</span> sense  <span class="comment"># Show configuration</span>
+
+COMMON CAUSES:
+
+1. DEPENDENCIES NOT RUNNING
+   Required services:
+   ├── Windows Defender Antivirus Service (WinDefend)
+   ├── Windows Defender Advanced Threat Protection (Sense)
+   └── Diagnostic Tracking Service (DiagTrack)
+   
+   Check all: <span class="function">sc query</span> WinDefend && <span class="function">sc query</span> DiagTrack
+
+2. THIRD-PARTY AV CONFLICT
+   ├── Some AV products disable Sense
+   ├── Check AV exclusions for MDE
+   └── May need to uninstall conflicting AV
+
+3. GROUP POLICY BLOCKING
+   ├── Check for policies disabling Defender
+   └── HKLM\SOFTWARE\Policies\Microsoft\Windows Defender
+   └── DisableAntiSpyware should NOT be 1
+
+4. CORRUPTED INSTALLATION
+   Solution:
+   ├── Run: DISM /Online /Cleanup-Image /RestoreHealth
+   ├── Run: sfc /scannow
+   └── Re-run onboarding script
+
+5. MISSING PREREQUISITES
+   Windows 10/11:
+   ├── KB required for older versions
+   └── Check Windows Update for pending updates
+
+   Windows Server:
+   ├── Install Microsoft Monitoring Agent if needed
+   └── Enable required Windows features
+
+MANUAL SERVICE START:
+<span class="function">sc start</span> sense
+<span class="comment"># If fails, check Event Viewer for specific error</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Issue: Connectivity Problems</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Connectivity Fixes</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROBLEM: Device can't reach MDE cloud services
+
+QUICK CONNECTIVITY TEST:
+<span class="function">Invoke-WebRequest</span> <span class="string">"https://x.cp.wd.microsoft.com/api/report"</span> <span class="variable">-UseBasicParsing</span>
+<span class="comment"># Should return 200 OK</span>
+
+COMMON FIXES:
+
+1. CONFIGURE PROXY
+   <span class="comment"># Set system proxy</span>
+   <span class="function">netsh winhttp set proxy</span> proxy-server=<span class="string">"http://proxy:8080"</span>
+   
+   <span class="comment"># Or import from IE</span>
+   <span class="function">netsh winhttp import proxy</span> source=ie
+
+2. ALLOW REQUIRED URLS
+   Must allow outbound HTTPS (443) to:
+   ├── *.securitycenter.windows.com
+   ├── *.wdcp.microsoft.com
+   ├── *.wd.microsoft.com
+   ├── *.events.data.microsoft.com
+   └── *.blob.core.windows.net
+
+3. EXEMPT FROM SSL INSPECTION
+   ├── MDE URLs should bypass SSL inspection
+   ├── Or trust inspection CA on endpoints
+   └── Test after making changes
+
+4. CHECK DNS RESOLUTION
+   <span class="function">nslookup</span> winatp-gw-cus.microsoft.com
+   <span class="function">nslookup</span> x.cp.wd.microsoft.com
+   └── Should resolve to valid IPs
+
+5. VERIFY TLS VERSION
+   <span class="comment"># Enable TLS 1.2</span>
+   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+RUN FULL DIAGNOSTICS:
+1. Download MDEClientAnalyzer from aka.ms/MDEClientAnalyzer
+2. Extract and run as Administrator
+3. Review results for specific issues
+4. Follow remediation steps provided</code></pre>
+                </div>
+            </div>
+
+            <h2>MDEClientAnalyzer Tool</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Using the Analyzer</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MDEClientAnalyzer - OFFICIAL DIAGNOSTIC TOOL
+
+DOWNLOAD:
+https://aka.ms/MDEClientAnalyzer
+
+USAGE:
+1. Download MDEClientAnalyzer.zip
+2. Extract to local folder
+3. Run Command Prompt as Administrator
+4. Navigate to extracted folder
+5. Run: MDEClientAnalyzer.cmd
+6. Wait for analysis to complete (5-10 minutes)
+7. Review results in MDEClientAnalyzerResult folder
+
+OUTPUT FILES:
+├── MDEClientAnalyzer.htm    - Summary report (open this first)
+├── Connectivity results      - URL test results
+├── Event logs               - Relevant Windows events
+├── Configuration dump       - Registry and settings
+├── Recommendations          - Suggested fixes
+└── Logs for support         - For escalation to Microsoft
+
+WHAT IT CHECKS:
+├── Onboarding status
+├── Service health
+├── Cloud connectivity (all URLs)
+├── Proxy configuration
+├── Certificate chain validation
+├── DNS resolution
+├── TLS configuration
+├── Firewall rules
+├── Third-party AV detection
+├── Windows version compatibility
+└── Known issues detection
+
+INTERPRETING RESULTS:
+├── Green = Passed
+├── Yellow = Warning (may cause issues)
+├── Red = Failed (blocking issue)
+└── Follow recommendations for each failed check</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Important Notes</h5>
+                    <ul>
+                        <li><strong>Always run as Administrator</strong> for accurate results</li>
+                        <li><strong>Wait 30 minutes</strong> after onboarding before troubleshooting</li>
+                        <li><strong>Check for pending reboots</strong> - some changes require restart</li>
+                        <li><strong>Download fresh packages</strong> - onboarding packages can expire</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Onboarding Support</h4>
+                <ul>
+                    <li>Troubleshoot devices failing to onboard</li>
+                    <li>Run MDEClientAnalyzer on problem devices</li>
+                    <li>Work with network team on connectivity issues</li>
+                    <li>Document common issues and solutions</li>
+                    <li>Escalate complex issues to Microsoft support</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Device not appearing after onboarding"</span>
+                    <span class="ticket-solution">→ Check OnboardingState, verify OrgId, test connectivity, wait 30 min.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Onboarding script errors out"</span>
+                    <span class="ticket-solution">→ Run as admin, check execution policy, verify OS version, check event logs.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Sense service keeps stopping"</span>
+                    <span class="ticket-solution">→ Check for AV conflicts, verify dependencies, run sfc /scannow.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>First check</strong>: OnboardingState registry value (1 = onboarded)</li>
+                    <li><strong>Key service</strong>: Sense (sc query sense)</li>
+                    <li><strong>Diagnostic tool</strong>: MDEClientAnalyzer from aka.ms/MDEClientAnalyzer</li>
+                    <li><strong>Event logs</strong>: Microsoft-Windows-SENSE/Operational</li>
+                    <li><strong>Common issues</strong>: Connectivity, proxy, AV conflicts, admin rights</li>
+                    <li><strong>Wait time</strong>: Devices can take 20-30 minutes to appear in portal</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="9-2-connectivity-troubleshooting.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Connectivity Troubleshooting</span>
+                </a>
+                <a href="9-4-performance-issues.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Performance Issues</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

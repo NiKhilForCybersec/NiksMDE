@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Protection | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Microsoft Defender Antivirus real-time protection. Learn protection components, cloud protection, scan types, exclusions management, troubleshooting, and performance optimization.</p>
+            </div>
+
+            <h1>Real-time Protection</h1>
+
+            <p>Real-time protection is the foundation of Microsoft Defender Antivirus, continuously monitoring file system activity, process behavior, and network connections to detect and block threats as they occur.</p>
+
+            <h2>Real-time Protection Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Protection Layers</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    REAL-TIME PROTECTION STACK                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  CLOUD LAYER (Microsoft Intelligent Security Graph)                     │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  • Cloud-delivered protection (MAPS)                             │   │
+│  │  • Machine learning models                                       │   │
+│  │  • Big data analytics                                            │   │
+│  │  • Threat intelligence (billions of signals daily)               │   │
+│  │  • Block at First Sight (BAFS)                                   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              ▲                                          │
+│                              │ Suspicious file metadata                 │
+│                              │ Sample submission                        │
+│                              ▼                                          │
+│  LOCAL PROTECTION LAYER                                                 │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                  │   │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │   │
+│  │  │  Behavior    │  │  Heuristic   │  │  Signature   │          │   │
+│  │  │  Monitoring  │  │  Analysis    │  │  Matching    │          │   │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘          │   │
+│  │                                                                  │   │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │   │
+│  │  │  Memory      │  │  Script      │  │  Exploit     │          │   │
+│  │  │  Scanning    │  │  Scanning    │  │  Protection  │          │   │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘          │   │
+│  │                                                                  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              ▲                                          │
+│                              │                                          │
+│  FILE SYSTEM FILTER DRIVER (WdFilter.sys)                              │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  Intercepts: File open, File create, File write, File execute   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Protection Components</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Function</th>
+                            <th>What It Catches</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>On-Access Scanning</strong></td>
+                            <td>Scans files when opened, created, or executed</td>
+                            <td>Known malware, trojans, viruses</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Behavior Monitoring</strong></td>
+                            <td>Monitors process and system behavior</td>
+                            <td>Ransomware, fileless attacks, living-off-the-land</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cloud Protection (MAPS)</strong></td>
+                            <td>Cloud-based verdict for unknown files</td>
+                            <td>Zero-day malware, emerging threats</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block at First Sight</strong></td>
+                            <td>Blocks suspicious files pending cloud verdict</td>
+                            <td>Never-before-seen malware</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network Protection</strong></td>
+                            <td>Blocks connections to malicious domains/IPs</td>
+                            <td>C2, phishing, malicious downloads</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Script Scanning (AMSI)</strong></td>
+                            <td>Scans script content before execution</td>
+                            <td>Obfuscated PowerShell, malicious macros</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Cloud-Delivered Protection</h2>
+
+            <h3>How Cloud Protection Works</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Cloud Protection Flow</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>USER OPENS FILE
+      │
+      ▼
+┌─────────────────┐
+│ Local Scan      │ ← Signature + heuristic check
+└────────┬────────┘
+         │
+    Local verdict?
+    ┌────┴────┐
+    │         │
+  Known     Unknown
+    │         │
+    ▼         ▼
+┌───────┐  ┌──────────────────────────────────────┐
+│Allow/ │  │ CLOUD QUERY                          │
+│Block  │  │ Send: file metadata, hash, behavior  │
+└───────┘  └──────────────────┬───────────────────┘
+                              │
+                         Cloud response
+                    ┌─────────┴─────────┐
+                    │                   │
+               Known Safe          Suspicious
+                    │                   │
+                    ▼                   ▼
+              ┌─────────┐        ┌─────────────────┐
+              │ Allow   │        │ BLOCK AT FIRST  │
+              └─────────┘        │ SIGHT           │
+                                 └────────┬────────┘
+                                          │
+                                    Cloud Analysis
+                                          │
+                                    ┌─────┴─────┐
+                                    │           │
+                                  Clean     Malicious
+                                    │           │
+                                    ▼           ▼
+                              ┌─────────┐ ┌───────────┐
+                              │ Release │ │ Quarantine│
+                              └─────────┘ └───────────┘</code></pre>
+                </div>
+            </div>
+
+            <h3>Cloud Protection Levels</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Cloud Protection Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CLOUD PROTECTION LEVELS:
+
+0 - Not Configured (uses default)
+1 - Basic: Send basic metadata only
+2 - Advanced: Send file samples for analysis (RECOMMENDED)
+
+BLOCK AT FIRST SIGHT TIMEOUT:
+
+Default: 10 seconds
+Extended: 50 seconds (more thorough analysis)
+Maximum: 60 seconds
+
+Configure via:
+• Intune: Endpoint security → Antivirus → Cloud protection
+• Group Policy: Windows Defender → MAPS → Configure cloud block level
+• PowerShell:
+  Set-MpPreference -CloudBlockLevel High
+  Set-MpPreference -CloudExtendedTimeout 50</code></pre>
+                </div>
+            </div>
+
+            <h2>Checking Protection Status</h2>
+
+            <h3>PowerShell Commands</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Check AV Status</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Complete protection status</span>
+<span class="function">Get-MpComputerStatus</span>
+
+<span class="comment"># Key fields to check:</span>
+<span class="comment"># - RealTimeProtectionEnabled: True/False</span>
+<span class="comment"># - IoavProtectionEnabled: True/False (Download scanning)</span>
+<span class="comment"># - BehaviorMonitorEnabled: True/False</span>
+<span class="comment"># - OnAccessProtectionEnabled: True/False</span>
+<span class="comment"># - AMServiceEnabled: True/False</span>
+<span class="comment"># - AntispywareEnabled: True/False</span>
+
+<span class="comment"># Check specific settings</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    RealTimeProtectionEnabled, `
+    BehaviorMonitorEnabled, `
+    IoavProtectionEnabled, `
+    AntivirusEnabled, `
+    AMServiceEnabled
+
+<span class="comment"># Check cloud protection status</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    MAPSReporting, `
+    CloudBlockLevel, `
+    CloudExtendedTimeout
+
+<span class="comment"># Check signature versions</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    AntivirusSignatureVersion, `
+    AntivirusSignatureLastUpdated, `
+    AntispywareSignatureVersion
+
+<span class="comment"># Check running mode</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> AMRunningMode
+<span class="comment"># Values: Normal, Passive, EDR Block Mode</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Scan Types</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scan Type</th>
+                            <th>What It Scans</th>
+                            <th>Duration</th>
+                            <th>When to Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Quick Scan</strong></td>
+                            <td>Common malware locations, startup items, memory</td>
+                            <td>~5-10 minutes</td>
+                            <td>Daily scheduled scan</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Full Scan</strong></td>
+                            <td>All files and running programs</td>
+                            <td>1-4+ hours</td>
+                            <td>Weekly, post-incident</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom Scan</strong></td>
+                            <td>Specific folders/files</td>
+                            <td>Varies</td>
+                            <td>Targeted investigation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Offline Scan</strong></td>
+                            <td>Boot-time scan before Windows loads</td>
+                            <td>15-30 minutes</td>
+                            <td>Rootkit removal</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Running Scans</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Run Scans</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Quick scan</span>
+<span class="function">Start-MpScan</span> <span class="variable">-ScanType</span> QuickScan
+
+<span class="comment"># Full scan</span>
+<span class="function">Start-MpScan</span> <span class="variable">-ScanType</span> FullScan
+
+<span class="comment"># Custom scan of specific path</span>
+<span class="function">Start-MpScan</span> <span class="variable">-ScanType</span> CustomScan <span class="variable">-ScanPath</span> <span class="string">"C:\Users\Public"</span>
+
+<span class="comment"># Offline scan (requires reboot)</span>
+<span class="function">Start-MpWDOScan</span>
+
+<span class="comment"># Check scan status</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    QuickScanStartTime, `
+    QuickScanEndTime, `
+    FullScanStartTime, `
+    FullScanEndTime, `
+    LastQuickScanSource, `
+    LastFullScanSource</code></pre>
+                </div>
+            </div>
+
+            <h2>Signature Updates</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Signature Management</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Force signature update</span>
+<span class="function">Update-MpSignature</span>
+
+<span class="comment"># Check current signature info</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    AntivirusSignatureVersion, `
+    AntivirusSignatureLastUpdated, `
+    NISSignatureVersion, `
+    NISSignatureLastUpdated
+
+<span class="comment"># Update from specific source</span>
+<span class="function">Update-MpSignature</span> <span class="variable">-UpdateSource</span> MicrosoftUpdateServer
+<span class="function">Update-MpSignature</span> <span class="variable">-UpdateSource</span> MMPC  <span class="comment"># Microsoft Malware Protection Center</span>
+<span class="function">Update-MpSignature</span> <span class="variable">-UpdateSource</span> FileShares
+
+<span class="comment"># Signature update frequency settings</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> SignatureUpdateInterval
+<span class="comment"># Default: Every 8 hours (value in hours)</span>
+
+<span class="comment"># Set signature update interval (in hours)</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-SignatureUpdateInterval</span> <span class="number">4</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Exclusions Management</h2>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Exclusion Security Risk</h5>
+                    <p>Every exclusion is a potential security gap. Attackers actively target common exclusion paths. Document and regularly review all exclusions. Never exclude user-writable locations like Downloads, Temp, or Desktop.</p>
+                </div>
+            </div>
+
+            <h3>Exclusion Types</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Exclusion Types</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXCLUSION TYPES:
+
+1. PATH EXCLUSIONS
+   • Folder: C:\Program Files\CustomApp\
+   • File: C:\Logs\app.log
+   • Wildcards: C:\Temp\*.tmp
+
+2. EXTENSION EXCLUSIONS
+   • .log, .txt, .tmp
+   • Use sparingly - high risk
+
+3. PROCESS EXCLUSIONS
+   • Process that triggers scans
+   • Files accessed BY this process won't be scanned
+   • Example: C:\Program Files\Database\db.exe
+
+4. ASR EXCLUSIONS
+   • Separate from AV exclusions
+   • Apply to specific ASR rules only</code></pre>
+                </div>
+            </div>
+
+            <h3>Managing Exclusions</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Exclusion Management</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># View current exclusions</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    ExclusionPath, `
+    ExclusionExtension, `
+    ExclusionProcess
+
+<span class="comment"># Add path exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionPath</span> <span class="string">"C:\Program Files\CustomApp"</span>
+
+<span class="comment"># Add extension exclusion (use sparingly!)</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionExtension</span> <span class="string">".customext"</span>
+
+<span class="comment"># Add process exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionProcess</span> <span class="string">"C:\Program Files\App\app.exe"</span>
+
+<span class="comment"># Remove exclusion</span>
+<span class="function">Remove-MpPreference</span> <span class="variable">-ExclusionPath</span> <span class="string">"C:\OldPath"</span>
+
+<span class="comment"># View all exclusions in detail</span>
+<span class="variable">$prefs</span> = <span class="function">Get-MpPreference</span>
+<span class="variable">$prefs</span>.ExclusionPath
+<span class="variable">$prefs</span>.ExclusionExtension
+<span class="variable">$prefs</span>.ExclusionProcess</code></pre>
+                </div>
+            </div>
+
+            <h3>Exclusion Best Practices</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Exclusion Guidelines</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXCLUSION BEST PRACTICES:
+
+✅ DO:
+• Use process exclusions over path exclusions when possible
+• Be as specific as possible (full path, not just folder)
+• Document reason for each exclusion
+• Review exclusions quarterly
+• Use vendor-recommended exclusions only
+• Test impact before applying in production
+
+❌ DON'T:
+• Exclude user profile folders (C:\Users\*)
+• Exclude %temp% or Downloads folders
+• Exclude entire drives
+• Use broad extension exclusions (.exe, .dll)
+• Create exclusions without approval process
+• Copy exclusions from the internet without validation
+
+HIGH-RISK EXCLUSION PATHS (Never exclude):
+• C:\Users\*\Downloads
+• C:\Users\*\AppData\Local\Temp
+• C:\Users\*\Desktop
+• C:\Windows\Temp
+• %USERPROFILE%\
+• Any user-writable location</code></pre>
+                </div>
+            </div>
+
+            <h2>Remediation Actions</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>Recoverable?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Quarantine</strong></td>
+                            <td>Move file to isolated storage, prevent execution</td>
+                            <td>Yes - can restore</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Remove</strong></td>
+                            <td>Delete the malicious file</td>
+                            <td>Limited - may be in quarantine first</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Clean</strong></td>
+                            <td>Remove malicious content, keep file</td>
+                            <td>N/A</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Allow</strong></td>
+                            <td>Restore and exclude from future scans</td>
+                            <td>N/A</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Block</strong></td>
+                            <td>Prevent execution without removing</td>
+                            <td>Yes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Managing Quarantined Items</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Quarantine Management</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># View quarantine history</span>
+<span class="function">Get-MpThreatDetection</span>
+
+<span class="comment"># View threat details</span>
+<span class="function">Get-MpThreat</span>
+
+<span class="comment"># Restore quarantined file (USE WITH CAUTION)</span>
+<span class="function">Restore-MpQuarantinedItem</span> <span class="variable">-Path</span> <span class="string">"C:\original\path\file.exe"</span>
+
+<span class="comment"># Remove all threats</span>
+<span class="function">Remove-MpThreat</span>
+
+<span class="comment"># View protection history via Event Log</span>
+<span class="function">Get-WinEvent</span> <span class="variable">-LogName</span> <span class="string">"Microsoft-Windows-Windows Defender/Operational"</span> <span class="operator">|</span>
+    <span class="function">Where-Object</span> { <span class="variable">$_</span>.Id <span class="operator">-in</span> @(<span class="number">1116</span>, <span class="number">1117</span>) } <span class="operator">|</span>
+    <span class="function">Select-Object</span> <span class="variable">-First</span> <span class="number">20</span> TimeCreated, Message
+
+<span class="comment"># Event IDs:</span>
+<span class="comment"># 1116 = Malware detected</span>
+<span class="comment"># 1117 = Action taken on malware</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Troubleshooting Real-time Protection</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Troubleshooting Commands</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check if real-time protection is disabled</span>
+<span class="variable">$status</span> = <span class="function">Get-MpComputerStatus</span>
+<span class="keyword">if</span> (<span class="operator">-not</span> <span class="variable">$status</span>.RealTimeProtectionEnabled) {
+    Write-Host <span class="string">"Real-time protection is DISABLED"</span> <span class="variable">-ForegroundColor</span> Red
+    
+    <span class="comment"># Check if disabled by policy</span>
+    <span class="variable">$policy</span> = <span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection"</span> <span class="variable">-ErrorAction</span> SilentlyContinue
+    <span class="keyword">if</span> (<span class="variable">$policy</span>.DisableRealtimeMonitoring <span class="operator">-eq</span> <span class="number">1</span>) {
+        Write-Host <span class="string">"Disabled by Group Policy"</span>
+    }
+}
+
+<span class="comment"># Check for third-party AV conflicts</span>
+<span class="function">Get-CimInstance</span> <span class="variable">-Namespace</span> <span class="string">"root\SecurityCenter2"</span> <span class="variable">-ClassName</span> AntivirusProduct
+
+<span class="comment"># Check Defender service status</span>
+<span class="function">Get-Service</span> WinDefend, WdNisSvc, SecurityHealthService <span class="operator">|</span> 
+    <span class="function">Select-Object</span> Name, Status, StartType
+
+<span class="comment"># Restart Defender services</span>
+<span class="function">Restart-Service</span> WinDefend <span class="variable">-Force</span>
+
+<span class="comment"># Check for tamper protection</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> IsTamperProtected
+
+<span class="comment"># Re-enable real-time protection (if not policy-controlled)</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-DisableRealtimeMonitoring</span> <span class="variable">$false</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Performance Optimization</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Performance Settings</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PERFORMANCE OPTIMIZATION OPTIONS:
+
+1. CPU USAGE LIMIT
+   <span class="function">Set-MpPreference</span> <span class="variable">-ScanAvgCPULoadFactor</span> <span class="number">50</span>  <span class="comment"># Max 50% CPU during scans</span>
+
+2. SCAN ONLY DURING IDLE
+   <span class="function">Set-MpPreference</span> <span class="variable">-ScanOnlyIfIdleEnabled</span> <span class="variable">$true</span>
+
+3. LOW PRIORITY SCAN
+   <span class="function">Set-MpPreference</span> <span class="variable">-EnableLowCpuPriority</span> <span class="variable">$true</span>
+
+4. ARCHIVE SCANNING (Disable for performance, enable for security)
+   <span class="function">Set-MpPreference</span> <span class="variable">-DisableArchiveScanning</span> <span class="variable">$true</span>
+
+5. NETWORK FILE SCANNING
+   <span class="function">Set-MpPreference</span> <span class="variable">-DisableScanningMappedNetworkDrivesForFullScan</span> <span class="variable">$true</span>
+
+VIEW CURRENT PERFORMANCE SETTINGS:
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> `
+    ScanAvgCPULoadFactor, `
+    ScanOnlyIfIdleEnabled, `
+    EnableLowCpuPriority, `
+    DisableArchiveScanning</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL Queries for AV Monitoring</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - AV Detection Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// All AV detections in last 7 days</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"AntivirusDetection"</span>
+<span class="operator">|</span> <span class="keyword">extend</span> Detection <span class="operator">=</span> <span class="function">parse_json</span>(AdditionalFields)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, 
+         ThreatName <span class="operator">=</span> Detection.ThreatName,
+         Action <span class="operator">=</span> Detection.Action,
+         FileName
+
+<span class="comment">// Detection trends by day</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"AntivirusDetection"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Detections <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> <span class="function">bin</span>(Timestamp, <span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">render</span> timechart
+
+<span class="comment">// Top detected threats</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"AntivirusDetection"</span>
+<span class="operator">|</span> <span class="keyword">extend</span> Detection <span class="operator">=</span> <span class="function">parse_json</span>(AdditionalFields)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> <span class="function">tostring</span>(Detection.ThreatName)
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">10</span> <span class="keyword">by</span> Count
+
+<span class="comment">// Devices with disabled real-time protection</span>
+<span class="variable">DeviceTvmSecureConfigurationAssessment</span>
+<span class="operator">|</span> <span class="keyword">where</span> ConfigurationId <span class="operator">==</span> <span class="string">"scid-91"</span>  <span class="comment">// Real-time protection</span>
+<span class="operator">|</span> <span class="keyword">where</span> IsCompliant <span class="operator">==</span> <span class="number">0</span>
+<span class="operator">|</span> <span class="keyword">project</span> DeviceName, IsCompliant, ConfigurationId</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>AV Operations</h4>
+                <ul>
+                    <li>Monitor AV detection alerts and investigate</li>
+                    <li>Process exclusion requests with proper validation</li>
+                    <li>Verify signature updates are current across fleet</li>
+                    <li>Investigate devices with disabled protection</li>
+                    <li>Review and approve quarantine actions</li>
+                    <li>Troubleshoot AV performance issues</li>
+                </ul>
+
+                <h4>Common Issues</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Application blocked by AV"</span>
+                    <span class="ticket-solution">→ Verify if true malware. If FP, submit to Microsoft, add targeted exclusion.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"AV causing slowness"</span>
+                    <span class="ticket-solution">→ Check for missing exclusions for legitimate apps. Review CPU limit settings.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Signatures out of date"</span>
+                    <span class="ticket-solution">→ Check WSUS/SCCM update path. Verify internet connectivity. Force update.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Real-time protection disabled"</span>
+                    <span class="ticket-solution">→ Check for policy conflict. Check for third-party AV. Verify tamper protection.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Protection layers</strong>: Signature, heuristic, behavior, cloud, AMSI</li>
+                    <li><strong>Cloud protection (MAPS)</strong>: Sends metadata/samples for cloud verdict</li>
+                    <li><strong>Block at First Sight</strong>: Holds unknown files pending cloud analysis</li>
+                    <li><strong>Scan types</strong>: Quick (common locations), Full (all files), Custom, Offline</li>
+                    <li><strong>Exclusion types</strong>: Path, Extension, Process - use process exclusions when possible</li>
+                    <li><strong>Signature updates</strong>: Default every 8 hours, can force with Update-MpSignature</li>
+                    <li><strong>Check status</strong>: Get-MpComputerStatus for comprehensive protection status</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="2-8-reporting.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Reporting</span>
+                </a>
+                <a href="3-2-attack-surface-reduction.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Attack Surface Reduction</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

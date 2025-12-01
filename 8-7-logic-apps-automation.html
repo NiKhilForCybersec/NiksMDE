@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic Apps Automation | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to automating MDE workflows with Azure Logic Apps and Microsoft Sentinel playbooks. Learn to build automated response, enrichment, and notification workflows.</p>
+            </div>
+
+            <h1>Logic Apps Automation</h1>
+
+            <p>Azure Logic Apps provides a powerful platform for automating security workflows. When combined with MDE and Microsoft Sentinel, you can build sophisticated SOAR (Security Orchestration, Automation, and Response) capabilities.</p>
+
+            <h2>Logic Apps Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE + Logic Apps Integration</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                   LOGIC APPS AUTOMATION                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  TRIGGERS                                                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                     │
+│  │  Sentinel   │  │  Schedule   │  │   HTTP      │                     │
+│  │  Alert      │  │  (Recurrence│  │   Webhook   │                     │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘                     │
+│         │                │                │                             │
+│         └────────────────┼────────────────┘                             │
+│                          ▼                                              │
+│  ┌──────────────────────────────────────────────────────────────┐      │
+│  │                    LOGIC APP WORKFLOW                         │      │
+│  │                                                               │      │
+│  │  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐  │      │
+│  │  │  Parse   │──►│  Enrich  │──►│ Condition│──►│  Action  │  │      │
+│  │  │  Input   │   │  Data    │   │  Logic   │   │  Branch  │  │      │
+│  │  └──────────┘   └──────────┘   └──────────┘   └──────────┘  │      │
+│  │                                                               │      │
+│  └──────────────────────────────────────────────────────────────┘      │
+│                          │                                              │
+│         ┌────────────────┼────────────────┐                             │
+│         ▼                ▼                ▼                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                     │
+│  │    MDE      │  │   Teams/    │  │  ServiceNow │                     │
+│  │  Actions    │  │   Email     │  │   Ticket    │                     │
+│  └─────────────┘  └─────────────┘  └─────────────┘                     │
+│                                                                          │
+│  MDE CONNECTOR ACTIONS:                                                 │
+│  ├── Isolate machine                                                   │
+│  ├── Run antivirus scan                                                │
+│  ├── Collect investigation package                                     │
+│  ├── Restrict app execution                                            │
+│  ├── Get machine information                                           │
+│  ├── Get alerts                                                        │
+│  └── Add indicators (IOC)                                              │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Creating a Logic App</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Setup Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CREATING A LOGIC APP:
+
+AZURE PORTAL METHOD:
+1. Azure Portal → Create a resource → Logic App
+2. Configure basics:
+   ├── Subscription: [Your subscription]
+   ├── Resource Group: [Security-Automation]
+   ├── Logic App name: MDE-AutoIsolate-Critical
+   ├── Region: [Your region]
+   └── Plan type: Consumption (pay per execution)
+3. Review + Create
+
+SENTINEL PLAYBOOK METHOD:
+1. Microsoft Sentinel → Automation → Create → Playbook
+2. Choose template or blank
+3. Configure trigger type:
+   ├── When Azure Sentinel alert is triggered
+   ├── When Azure Sentinel incident is triggered
+   └── When entity is triggered
+4. Create and open in Logic Apps Designer
+
+MDE CONNECTOR SETUP:
+1. In Logic App Designer → Add action
+2. Search "Microsoft Defender for Endpoint"
+3. First use: Authenticate with Azure AD
+   ├── Sign in with account that has MDE permissions
+   ├── Consent to API permissions
+   └── Connection created automatically
+4. Select action (e.g., "Isolate machine")</code></pre>
+                </div>
+            </div>
+
+            <h2>Auto-Isolate Playbook</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Logic App - Auto-Isolate on Critical Alert</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PLAYBOOK: Auto-Isolate Critical Threats
+
+TRIGGER: When a Sentinel incident is created
+├── Filter: Severity = High or Critical
+└── Filter: Product = Microsoft Defender for Endpoint
+
+STEP 1: Parse incident details
+├── Action: Parse JSON
+├── Content: Trigger body
+└── Extract: AlertIds, DeviceIds, Severity
+
+STEP 2: For each device in incident
+├── Action: For each loop
+├── Input: DeviceIds array
+└── Contains actions below
+
+STEP 3: Get device details
+├── Action: MDE - Get machine by ID
+├── Machine ID: Current item from loop
+└── Output: Device name, status, risk level
+
+STEP 4: Condition - Check if already isolated
+├── Condition: Device health status != "Isolated"
+├── If true: Continue to isolate
+└── If false: Skip (already isolated)
+
+STEP 5: Isolate machine
+├── Action: MDE - Isolate machine
+├── Machine ID: Current device ID
+├── Isolation type: Full
+└── Comment: "Auto-isolated by playbook - Incident [ID]"
+
+STEP 6: Collect investigation package
+├── Action: MDE - Collect investigation package
+├── Machine ID: Current device ID
+└── Comment: "Auto-collected for incident [ID]"
+
+STEP 7: Send notification
+├── Action: Send Teams message
+├── Channel: SOC-Alerts
+├── Message: "Device [Name] isolated due to [AlertTitle]"
+└── Include: Device details, incident link
+
+STEP 8: Update incident
+├── Action: Update Sentinel incident
+├── Status: Active
+├── Severity: Keep original
+└── Add comment: "Automated response executed"</code></pre>
+                </div>
+            </div>
+
+            <h2>Alert Enrichment Playbook</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Logic App - Alert Enrichment</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PLAYBOOK: Enrich MDE Alerts
+
+TRIGGER: When a Sentinel alert is triggered
+
+STEP 1: Parse alert entities
+├── Extract: IP addresses, file hashes, URLs, users
+└── Store in variables
+
+STEP 2: Parallel branch - Enrich each entity type
+
+BRANCH A: IP Enrichment
+├── Action: HTTP - VirusTotal IP lookup
+├── URL: https://www.virustotal.com/api/v3/ip_addresses/{IP}
+├── Headers: x-apikey = [VT API Key]
+├── Parse response: Malicious score, country, ASN
+└── Store results
+
+BRANCH B: Hash Enrichment
+├── Action: HTTP - VirusTotal file lookup
+├── URL: https://www.virustotal.com/api/v3/files/{SHA256}
+├── Parse response: Detection ratio, file type, names
+└── Store results
+
+BRANCH C: User Enrichment
+├── Action: Azure AD - Get user
+├── User ID: From alert entity
+├── Get: Department, manager, recent sign-ins
+└── Store results
+
+STEP 3: Aggregate enrichment
+├── Compose all enrichment results
+└── Create summary JSON
+
+STEP 4: Update Sentinel incident
+├── Action: Add comment to incident
+├── Comment: Enrichment summary
+└── Include: Risk assessment, IOC status
+
+STEP 5: Conditional escalation
+├── Condition: VT detections > 5 OR IP malicious
+├── If true: Change severity to High
+├── If true: Send Teams alert to security lead
+└── If false: Standard processing</code></pre>
+                </div>
+            </div>
+
+            <h2>Scheduled Reporting Playbook</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Logic App - Weekly Security Report</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PLAYBOOK: Weekly MDE Security Report
+
+TRIGGER: Recurrence
+├── Frequency: Week
+├── Interval: 1
+├── On these days: Monday
+└── At these hours: 8:00 AM
+
+STEP 1: Run Advanced Hunting query
+├── Action: HTTP POST to MDE API
+├── URL: https://api.securitycenter.microsoft.com/api/advancedhunting/run
+├── Body: {
+│   "Query": "AlertInfo | where Timestamp > ago(7d) | 
+│             summarize Total=count(), Critical=countif(Severity=='Critical')..."
+│ }
+└── Parse response
+
+STEP 2: Get device health
+├── Action: MDE - Get machines
+├── Filter: healthStatus ne 'Active'
+└── Count unhealthy devices
+
+STEP 3: Get vulnerability summary
+├── Action: HTTP GET
+├── URL: https://api.securitycenter.microsoft.com/api/vulnerabilities
+├── Filter: severity eq 'Critical'
+└── Count and list top 5
+
+STEP 4: Create HTML report
+├── Action: Compose
+├── Build HTML table with:
+│   ├── Alert summary
+│   ├── Incident metrics
+│   ├── Device health status
+│   ├── Top vulnerabilities
+│   └── Trend comparison
+└── Output: HTML string
+
+STEP 5: Send email report
+├── Action: Office 365 Outlook - Send email
+├── To: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e291878197908b969bcf9687838fa2818d8f92838c9bcc818d8f">[email&#160;protected]</a>
+├── Subject: Weekly MDE Security Report - [Date]
+├── Body: HTML report from Step 4
+└── Importance: Normal
+
+STEP 6: Save to SharePoint (optional)
+├── Action: SharePoint - Create file
+├── Site: Security Team Site
+├── Folder: /Reports/Weekly
+├── File name: MDE-Report-[Date].html
+└── Content: HTML report</code></pre>
+                </div>
+            </div>
+
+            <h2>Common Logic App Patterns</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Useful Patterns</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PATTERN 1: RETRY ON FAILURE
+├── Configure retry policy on HTTP actions
+├── Fixed interval: 4 retries, 1 minute apart
+├── Or exponential backoff
+└── Handle 429 (rate limit) responses
+
+PATTERN 2: ERROR HANDLING
+├── Add "Scope" around critical actions
+├── Configure "Run after" on error branch
+├── Send alert on failure
+└── Log errors to Log Analytics
+
+PATTERN 3: APPROVAL WORKFLOW
+├── Trigger: Critical action needed
+├── Action: Send approval email
+├── Wait for response (timeout: 1 hour)
+├── If approved: Execute action
+└── If rejected/timeout: Log and notify
+
+PATTERN 4: CONDITIONAL EXECUTION
+├── Use Condition actions for branching
+├── Switch for multiple outcomes
+├── Filter arrays with Filter action
+└── Terminate if conditions not met
+
+PATTERN 5: VARIABLE MANAGEMENT
+├── Initialize variables at start
+├── Use Append to array for collections
+├── Increment for counters
+└── Set variable for updates
+
+PATTERN 6: PARALLEL EXECUTION
+├── Use Parallel branches for independent tasks
+├── Reduces total execution time
+├── Use "Join" to wait for all branches
+└── Good for enrichment from multiple sources
+
+PATTERN 7: PAGINATION
+├── Handle paginated API responses
+├── Use "Until" loop
+├── Check for nextLink in response
+├── Aggregate results across pages</code></pre>
+                </div>
+            </div>
+
+            <h2>MDE Connector Actions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Available MDE Actions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MDE CONNECTOR ACTIONS:
+
+MACHINE ACTIONS:
+├── Get machine by ID
+├── Get machines (list all)
+├── Isolate machine (Full or Selective)
+├── Release from isolation
+├── Restrict app execution
+├── Remove app restriction
+├── Run antivirus scan (Quick or Full)
+├── Collect investigation package
+├── Offboard machine
+└── Add/remove machine tags
+
+ALERT ACTIONS:
+├── Get alert by ID
+├── Get alerts (list with filters)
+├── Update alert (status, classification)
+└── Create alert (custom)
+
+INDICATOR ACTIONS:
+├── Get indicator by ID
+├── Get indicators (list all)
+├── Create indicator (hash, IP, URL, cert)
+├── Update indicator
+└── Delete indicator
+
+INVESTIGATION ACTIONS:
+├── Get investigation by ID
+├── Get investigations
+├── Start automated investigation
+└── Get investigation collection package
+
+ADVANCED HUNTING:
+├── Run advanced hunting query
+└── Parse results</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Test thoroughly</strong>: Use test incidents before production</li>
+                        <li><strong>Add logging</strong>: Log all actions for audit trail</li>
+                        <li><strong>Handle errors</strong>: Every playbook should have error handling</li>
+                        <li><strong>Use managed identities</strong>: More secure than service principals</li>
+                        <li><strong>Monitor costs</strong>: Track Logic App execution costs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Logic Apps</strong>: Azure's low-code automation platform for workflows</li>
+                    <li><strong>Sentinel playbooks</strong>: Logic Apps triggered by Sentinel alerts/incidents</li>
+                    <li><strong>MDE connector</strong>: Pre-built actions for isolate, scan, collect package, etc.</li>
+                    <li><strong>Common patterns</strong>: Auto-isolate, enrichment, notification, reporting</li>
+                    <li><strong>SOAR benefit</strong>: Reduces response time, ensures consistency</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="8-6-api-use-cases.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">API Use Cases</span>
+                </a>
+                <a href="8-8-siem-integration.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">SIEM Integration</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </di

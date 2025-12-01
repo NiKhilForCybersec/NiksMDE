@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Response | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to MDE Live Response capabilities for remote investigation and remediation. Learn basic and advanced commands, file collection, script execution, and real-world investigation workflows.</p>
+            </div>
+
+            <h1>Live Response</h1>
+
+            <p>Live Response provides security teams with instant remote shell access to endpoints directly from the MDE portal. This enables real-time investigation, evidence collection, and remediation without requiring physical access or traditional remote desktop tools.</p>
+
+            <h2>Live Response Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Live Response Architecture</div>
+<pre>
+┌────────────────────────────────────────────────────────────────────────┐
+│                        SECURITY ANALYST                                 │
+│                    security.microsoft.com                               │
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │                    LIVE RESPONSE CONSOLE                         │  │
+│   │  ┌──────────────────────────────────────────────────────────┐   │  │
+│   │  │  > connections                                            │   │  │
+│   │  │  > processes                                              │   │  │
+│   │  │  > getfile C:\Windows\Temp\suspicious.exe                 │   │  │
+│   │  │  > run remediation.ps1                                    │   │  │
+│   │  └──────────────────────────────────────────────────────────┘   │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                    │                                    │
+└────────────────────────────────────┼────────────────────────────────────┘
+                                     │  HTTPS/443
+                                     │  Encrypted Channel
+                                     ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                           ENDPOINT                                      │
+│                                                                         │
+│   ┌─────────────────┐      ┌─────────────────┐                         │
+│   │   SenseIR.exe   │◄────►│   MsSense.exe   │                         │
+│   │   Live Response │      │   Main Sensor   │                         │
+│   │   Handler       │      │                 │                         │
+│   └─────────────────┘      └─────────────────┘                         │
+│           │                                                             │
+│           ▼                                                             │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  Execute commands, collect files, run scripts                    │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+└────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Enabling Live Response</h2>
+
+            <p>Live Response must be enabled in MDE settings:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal Path</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Settings → Endpoints → Advanced Features
+
+Enable:
+✓ Live Response
+✓ Live Response for Servers (if needed)
+✓ Live Response unsigned script execution (Advanced only)</code></pre>
+                </div>
+            </div>
+
+            <h3>Permission Requirements</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Capability</th>
+                            <th>Required Role</th>
+                            <th>Commands Allowed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Basic Live Response</td>
+                            <td>Security Reader + Live Response</td>
+                            <td>Read-only commands (dir, connections, processes)</td>
+                        </tr>
+                        <tr>
+                            <td>Advanced Live Response</td>
+                            <td>Security Operator or Admin</td>
+                            <td>All commands including run, putfile, remediate</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Starting a Live Response Session</h2>
+
+            <ol>
+                <li>Navigate to Device Inventory or Device Page</li>
+                <li>Click the device name to open device details</li>
+                <li>Click <strong>"Initiate Live Response Session"</strong> button</li>
+                <li>Wait for connection (may take 30-60 seconds)</li>
+                <li>Session opens in new console window</li>
+            </ol>
+
+            <div class="callout info">
+                <div class="callout-icon">ℹ️</div>
+                <div class="callout-content">
+                    <h5>Session Limits</h5>
+                    <p>Maximum 25 concurrent Live Response sessions per tenant. Sessions auto-timeout after 30 minutes of inactivity.</p>
+                </div>
+            </div>
+
+            <h2>Basic Commands</h2>
+
+            <p>These commands are available with basic Live Response permissions:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>help</code></td>
+                            <td>Show available commands</td>
+                            <td><code>help</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>cd</code></td>
+                            <td>Change directory</td>
+                            <td><code>cd C:\Users\Public</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>dir</code></td>
+                            <td>List directory contents</td>
+                            <td><code>dir C:\Windows\Temp</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>cls</code></td>
+                            <td>Clear screen</td>
+                            <td><code>cls</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>connections</code></td>
+                            <td>Show active network connections</td>
+                            <td><code>connections</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>processes</code></td>
+                            <td>List running processes</td>
+                            <td><code>processes</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>scheduledtasks</code></td>
+                            <td>List scheduled tasks</td>
+                            <td><code>scheduledtasks</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>services</code></td>
+                            <td>List Windows services</td>
+                            <td><code>services</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>drivers</code></td>
+                            <td>List loaded drivers</td>
+                            <td><code>drivers</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>registry</code></td>
+                            <td>Query registry values</td>
+                            <td><code>registry HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>trace</code></td>
+                            <td>Set terminal logging mode</td>
+                            <td><code>trace enable</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Advanced Commands</h2>
+
+            <p>These commands require Advanced Live Response permissions:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>getfile</code></td>
+                            <td>Download file from endpoint</td>
+                            <td><code>getfile C:\Windows\Temp\malware.exe</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>putfile</code></td>
+                            <td>Upload file to endpoint</td>
+                            <td><code>putfile remediation.ps1</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>run</code></td>
+                            <td>Execute script from library</td>
+                            <td><code>run CollectLogs.ps1</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>remediate</code></td>
+                            <td>Remediate an entity</td>
+                            <td><code>remediate file C:\malware.exe</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>undo</code></td>
+                            <td>Restore remediated entity</td>
+                            <td><code>undo file C:\malware.exe</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>analyze</code></td>
+                            <td>Submit file for deep analysis</td>
+                            <td><code>analyze C:\suspicious.exe</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>findfile</code></td>
+                            <td>Search for files by name</td>
+                            <td><code>findfile *.ps1</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Common Investigation Workflows</h2>
+
+            <h3>Workflow 1: Initial Triage</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Live Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Step 1: Check running processes</span>
+processes
+
+<span class="comment"># Step 2: Check network connections</span>
+connections
+
+<span class="comment"># Step 3: Check persistence locations</span>
+registry HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+registry HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+scheduledtasks
+
+<span class="comment"># Step 4: Check services</span>
+services</code></pre>
+                </div>
+            </div>
+
+            <h3>Workflow 2: File Collection for Analysis</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Live Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Step 1: Navigate to suspicious directory</span>
+cd C:\Users\victim\AppData\Local\Temp
+
+<span class="comment"># Step 2: List contents</span>
+dir
+
+<span class="comment"># Step 3: Download suspicious file</span>
+getfile suspicious.exe
+
+<span class="comment"># Step 4: Submit for deep analysis</span>
+analyze suspicious.exe
+
+<span class="comment"># Step 5: Collect additional artifacts</span>
+getfile C:\Windows\Prefetch\SUSPICIOUS.EXE-12345678.pf</code></pre>
+                </div>
+            </div>
+
+            <h3>Workflow 3: Remediation</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Live Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Step 1: Identify malicious file</span>
+dir C:\Users\Public\Downloads
+
+<span class="comment"># Step 2: Remediate (quarantine) the file</span>
+remediate file C:\Users\Public\Downloads\malware.exe
+
+<span class="comment"># Step 3: Remove persistence</span>
+run RemoveScheduledTask.ps1 -parameters "-TaskName MaliciousTask"
+
+<span class="comment"># Step 4: If needed, undo remediation</span>
+undo file C:\Users\Public\Downloads\malware.exe</code></pre>
+                </div>
+            </div>
+
+            <h2>Live Response Library</h2>
+
+            <p>The Live Response library allows you to upload scripts for repeated use:</p>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Live Response Library</div>
+<pre>
+Settings → Endpoints → Live Response Library
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                     LIVE RESPONSE LIBRARY                            │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Script Name              │ Type    │ Signed │ Uploaded By          │
+│  ─────────────────────────┼─────────┼────────┼─────────────────────│
+│  CollectLogs.ps1          │ PS1     │ Yes    │ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d5b4b1b8bcbb95b6bab8a5b4bbacfbb6bab8">[email&#160;protected]</a>   │
+│  RemoveScheduledTask.ps1  │ PS1     │ Yes    │ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f392979e9a9db3909c9e83929d8add909c9e">[email&#160;protected]</a>   │
+│  CollectBrowserHistory.ps1│ PS1     │ Yes    │ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d1c191014133d1e12100d1c1304531e1210">[email&#160;protected]</a>   │
+│  MemoryDump.ps1           │ PS1     │ No     │ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="34555a55584d474074575b5944555a4d1a575b59">[email&#160;protected]</a> │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h3>Sample Scripts for Library</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - CollectArtifacts.ps1</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># CollectArtifacts.ps1 - Collect common forensic artifacts</span>
+<span class="keyword">param</span>(
+    [<span class="variable">string</span>]<span class="variable">$OutputPath</span> = <span class="string">"C:\Windows\Temp\Artifacts"</span>
+)
+
+<span class="comment"># Create output directory</span>
+<span class="function">New-Item</span> <span class="variable">-Path</span> <span class="variable">$OutputPath</span> <span class="variable">-ItemType</span> Directory <span class="variable">-Force</span>
+
+<span class="comment"># Collect running processes</span>
+<span class="function">Get-Process</span> <span class="operator">|</span> <span class="function">Select-Object</span> Name, Id, Path, StartTime <span class="operator">|</span> 
+    <span class="function">Export-Csv</span> <span class="string">"$OutputPath\processes.csv"</span> <span class="variable">-NoTypeInformation</span>
+
+<span class="comment"># Collect network connections</span>
+<span class="function">Get-NetTCPConnection</span> <span class="operator">|</span> 
+    <span class="function">Export-Csv</span> <span class="string">"$OutputPath\connections.csv"</span> <span class="variable">-NoTypeInformation</span>
+
+<span class="comment"># Collect scheduled tasks</span>
+<span class="function">Get-ScheduledTask</span> <span class="operator">|</span> 
+    <span class="function">Export-Csv</span> <span class="string">"$OutputPath\scheduledtasks.csv"</span> <span class="variable">-NoTypeInformation</span>
+
+<span class="comment"># Collect services</span>
+<span class="function">Get-Service</span> <span class="operator">|</span> <span class="function">Select-Object</span> Name, Status, StartType, DisplayName <span class="operator">|</span>
+    <span class="function">Export-Csv</span> <span class="string">"$OutputPath\services.csv"</span> <span class="variable">-NoTypeInformation</span>
+
+<span class="comment"># Collect autorun locations</span>
+<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"</span> <span class="operator">|</span>
+    <span class="function">Out-File</span> <span class="string">"$OutputPath\autoruns_hklm.txt"</span>
+
+<span class="function">Write-Output</span> <span class="string">"Artifacts collected to $OutputPath"</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Best Practices</h2>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Live Response Best Practices</h5>
+                    <ul>
+                        <li>Always document commands run during investigation</li>
+                        <li>Use <code>trace enable</code> to log session activity</li>
+                        <li>Collect evidence before remediation</li>
+                        <li>Test scripts in library before deploying to production</li>
+                        <li>Coordinate with endpoint user if system is in active use</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>When to Use Live Response</h4>
+                <ul>
+                    <li>Investigating active alerts requiring immediate endpoint access</li>
+                    <li>Collecting files for malware analysis</li>
+                    <li>Verifying remediation actions completed successfully</li>
+                    <li>Gathering additional evidence during incident response</li>
+                    <li>Running pre-approved remediation scripts</li>
+                </ul>
+
+                <h4>Common Tickets You'll Handle</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Need to collect malware sample"</span>
+                    <span class="ticket-solution">→ Use <code>getfile</code> to download, then <code>analyze</code> for deep analysis</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Check if process is still running"</span>
+                    <span class="ticket-solution">→ Use <code>processes</code> command, filter for specific process name</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Remove persistent malware"</span>
+                    <span class="ticket-solution">→ Check persistence locations, use <code>remediate</code> and library scripts</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Two permission levels</strong>: Basic (read-only) and Advanced (remediation, script execution)</li>
+                    <li><strong>Key commands</strong>: <code>processes</code>, <code>connections</code>, <code>getfile</code>, <code>run</code>, <code>remediate</code></li>
+                    <li><strong>Session limits</strong>: 25 concurrent sessions, 30-minute timeout</li>
+                    <li><strong>Script library</strong>: Upload reusable scripts for consistent remediation</li>
+                    <li><strong>Evidence first</strong>: Always collect files before remediation</li>
+                    <li><strong>Documentation</strong>: Use <code>trace enable</code> to log all commands for case documentation</li>
+                </ul>
+            </div>
+
+            <!-- Page Navigation -->
+            <nav class="page-nav">
+                <a href="4-4-device-timeline.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Device Timeline</span>
+                </a>
+                <a href="4-6-automated-investigation.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Automated Investigation</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="c

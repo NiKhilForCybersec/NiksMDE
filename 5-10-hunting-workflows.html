@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hunting Workflows | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Structured threat hunting workflows and methodologies. Learn hypothesis-driven hunting, scheduled hunts, and how to build an effective threat hunting program.</p>
+            </div>
+
+            <h1>Hunting Workflows</h1>
+
+            <p>Effective threat hunting requires structured workflows that combine threat intelligence, hypothesis development, and systematic investigation to proactively identify threats that evade automated detection.</p>
+
+            <h2>Threat Hunting Framework</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Hunting Workflow Cycle</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    THREAT HUNTING WORKFLOW                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│                    ┌─────────────────┐                                  │
+│                    │  1. HYPOTHESIS  │                                  │
+│                    │   GENERATION    │                                  │
+│                    └────────┬────────┘                                  │
+│                             │                                           │
+│      ┌──────────────────────┼──────────────────────┐                   │
+│      ▼                      ▼                      ▼                    │
+│  ┌────────┐          ┌────────────┐         ┌──────────┐              │
+│  │ Threat │          │  MITRE     │         │ Anomaly  │              │
+│  │ Intel  │          │  ATT&CK    │         │ Based    │              │
+│  └────────┘          └────────────┘         └──────────┘              │
+│                             │                                           │
+│                    ┌────────┴────────┐                                  │
+│                    │  2. DATA        │                                  │
+│                    │   COLLECTION    │                                  │
+│                    └────────┬────────┘                                  │
+│                             │                                           │
+│                    ┌────────┴────────┐                                  │
+│                    │  3. HUNTING     │                                  │
+│                    │   EXECUTION     │                                  │
+│                    └────────┬────────┘                                  │
+│                             │                                           │
+│              ┌──────────────┼──────────────┐                           │
+│              ▼              ▼              ▼                            │
+│         ┌────────┐    ┌─────────┐    ┌─────────┐                       │
+│         │ Finding│    │ No      │    │ Improve │                       │
+│         │ = IR   │    │ Finding │    │ Detection│                      │
+│         └────────┘    └─────────┘    └─────────┘                       │
+│                             │                                           │
+│                    ┌────────┴────────┐                                  │
+│                    │  4. DOCUMENT    │                                  │
+│                    │   & IMPROVE     │                                  │
+│                    └─────────────────┘                                  │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Hypothesis-Driven Hunting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Hypothesis Development</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>HYPOTHESIS TEMPLATE:
+
+"Given [THREAT/TTP], I believe [ATTACKER BEHAVIOR] 
+ may be occurring in [ENVIRONMENT/SCOPE] 
+ because [REASONING/INTELLIGENCE]"
+
+EXAMPLE HYPOTHESES:
+
+1. THREAT INTEL DRIVEN:
+   "Given recent Emotet campaigns targeting our industry,
+    I believe malicious Office documents may have delivered
+    malware via email in the past 30 days because we received
+    threat intel about active campaigns."
+
+2. MITRE ATT&CK DRIVEN:
+   "Given T1055 (Process Injection) is common in APT attacks,
+    I believe attackers may be injecting code into legitimate
+    processes on our endpoints because we have gaps in this
+    detection area."
+
+3. ANOMALY DRIVEN:
+   "Given baseline network behavior patterns,
+    I believe unusual outbound connections may indicate C2
+    communication because we detected statistical outliers
+    in DNS query volumes."
+
+4. INCIDENT DRIVEN:
+   "Given the recent phishing incident affecting HR,
+    I believe similar attacks may have succeeded against
+    other departments because the campaign was widespread."
+
+HYPOTHESIS VALIDATION:
+├── Define success criteria
+├── Identify data sources needed
+├── Set time scope
+├── Document search methodology
+└── Plan escalation path if threat found</code></pre>
+                </div>
+            </div>
+
+            <h2>Structured Hunt Template</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Hunt Documentation Template</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>═══════════════════════════════════════════════════════════════
+                    THREAT HUNT TEMPLATE
+═══════════════════════════════════════════════════════════════
+
+HUNT ID: TH-2024-001
+DATE: [Date]
+HUNTER: [Name]
+STATUS: Planning / Active / Complete
+
+───────────────────────────────────────────────────────────────
+HYPOTHESIS
+───────────────────────────────────────────────────────────────
+Statement: [Clear hypothesis statement]
+Trigger: [What prompted this hunt - TI, incident, gap analysis]
+MITRE ATT&CK: [Relevant techniques - e.g., T1059.001]
+Priority: High / Medium / Low
+
+───────────────────────────────────────────────────────────────
+SCOPE
+───────────────────────────────────────────────────────────────
+Time Range: [e.g., Last 30 days]
+Devices: [All / Specific groups / Specific devices]
+Data Sources: [Tables to query]
+Estimated Effort: [Hours]
+
+───────────────────────────────────────────────────────────────
+METHODOLOGY
+───────────────────────────────────────────────────────────────
+Step 1: [Initial broad search]
+Step 2: [Narrow based on results]
+Step 3: [Deep dive on anomalies]
+Step 4: [Validate/correlate findings]
+
+───────────────────────────────────────────────────────────────
+QUERIES USED
+───────────────────────────────────────────────────────────────
+Query 1: [KQL query]
+Purpose: [What this query looks for]
+Results: [Count / summary]
+
+Query 2: [KQL query]
+Purpose: [What this query looks for]
+Results: [Count / summary]
+
+───────────────────────────────────────────────────────────────
+FINDINGS
+───────────────────────────────────────────────────────────────
+[ ] No suspicious activity found
+[ ] Suspicious activity - requires investigation
+[ ] Confirmed threat - escalated to IR
+
+Details: [Description of findings]
+Evidence: [Links to queries, screenshots, device IDs]
+
+───────────────────────────────────────────────────────────────
+OUTCOMES
+───────────────────────────────────────────────────────────────
+[ ] New detection rule created: [Rule name]
+[ ] Existing detection tuned: [Rule name]
+[ ] Incident created: [Incident ID]
+[ ] No action required
+[ ] Baseline updated
+
+───────────────────────────────────────────────────────────────
+LESSONS LEARNED
+───────────────────────────────────────────────────────────────
+[What worked, what didn't, improvements for next time]
+
+═══════════════════════════════════════════════════════════════</code></pre>
+                </div>
+            </div>
+
+            <h2>Weekly Hunt Schedule</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Sample Hunt Schedule</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WEEKLY THREAT HUNTING SCHEDULE:
+
+MONDAY: INITIAL ACCESS
+├── Hunt: Suspicious email attachments
+├── Hunt: Malicious downloads
+├── Hunt: Drive-by compromise indicators
+└── Tables: EmailEvents, DeviceFileEvents, DeviceNetworkEvents
+
+TUESDAY: EXECUTION & PERSISTENCE  
+├── Hunt: Suspicious PowerShell execution
+├── Hunt: Scheduled task creation
+├── Hunt: Registry persistence mechanisms
+└── Tables: DeviceProcessEvents, DeviceRegistryEvents
+
+WEDNESDAY: CREDENTIAL ACCESS
+├── Hunt: LSASS access attempts
+├── Hunt: Credential dumping tools
+├── Hunt: Suspicious authentication patterns
+└── Tables: DeviceProcessEvents, DeviceLogonEvents
+
+THURSDAY: LATERAL MOVEMENT
+├── Hunt: Remote service creation
+├── Hunt: Admin tool usage (PsExec, WMI)
+├── Hunt: Unusual SMB connections
+└── Tables: DeviceNetworkEvents, DeviceProcessEvents
+
+FRIDAY: EXFILTRATION & C2
+├── Hunt: Data staging
+├── Hunt: Unusual outbound traffic
+├── Hunt: DNS tunneling indicators
+└── Tables: DeviceNetworkEvents, DeviceFileEvents
+
+RECURRING (MONTHLY):
+├── Full MITRE ATT&CK coverage review
+├── Threat intelligence-driven hunts
+├── Hunt backlog review
+└── Detection gap analysis</code></pre>
+                </div>
+            </div>
+
+            <h2>Hunt Execution Workflow</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Sample Hunt Workflow</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// HUNT: Suspicious PowerShell Activity</span>
+<span class="comment">// Hypothesis: Attackers may be using encoded PowerShell</span>
+
+<span class="comment">// STEP 1: Broad search for encoded commands</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (
+    <span class="string">"-enc"</span>, <span class="string">"-encodedcommand"</span>, <span class="string">"-e "</span>
+)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> DeviceName, AccountName
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// STEP 2: Examine specific devices with high counts</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">==</span> <span class="string">"SUSPICIOUS-DEVICE"</span>
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, ProcessCommandLine, AccountName,
+         InitiatingProcessFileName
+
+<span class="comment">// STEP 3: Check parent processes for anomalies</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="function">!in~</span> (
+    <span class="string">"explorer.exe"</span>, <span class="string">"cmd.exe"</span>, <span class="string">"powershell.exe"</span>,
+    <span class="string">"svchost.exe"</span>, <span class="string">"services.exe"</span>
+)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> InitiatingProcessFileName
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// STEP 4: Correlate with network activity</span>
+<span class="keyword">let</span> SuspiciousDevices = 
+    <span class="variable">DeviceProcessEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+    <span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+    <span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has</span> <span class="string">"-enc"</span>
+    <span class="operator">|</span> <span class="keyword">distinct</span> DeviceId;
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceId <span class="function">in</span> (SuspiciousDevices)
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> <span class="function">count</span>() <span class="keyword">by</span> DeviceName, RemoteIP, RemotePort</code></pre>
+                </div>
+            </div>
+
+            <h2>Hunt Metrics & KPIs</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Hunting Program Metrics</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>HUNTING PROGRAM METRICS:
+
+ACTIVITY METRICS:
+├── Hunts conducted per month
+├── Hours spent hunting
+├── Data sources queried
+├── MITRE techniques covered
+└── Threat intel items actioned
+
+OUTCOME METRICS:
+├── Threats discovered
+├── True positive rate
+├── Time to discovery (vs automated)
+├── New detections created
+├── Detections improved
+└── Incidents prevented/contained early
+
+COVERAGE METRICS:
+├── % of MITRE ATT&CK techniques hunted
+├── % of devices covered
+├── % of data sources utilized
+├── Time since last hunt per technique
+└── Gap analysis score
+
+EFFICIENCY METRICS:
+├── Hours per threat discovered
+├── Query reuse rate
+├── False positive rate in hunts
+├── Automation opportunities identified
+└── Detection rule conversion rate
+
+SAMPLE DASHBOARD:
+┌────────────────────────────────────────────┐
+│ Hunting Dashboard - Q4 2024               │
+├────────────────────────────────────────────┤
+│ Hunts Completed:        24                │
+│ Threats Discovered:      3                │
+│ New Detections Created:  8                │
+│ MITRE Coverage:         67%               │
+│ Hours Invested:        120                │
+│ ROI (threats/hour):    0.025              │
+└────────────────────────────────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Hunting Best Practices</h5>
+                    <ul>
+                        <li><strong>Start with hypothesis</strong>: Don't just run random queries</li>
+                        <li><strong>Know your baseline</strong>: Understand normal before finding abnormal</li>
+                        <li><strong>Document everything</strong>: Queries, findings, and outcomes</li>
+                        <li><strong>Convert to detections</strong>: Successful hunts should become automated rules</li>
+                        <li><strong>Iterate and improve</strong>: Refine techniques based on results</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Hypothesis-driven</strong>: Start with a theory, then validate with data</li>
+                    <li><strong>Three approaches</strong>: TI-driven, MITRE-driven, anomaly-based</li>
+                    <li><strong>Outcome types</strong>: Threat found → IR, or no threat → improve detection</li>
+                    <li><strong>Documentation</strong>: Essential for repeatability and knowledge sharing</li>
+                    <li><strong>Success metric</strong>: Not just threats found, but detection improvements made</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="5-9-hunting-queries-malware.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Malware Hunting Queries</span>
+                </a>
+                <a href="6-1-remediation-actions.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Remediation Actions</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

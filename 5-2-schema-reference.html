@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schema Reference | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete reference for Advanced Hunting schema tables in Microsoft 365 Defender. Learn all available tables, their key columns, what data they contain, and when to use each table for threat hunting.</p>
+            </div>
+
+            <h1>Advanced Hunting Schema Reference</h1>
+
+            <p>The Advanced Hunting schema contains tables with endpoint, identity, email, and cloud app data. Understanding the schema is essential for effective threat hunting.</p>
+
+            <h2>Schema Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Schema Categories</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    ADVANCED HUNTING SCHEMA                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ENDPOINT TABLES (MDE)           │  IDENTITY TABLES (MDI)              │
+│  ┌─────────────────────────────┐ │  ┌─────────────────────────────┐    │
+│  │ DeviceProcessEvents         │ │  │ IdentityLogonEvents         │    │
+│  │ DeviceNetworkEvents         │ │  │ IdentityQueryEvents         │    │
+│  │ DeviceFileEvents            │ │  │ IdentityDirectoryEvents     │    │
+│  │ DeviceRegistryEvents        │ │  │ AADSignInEventsBeta         │    │
+│  │ DeviceLogonEvents           │ │  │ AADSpnSignInEventsBeta      │    │
+│  │ DeviceImageLoadEvents       │ │  └─────────────────────────────┘    │
+│  │ DeviceEvents                │ │                                      │
+│  │ DeviceInfo                  │ │  EMAIL TABLES (MDO)                 │
+│  │ DeviceFileCertificateInfo   │ │  ┌─────────────────────────────┐    │
+│  └─────────────────────────────┘ │  │ EmailEvents                 │    │
+│                                   │  │ EmailAttachmentInfo         │    │
+│  ALERT/INCIDENT TABLES           │  │ EmailUrlInfo                │    │
+│  ┌─────────────────────────────┐ │  │ EmailPostDeliveryEvents     │    │
+│  │ AlertInfo                   │ │  └─────────────────────────────┘    │
+│  │ AlertEvidence               │ │                                      │
+│  └─────────────────────────────┘ │  CLOUD APPS (MDCA)                  │
+│                                   │  ┌─────────────────────────────┐    │
+│  VULNERABILITY TABLES            │  │ CloudAppEvents              │    │
+│  ┌─────────────────────────────┐ │  └─────────────────────────────┘    │
+│  │ DeviceTvmSoftwareInventory  │ │                                      │
+│  │ DeviceTvmSoftwareVulner...  │ │                                      │
+│  │ DeviceTvmSecureConfig...    │ │                                      │
+│  └─────────────────────────────┘ │                                      │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Core Endpoint Tables</h2>
+
+            <h3>DeviceProcessEvents</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">DeviceProcessEvents - Process Creation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PURPOSE: Process creation and termination events
+USE FOR: Execution analysis, process trees, command line hunting
+
+KEY COLUMNS:
+├── Timestamp              - When event occurred
+├── DeviceId              - Unique device identifier
+├── DeviceName            - Computer name
+├── ActionType            - ProcessCreated, ProcessTerminated
+├── FileName              - Process file name (e.g., cmd.exe)
+├── FolderPath            - Full path to executable
+├── SHA256                - File hash
+├── ProcessId             - Process ID
+├── ProcessCommandLine    - Full command line (CRITICAL)
+├── InitiatingProcessFileName    - Parent process name
+├── InitiatingProcessCommandLine - Parent command line
+├── InitiatingProcessId   - Parent PID
+├── AccountDomain         - User domain
+├── AccountName           - Username
+├── AccountSid            - User SID
+├── LogonId               - Logon session ID
+└── ProcessTokenElevation - Token elevation type
+
+EXAMPLE QUERY:
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ProcessCommandLine, AccountName</code></pre>
+                </div>
+            </div>
+
+            <h3>DeviceNetworkEvents</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">DeviceNetworkEvents - Network Connections</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PURPOSE: Network connection events
+USE FOR: C2 detection, data exfiltration, lateral movement
+
+KEY COLUMNS:
+├── Timestamp              - When connection occurred
+├── DeviceId              - Device identifier
+├── DeviceName            - Computer name
+├── ActionType            - ConnectionSuccess, ConnectionFailed, etc.
+├── RemoteIP              - Destination IP address
+├── RemotePort            - Destination port
+├── RemoteUrl             - Full URL if available
+├── LocalIP               - Source IP
+├── LocalPort             - Source port
+├── Protocol              - TCP, UDP
+├── InitiatingProcessFileName    - Process making connection
+├── InitiatingProcessCommandLine - Process command line
+├── InitiatingProcessId   - Process ID
+├── RemoteIPType          - Public, Private, Reserved
+└── AdditionalFields      - Extra metadata (JSON)
+
+EXAMPLE QUERY:
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> RemotePort <span class="function">in</span> (<span class="number">4444</span>, <span class="number">5555</span>, <span class="number">6666</span>)  <span class="comment">// Common C2 ports</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName</code></pre>
+                </div>
+            </div>
+
+            <h3>DeviceFileEvents</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">DeviceFileEvents - File Operations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PURPOSE: File system operations
+USE FOR: Malware drops, data staging, ransomware detection
+
+KEY COLUMNS:
+├── Timestamp              - When file operation occurred
+├── DeviceId              - Device identifier
+├── DeviceName            - Computer name
+├── ActionType            - FileCreated, FileModified, FileDeleted, FileRenamed
+├── FileName              - File name
+├── FolderPath            - Full path
+├── SHA256                - File hash (when available)
+├── SHA1                  - SHA1 hash
+├── MD5                   - MD5 hash
+├── FileSize              - Size in bytes
+├── FileOriginUrl         - Download source URL
+├── FileOriginReferrerUrl - Referrer URL
+├── InitiatingProcessFileName    - Process that created/modified
+├── InitiatingProcessCommandLine - Process command line
+├── InitiatingProcessId   - Process ID
+├── SensitivityLabel      - Data classification label
+└── IsAzureInfoProtectionApplied - AIP protected
+
+EXAMPLE QUERY:
+<span class="variable">DeviceFileEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"FileCreated"</span>
+<span class="operator">|</span> <span class="keyword">where</span> FolderPath <span class="function">has</span> <span class="string">"Downloads"</span>
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="function">endswith</span> <span class="string">".exe"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, FolderPath, SHA256</code></pre>
+                </div>
+            </div>
+
+            <h3>DeviceRegistryEvents</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">DeviceRegistryEvents - Registry Changes</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PURPOSE: Registry key and value modifications
+USE FOR: Persistence detection, configuration changes
+
+KEY COLUMNS:
+├── Timestamp              - When registry change occurred
+├── DeviceId              - Device identifier
+├── DeviceName            - Computer name
+├── ActionType            - RegistryKeyCreated, RegistryValueSet, RegistryKeyDeleted
+├── RegistryKey           - Full registry path
+├── RegistryValueName     - Value name
+├── RegistryValueType     - REG_SZ, REG_DWORD, etc.
+├── RegistryValueData     - Value data
+├── PreviousRegistryKey   - Previous key (for renames)
+├── PreviousRegistryValueData - Previous value
+├── InitiatingProcessFileName    - Process making change
+├── InitiatingProcessCommandLine - Process command line
+└── InitiatingProcessId   - Process ID
+
+PERSISTENCE LOCATIONS TO MONITOR:
+├── HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+├── HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+├── HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce
+├── HKLM\SYSTEM\CurrentControlSet\Services
+└── HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+
+EXAMPLE QUERY:
+<span class="variable">DeviceRegistryEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> RegistryKey <span class="function">has</span> <span class="string">"CurrentVersion\\Run"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ActionType, RegistryKey, RegistryValueName, RegistryValueData</code></pre>
+                </div>
+            </div>
+
+            <h3>DeviceLogonEvents</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">DeviceLogonEvents - Authentication</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PURPOSE: User logon events on endpoints
+USE FOR: Lateral movement, credential use, access patterns
+
+KEY COLUMNS:
+├── Timestamp              - When logon occurred
+├── DeviceId              - Device identifier
+├── DeviceName            - Computer name
+├── ActionType            - LogonSuccess, LogonFailed
+├── LogonType             - Interactive, Network, RemoteInteractive, etc.
+├── AccountDomain         - Domain
+├── AccountName           - Username
+├── AccountSid            - User SID
+├── RemoteIP              - Source IP (for network logons)
+├── RemoteDeviceName      - Source computer name
+├── IsLocalAdmin          - Is user local admin
+├── FailureReason         - Reason for failed logon
+└── Protocol              - Kerberos, NTLM, etc.
+
+LOGON TYPES:
+├── 2  - Interactive (local keyboard)
+├── 3  - Network (file share, etc.)
+├── 4  - Batch (scheduled task)
+├── 5  - Service
+├── 7  - Unlock
+├── 8  - NetworkCleartext
+├── 9  - NewCredentials (runas /netonly)
+├── 10 - RemoteInteractive (RDP)
+├── 11 - CachedInteractive
+└── 12 - CachedRemoteInteractive
+
+EXAMPLE QUERY:
+<span class="variable">DeviceLogonEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> LogonType <span class="operator">==</span> <span class="string">"RemoteInteractive"</span>  <span class="comment">// RDP</span>
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"LogonSuccess"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, AccountName, RemoteIP</code></pre>
+                </div>
+            </div>
+
+            <h3>DeviceEvents</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">DeviceEvents - Miscellaneous Events</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PURPOSE: Catch-all for various security events
+USE FOR: ASR, exploit guard, AMSI, tamper protection, etc.
+
+COMMON ACTION TYPES:
+├── AntivirusDetection              - AV detection
+├── AntivirusScanCompleted          - Scan completed
+├── AsrLsassCredentialTheftBlocked  - LSASS protection
+├── AsrOfficeChildProcessBlocked    - Office rule
+├── AsrExecutableEmailContentBlocked - Email executable
+├── ControlledFolderAccessViolationBlocked - CFA block
+├── ExploitGuardNetworkProtectionBlocked   - NP block
+├── TamperProtection                 - Tamper attempt
+├── AmsiScriptContent               - AMSI script scan
+├── SmartScreenUrlWarning           - SmartScreen
+├── UsbDriveMounted                 - USB connected
+├── UsbDriveUnmounted               - USB removed
+├── PowerShellCommand               - PS command logged
+└── ServiceInstalled                - Service created
+
+EXAMPLE QUERY - ASR Blocks:
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">startswith</span> <span class="string">"Asr"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> ActionType
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h3>DeviceImageLoadEvents</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">DeviceImageLoadEvents - DLL Loads</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PURPOSE: DLL and driver loads
+USE FOR: DLL injection, sideloading, driver attacks
+
+KEY COLUMNS:
+├── Timestamp              - When DLL loaded
+├── DeviceId              - Device identifier
+├── DeviceName            - Computer name
+├── ActionType            - ImageLoaded
+├── FileName              - DLL name
+├── FolderPath            - Full path
+├── SHA256                - DLL hash
+├── InitiatingProcessFileName    - Process loading DLL
+├── InitiatingProcessCommandLine - Process command line
+├── InitiatingProcessId   - Process ID
+└── SignatureStatus       - Valid, Invalid, Unsigned
+
+EXAMPLE QUERY - Unsigned DLLs loaded by Office:
+<span class="variable">DeviceImageLoadEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="function">in~</span> (<span class="string">"winword.exe"</span>, <span class="string">"excel.exe"</span>, <span class="string">"powerpnt.exe"</span>)
+<span class="operator">|</span> <span class="keyword">where</span> SignatureStatus <span class="operator">!=</span> <span class="string">"Valid"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, FolderPath, InitiatingProcessFileName</code></pre>
+                </div>
+            </div>
+
+            <h2>Alert Tables</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">AlertInfo and AlertEvidence</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>AlertInfo - ALERT METADATA:
+├── Timestamp              - Alert time
+├── AlertId               - Unique alert ID
+├── Title                 - Alert name
+├── Severity              - High, Medium, Low, Informational
+├── Category              - MITRE category
+├── AttackTechniques      - MITRE techniques
+├── ServiceSource         - Detection source
+├── DetectionSource       - AV, EDR, etc.
+├── IncidentId            - Linked incident
+└── InvestigationId       - Investigation ID
+
+AlertEvidence - ALERT EVIDENCE:
+├── AlertId               - Links to AlertInfo
+├── EntityType            - Process, File, IP, URL, etc.
+├── EvidenceRole          - Impacted, Related, etc.
+├── FileName              - File name
+├── SHA256                - Hash
+├── RemoteIP              - IP address
+├── RemoteUrl             - URL
+├── ProcessCommandLine    - Command line
+└── DeviceId              - Device
+
+EXAMPLE - Join alerts with evidence:
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> Severity <span class="operator">==</span> <span class="string">"High"</span>
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind=inner</span> <span class="variable">AlertEvidence</span> <span class="keyword">on</span> AlertId
+<span class="operator">|</span> <span class="keyword">where</span> EntityType <span class="operator">==</span> <span class="string">"File"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, Title, FileName, SHA256</code></pre>
+                </div>
+            </div>
+
+            <h2>Vulnerability Tables</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">TVM Tables</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DeviceTvmSoftwareInventory:
+├── DeviceId              - Device
+├── SoftwareName          - Software name
+├── SoftwareVendor        - Vendor
+├── SoftwareVersion       - Version
+├── EndOfSupportStatus    - EOS status
+└── NumberOfWeaknesses    - Vulnerability count
+
+DeviceTvmSoftwareVulnerabilities:
+├── DeviceId              - Device
+├── CveId                 - CVE identifier
+├── VulnerabilitySeverityLevel - Critical, High, etc.
+├── SoftwareName          - Affected software
+├── SoftwareVersion       - Version
+└── RecommendedSecurityUpdate - Patch KB
+
+DeviceTvmSecureConfigurationAssessment:
+├── DeviceId              - Device
+├── ConfigurationId       - Config ID
+├── ConfigurationCategory - Category
+├── ConfigurationSubcategory - Subcategory
+├── IsCompliant           - True/False
+└── IsApplicable          - True/False
+
+EXAMPLE - Find devices with critical CVEs:
+<span class="variable">DeviceTvmSoftwareVulnerabilities</span>
+<span class="operator">|</span> <span class="keyword">where</span> VulnerabilitySeverityLevel <span class="operator">==</span> <span class="string">"Critical"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> CriticalVulns = <span class="function">dcount</span>(CveId) <span class="keyword">by</span> DeviceId
+<span class="operator">|</span> <span class="keyword">order by</span> CriticalVulns <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Common Column Reference</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Description</th>
+                            <th>Found In</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Timestamp</code></td>
+                            <td>Event time (UTC)</td>
+                            <td>All tables</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceId</code></td>
+                            <td>Unique device GUID</td>
+                            <td>All device tables</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceName</code></td>
+                            <td>Computer name</td>
+                            <td>All device tables</td>
+                        </tr>
+                        <tr>
+                            <td><code>SHA256</code></td>
+                            <td>File hash</td>
+                            <td>Process, File, Image</td>
+                        </tr>
+                        <tr>
+                            <td><code>ProcessCommandLine</code></td>
+                            <td>Full command line</td>
+                            <td>Process, most events</td>
+                        </tr>
+                        <tr>
+                            <td><code>InitiatingProcess*</code></td>
+                            <td>Parent process info</td>
+                            <td>All action tables</td>
+                        </tr>
+                        <tr>
+                            <td><code>AccountName</code></td>
+                            <td>Username</td>
+                            <td>Process, Logon</td>
+                        </tr>
+                        <tr>
+                            <td><code>RemoteIP</code></td>
+                            <td>Destination IP</td>
+                            <td>Network, Logon</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Day-to-Day Usage</h3>
+                <ul>
+                    <li>Use DeviceProcessEvents for execution hunting</li>
+                    <li>Use DeviceNetworkEvents for C2 detection</li>
+                    <li>Use DeviceFileEvents for malware drops</li>
+                    <li>Use DeviceRegistryEvents for persistence</li>
+                    <li>Join tables for complete attack picture</li>
+                </ul>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Core tables</strong>: Process, Network, File, Registry, Logon, Events</li>
+                    <li><strong>DeviceEvents</strong>: Catch-all for ASR, AMSI, CFA, etc.</li>
+                    <li><strong>InitiatingProcess*</strong>: Parent process columns for tree building</li>
+                    <li><strong>Retention</strong>: 30 days default, extendable to 180 days</li>
+                    <li><strong>Common joins</strong>: AlertInfo + AlertEvidence, Process + Network</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="5-1-advanced-hunting-overview.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Advanced Hunting Overview</span>
+                </a>
+                <a href="5-3-kql-fundamentals.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">KQL Fundamentals</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Investigation | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Automated Investigation and Response (AIR) in MDE. Learn how AIR analyzes alerts, determines verdicts, takes remediation actions, and how to configure automation levels for your organization.</p>
+            </div>
+
+            <h1>Automated Investigation and Response (AIR)</h1>
+
+            <p>AIR automatically investigates alerts, analyzes evidence, determines verdicts, and can remediate threats without analyst intervention. It acts like a virtual analyst working 24/7 to reduce investigation workload and response time.</p>
+
+            <h2>How AIR Works</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Automated Investigation Flow</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│              AUTOMATED INVESTIGATION AND RESPONSE FLOW                   │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  TRIGGER                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ Alert Generated │ Analyst Request │ API Trigger │ Incident      │   │
+│  └────────────────────────────┬────────────────────────────────────┘   │
+│                               │                                          │
+│                               ▼                                          │
+│  INVESTIGATION                                                           │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                  │   │
+│  │  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐        │   │
+│  │  │ Collect      │──►│ Analyze      │──►│ Correlate    │        │   │
+│  │  │ Evidence     │   │ Entities     │   │ Related      │        │   │
+│  │  │              │   │              │   │ Alerts       │        │   │
+│  │  │ • Files      │   │ • Reputation │   │              │        │   │
+│  │  │ • Processes  │   │ • Behavior   │   │ • Timeline   │        │   │
+│  │  │ • Registry   │   │ • Prevalence │   │ • Other      │        │   │
+│  │  │ • Network    │   │ • Signatures │   │   devices    │        │   │
+│  │  └──────────────┘   └──────────────┘   └──────────────┘        │   │
+│  │                                                                  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                               │                                          │
+│                               ▼                                          │
+│  VERDICT                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                  │   │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌───────────────────────┐   │   │
+│  │  │ MALICIOUS   │  │ SUSPICIOUS  │  │ NO THREATS FOUND      │   │   │
+│  │  │ Confirmed   │  │ Needs review│  │ Clean / False positive│   │   │
+│  │  │ threat      │  │             │  │                       │   │   │
+│  │  └──────┬──────┘  └──────┬──────┘  └───────────┬───────────┘   │   │
+│  │         │                │                      │               │   │
+│  └─────────┼────────────────┼──────────────────────┼───────────────┘   │
+│            │                │                      │                    │
+│            ▼                ▼                      ▼                    │
+│  REMEDIATION                                                            │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ Full Auto:      │ Semi Auto:        │ No Auto:                  │   │
+│  │ Auto-remediate  │ Pending approval  │ Manual action             │   │
+│  │ immediately     │ in Action Center  │ required                  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Investigation Triggers</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">What Triggers AIR</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>AUTOMATIC TRIGGERS:
+
+ALERT-BASED:
+├── High-severity alerts automatically trigger AIR
+├── Medium-severity alerts may trigger based on type
+├── Specific detection categories trigger investigation
+└── Examples:
+    ├── Malware detected
+    ├── Suspicious PowerShell
+    ├── Credential theft attempt
+    ├── Ransomware behavior
+    └── C2 communication
+
+INCIDENT-BASED:
+├── New incident created → AIR runs on all alerts
+├── Alert added to incident → AIR continues
+└── Correlation discovery → Expanded investigation
+
+MANUAL TRIGGERS:
+
+FROM ALERT PAGE:
+├── Click alert → "Investigate"
+├── Forces AIR to run on specific alert
+└── Useful when auto didn't trigger
+
+FROM DEVICE PAGE:
+├── Device → "Initiate Automated Investigation"
+├── Investigates entire device state
+└── Comprehensive device analysis
+
+FROM INCIDENT PAGE:
+├── Incident → "Trigger investigation"
+├── Runs on all incident evidence
+└── Expands existing investigation
+
+VIA API:
+POST /api/machines/{id}/startInvestigation
+└── Automate investigation triggering</code></pre>
+                </div>
+            </div>
+
+            <h2>Investigation Process</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">What AIR Analyzes</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ENTITIES ANALYZED:
+
+FILES:
+├── File reputation (cloud lookup)
+├── Digital signature verification
+├── Prevalence in organization
+├── Prevalence globally
+├── First seen / last seen dates
+├── File behavior (sandbox results)
+├── Related alerts
+└── Verdict: Clean, Suspicious, Malicious
+
+PROCESSES:
+├── Process tree analysis
+├── Command line inspection
+├── Parent-child relationships
+├── User context
+├── Behavior patterns
+├── Known attack techniques
+└── Verdict: Normal, Suspicious, Malicious
+
+NETWORK CONNECTIONS:
+├── Destination reputation
+├── Connection patterns
+├── Data volume
+├── Known C2 infrastructure
+├── DNS queries
+└── Verdict: Safe, Suspicious, Malicious
+
+REGISTRY KEYS:
+├── Known persistence locations
+├── Value analysis
+├── Creation timeline
+├── Associated processes
+└── Verdict: Normal, Suspicious, Malicious
+
+USER ACCOUNTS:
+├── Account activity
+├── Logon patterns
+├── Privilege usage
+├── Related alerts
+└── Risk assessment
+
+CORRELATION:
+├── Other devices with same IOCs
+├── Other users affected
+├── Related alerts across tenant
+├── Timeline correlation
+└── Attack chain reconstruction</code></pre>
+                </div>
+            </div>
+
+            <h2>Automation Levels</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Level</th>
+                            <th>Behavior</th>
+                            <th>Use Case</th>
+                            <th>Recommended For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Full</strong></td>
+                            <td>Auto-remediate all threats</td>
+                            <td>Maximum speed, minimum manual work</td>
+                            <td>Most organizations</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Semi - Core folders</strong></td>
+                            <td>Auto-remediate in Windows/Program Files only</td>
+                            <td>Protect system, review user files</td>
+                            <td>Conservative approach</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Semi - Any folder</strong></td>
+                            <td>All remediation needs approval</td>
+                            <td>Review everything before action</td>
+                            <td>High-control environments</td>
+                        </tr>
+                        <tr>
+                            <td><strong>No automation</strong></td>
+                            <td>Investigation only, no remediation</td>
+                            <td>Manual response only</td>
+                            <td>Not recommended</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Configuring Automation Levels</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CONFIGURATION PATH:
+Settings → Endpoints → Device groups
+
+PER DEVICE GROUP:
+├── Each device group can have different automation
+├── Servers: May want semi-auto
+├── Workstations: Full auto OK
+├── Critical assets: Higher control
+└── Test groups: Full auto for testing
+
+EXAMPLE CONFIGURATION:
+┌─────────────────────────────────────────────────┐
+│ Device Group          │ Automation Level        │
+├───────────────────────┼─────────────────────────┤
+│ All Workstations      │ Full                    │
+│ Windows Servers       │ Semi - any folder       │
+│ Domain Controllers    │ No automated response   │
+│ Executive Devices     │ Full (fast response)    │
+│ Test Lab              │ Full                    │
+└─────────────────────────────────────────────────┘
+
+CHANGING AUTOMATION:
+1. Settings → Endpoints → Device groups
+2. Select device group
+3. Edit → Automation level
+4. Save changes
+5. Changes apply to new investigations</code></pre>
+                </div>
+            </div>
+
+            <h2>Investigation Status and Verdicts</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Investigation States</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INVESTIGATION STATUS:
+
+RUNNING:
+├── Investigation in progress
+├── Collecting and analyzing evidence
+├── May take 10-60 minutes
+└── Can run in parallel with other work
+
+PENDING ACTION:
+├── Investigation complete
+├── Remediation actions waiting approval
+├── Check Action Center → Pending
+└── Analyst must approve/reject
+
+PARTIALLY REMEDIATED:
+├── Some actions completed
+├── Some actions failed or pending
+├── Review what's left
+└── May need manual intervention
+
+REMEDIATED:
+├── All malicious entities remediated
+├── Threat contained
+├── Verify in timeline
+└── Investigation successful
+
+NO THREATS FOUND:
+├── Investigation found nothing malicious
+├── May be false positive
+├── May need manual review
+└── Consider alert tuning
+
+FAILED:
+├── Investigation couldn't complete
+├── Check for issues (offline device, etc.)
+├── May need manual investigation
+└── Retry or investigate manually
+
+TERMINATED BY SYSTEM:
+├── Exceeded time or resource limits
+├── May need to split investigation
+└── Investigate manually
+
+TERMINATED BY USER:
+├── Analyst cancelled investigation
+├── Resources redirected elsewhere
+└── May resume later</code></pre>
+                </div>
+            </div>
+
+            <h2>Remediation Actions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Actions AIR Can Take</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>AUTOMATED REMEDIATION ACTIONS:
+
+FILE ACTIONS:
+├── Quarantine file
+├── Remove file
+├── Block file (add to indicators)
+├── Stop and quarantine
+└── Collect file for analysis
+
+PROCESS ACTIONS:
+├── Stop process
+├── Block process (hash)
+└── Quarantine associated file
+
+PERSISTENCE ACTIONS:
+├── Remove scheduled task
+├── Remove registry key
+├── Remove service
+├── Remove WMI subscription
+└── Remove startup entry
+
+NETWORK ACTIONS:
+├── Block IP (add indicator)
+├── Block domain (add indicator)
+└── Isolate device (if configured)
+
+USER ACTIONS (with integration):
+├── Disable account
+├── Require re-authentication
+└── Revoke sessions
+
+ACTION CENTER VISIBILITY:
+├── All actions logged
+├── Pending actions need approval
+├── History shows completed actions
+├── Can undo some actions (unquarantine)</code></pre>
+                </div>
+            </div>
+
+            <h2>Reviewing Investigations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Investigation Review Workflow</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>VIEWING INVESTIGATION RESULTS:
+
+FROM ALERT:
+Alert page → Investigation tab
+├── Shows investigation status
+├── Entities analyzed
+├── Verdicts per entity
+├── Actions taken/pending
+└── Related investigations
+
+FROM INCIDENT:
+Incident → Investigations tab
+├── All investigations for incident
+├── Aggregated results
+├── Combined evidence
+└── Overall status
+
+FROM ACTION CENTER:
+Action center → History
+├── All completed actions
+├── Filter by investigation
+├── See what was remediated
+└── Track action success/failure
+
+INVESTIGATION DETAILS PAGE:
+├── Investigation graph (visual)
+├── Evidence list
+├── Entity verdicts
+├── Actions taken
+├── Timeline of investigation
+└── Related alerts/devices
+
+WHAT TO REVIEW:
+1. Were all threats identified?
+2. Were verdicts accurate?
+3. Did remediation succeed?
+4. Any missed indicators?
+5. Need additional hunting?
+6. Scope fully assessed?</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL for AIR Analysis</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Investigation Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Recent automated investigations</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">join</span> <span class="keyword">kind=inner</span> <span class="variable">AlertEvidence</span> <span class="keyword">on</span> AlertId
+<span class="operator">|</span> <span class="keyword">where</span> <span class="function">isnotempty</span>(InvestigationId)
+<span class="operator">|</span> <span class="keyword">summarize</span> by InvestigationId, Title, Severity
+
+<span class="comment">// Remediation actions taken by AIR</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="operator">==</span> <span class="string">"MsSense.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">has_any</span> (<span class="string">"Quarantine"</span>, <span class="string">"Block"</span>, <span class="string">"Remediate"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, ActionType, FileName
+
+<span class="comment">// Files quarantined by automation</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"AntivirusDetection"</span>
+<span class="operator">|</span> <span class="keyword">extend</span> Fields = <span class="function">parse_json</span>(AdditionalFields)
+<span class="operator">|</span> <span class="keyword">where</span> Fields.Action <span class="operator">==</span> <span class="string">"Quarantine"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, Fields.ThreatName</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Use Full automation</strong> for workstations - faster response, proven accuracy</li>
+                        <li><strong>Review pending actions daily</strong> - don't let them pile up</li>
+                        <li><strong>Monitor investigation failures</strong> - may indicate issues</li>
+                        <li><strong>Trust but verify</strong> - spot-check automated verdicts</li>
+                        <li><strong>Adjust automation by device type</strong> - critical servers may need review</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>AIR Operations</h4>
+                <ul>
+                    <li>Review pending remediation actions</li>
+                    <li>Monitor investigation success rates</li>
+                    <li>Validate automated verdicts</li>
+                    <li>Trigger manual investigations when needed</li>
+                    <li>Configure automation levels per device group</li>
+                    <li>Handle failed investigations</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Investigation stuck in Running"</span>
+                    <span class="ticket-solution">→ Check device online, may be collecting evidence. Wait or investigate manually.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Too many pending actions"</span>
+                    <span class="ticket-solution">→ Review and batch approve legitimate ones. Consider increasing automation level.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"AIR missed something"</span>
+                    <span class="ticket-solution">→ Manual hunting required. AIR is good but not perfect. Add custom detection if gap found.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Automatically investigate alerts and remediate threats</li>
+                    <li><strong>Triggers</strong>: Alerts, incidents, manual request, API</li>
+                    <li><strong>What it analyzes</strong>: Files, processes, network, registry, users</li>
+                    <li><strong>Automation levels</strong>: Full, Semi (core/any folder), None</li>
+                    <li><strong>Verdicts</strong>: Malicious, Suspicious, No threats found</li>
+                    <li><strong>Actions</strong>: Quarantine, block, stop process, remove persistence</li>
+                    <li><strong>Best practice</strong>: Full automation for workstations, review servers</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-5-live-response.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Live Response</span>
+                </a>
+                <a href="4-7-custom-detections.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Custom Detections</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

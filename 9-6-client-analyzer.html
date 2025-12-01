@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Analyzer | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to the MDE Client Analyzer tool. Learn to diagnose client-side issues, collect diagnostic data, and troubleshoot sensor problems.</p>
+            </div>
+
+            <h1>MDE Client Analyzer</h1>
+
+            <p>The MDE Client Analyzer is a diagnostic tool that collects detailed information about the MDE sensor and Defender Antivirus to troubleshoot issues.</p>
+
+            <h2>Client Analyzer Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Client Analyzer Capabilities</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MDE CLIENT ANALYZER                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  DOWNLOAD:                                                              │
+│  https://aka.ms/MDEClientAnalyzer                                       │
+│                                                                          │
+│  COLLECTS:                                                              │
+│  ├── Sensor configuration and status                                   │
+│  ├── Connectivity test results                                         │
+│  ├── Event logs (Defender, SENSE)                                      │
+│  ├── Registry settings                                                 │
+│  ├── Policy configurations                                             │
+│  ├── Performance data                                                  │
+│  ├── Certificate information                                           │
+│  └── Network configuration                                             │
+│                                                                          │
+│  OUTPUT:                                                                │
+│  ├── MDEClientAnalyzerResult.zip                                       │
+│  │   ├── SystemInfo.txt                                                │
+│  │   ├── EventLogs/                                                    │
+│  │   ├── RegistryExports/                                              │
+│  │   ├── ConnectivityTests/                                            │
+│  │   └── DefenderInfo/                                                 │
+│  └── Console summary with Pass/Fail checks                             │
+│                                                                          │
+│  PLATFORMS: Windows, macOS, Linux                                       │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Running the Analyzer</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Windows Usage</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>RUNNING MDE CLIENT ANALYZER (Windows):
+
+STEP 1: DOWNLOAD
+├── Download from: https://aka.ms/MDEClientAnalyzer
+├── Or use PowerShell:
+│   Invoke-WebRequest -Uri "https://aka.ms/MDEClientAnalyzer" `
+│       -OutFile MDEClientAnalyzer.zip
+└── Extract the ZIP file
+
+STEP 2: RUN (Elevated Command Prompt)
+cd C:\path\to\MDEClientAnalyzer
+MDEClientAnalyzer.cmd
+
+STEP 3: WAIT FOR COMPLETION
+├── Takes 5-15 minutes
+├── Runs connectivity tests
+├── Collects logs and config
+└── Generates summary
+
+STEP 4: REVIEW OUTPUT
+├── Console shows Pass/Fail summary
+├── Results in: MDEClientAnalyzerResult.zip
+└── Upload to support case if needed
+
+COMMAND LINE OPTIONS:
+MDEClientAnalyzer.cmd              # Standard run
+MDEClientAnalyzer.cmd -h           # Help
+MDEClientAnalyzer.cmd -o C:\output # Custom output path
+MDEClientAnalyzer.cmd -d           # Debug mode
+MDEClientAnalyzer.cmd -t           # Trace mode (detailed)
+
+LIVE RESPONSE:
+# Run from Live Response session
+library MDEClientAnalyzer.zip
+run MDEClientAnalyzerCMD.cmd</code></pre>
+                </div>
+            </div>
+
+            <h2>Key Diagnostic Checks</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Diagnostic Checks Performed</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>KEY DIAGNOSTIC CHECKS:
+
+ONBOARDING STATUS:
+├── ✓ Device is onboarded
+├── ✓ Organization ID configured
+├── ✓ Onboarding timestamp valid
+└── ✗ Onboarding failed (shows error)
+
+SERVICE STATUS:
+├── ✓ SENSE service running
+├── ✓ WinDefend service running
+├── ✓ Services start automatically
+└── ✗ Service stopped/disabled
+
+CONNECTIVITY:
+├── ✓ Can reach MDE cloud endpoints
+├── ✓ SSL/TLS certificates valid
+├── ✓ Proxy configured correctly
+└── ✗ Connectivity blocked (shows URL)
+
+CONFIGURATION:
+├── ✓ Telemetry level sufficient
+├── ✓ Cloud protection enabled
+├── ✓ Real-time protection enabled
+└── ✗ Feature disabled (shows setting)
+
+COMMON CHECK RESULTS:
+┌─────────────────────────────────────────────────────────────┐
+│ Check                          │ Status  │ Action          │
+├─────────────────────────────────────────────────────────────┤
+│ Onboarding state               │ PASS    │ None needed     │
+│ SENSE service                  │ PASS    │ None needed     │
+│ Cloud connectivity             │ FAIL    │ Check firewall  │
+│ Telemetry level                │ WARN    │ Increase level  │
+│ Certificate validation         │ PASS    │ None needed     │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h2>Analyzing Results</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Result Analysis</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ANALYZING CLIENT ANALYZER RESULTS:
+
+ZIP FILE CONTENTS:
+MDEClientAnalyzerResult.zip/
+├── SystemInfoNetworkConfig.txt
+│   └── OS version, network adapters, proxy
+├── EventLogs/
+│   ├── SENSE-Operational.evtx
+│   ├── WindowsDefender-Operational.evtx
+│   └── System-Errors.evtx
+├── RegistryExports/
+│   ├── HKLM-ATP.reg
+│   ├── HKLM-Defender.reg
+│   └── HKLM-Policies.reg
+├── ConnectivityResults/
+│   ├── URLConnectivity.txt
+│   └── CertificateInfo.txt
+└── MDEClientAnalyzer.htm
+    └── Summary report (open in browser)
+
+KEY FILES TO CHECK:
+
+1. MDEClientAnalyzer.htm
+   ├── Visual summary of all checks
+   ├── Pass/Fail status
+   ├── Recommendations
+   └── Start here for troubleshooting
+
+2. ConnectivityResults/URLConnectivity.txt
+   ├── Each URL tested
+   ├── Success or failure
+   └── Error codes if failed
+
+3. EventLogs/SENSE-Operational.evtx
+   ├── Sensor events
+   ├── Error details
+   └── Communication failures
+
+4. RegistryExports/HKLM-ATP.reg
+   ├── Onboarding configuration
+   ├── Organization ID
+   └── Sensor settings</code></pre>
+                </div>
+            </div>
+
+            <h2>Common Issues and Fixes</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Troubleshooting Guide</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>COMMON ISSUES FROM CLIENT ANALYZER:
+
+ISSUE: Connectivity Failed
+Analyzer shows: "Cannot connect to [URL]"
+Causes:
+├── Firewall blocking outbound
+├── Proxy not configured
+├── SSL inspection breaking certs
+└── Network policy blocking
+
+Fix:
+├── Allow MDE URLs in firewall
+├── Configure proxy: Set-MpPreference -ProxyServer
+├── Add SSL inspection bypass for MDE
+└── Check with network team
+
+ISSUE: Service Not Running
+Analyzer shows: "SENSE service stopped"
+Causes:
+├── Disabled by GPO
+├── Third-party conflict
+├── Corruption
+└── Resource exhaustion
+
+Fix:
+├── Check GPO settings
+├── Remove conflicting software
+├── Re-run onboarding script
+└── Check system resources
+
+ISSUE: Not Onboarded
+Analyzer shows: "OnboardingState = 0"
+Causes:
+├── Onboarding script never ran
+├── Script failed silently
+├── Wrong tenant configuration
+└── Prerequisites not met
+
+Fix:
+├── Re-run onboarding script
+├── Check script output
+├── Verify tenant ID
+└── Check Windows version
+
+ISSUE: Telemetry Level Too Low
+Analyzer shows: "Telemetry level insufficient"
+Causes:
+├── GPO set to minimal
+├── Privacy settings
+└── Policy conflict
+
+Fix:
+├── Set telemetry to Basic (1) minimum
+├── Check GPO: Computer Config → Admin Templates →
+│   Windows Components → Data Collection
+└── Required for MDE functionality</code></pre>
+                </div>
+            </div>
+
+            <h2>Platform-Specific Usage</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">macOS and Linux</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MACOS CLIENT ANALYZER:
+
+Download: https://aka.ms/MDEClientAnalyzerMacOS
+
+Run:
+chmod +x MDEClientAnalyzer.sh
+sudo ./MDEClientAnalyzer.sh
+
+Output: MDEClientAnalyzerResult.zip
+
+Checks:
+├── MDE for Mac installation
+├── Service status (wdavdaemon)
+├── Configuration
+├── Connectivity
+└── System requirements
+
+LINUX CLIENT ANALYZER:
+
+Download: https://aka.ms/MDEClientAnalyzerLinux
+
+Run:
+chmod +x MDEClientAnalyzer.sh
+sudo ./MDEClientAnalyzer.sh
+
+Output: MDEClientAnalyzerResult.zip
+
+Checks:
+├── MDE for Linux installation
+├── Service status (mdatp)
+├── Configuration
+├── Connectivity
+└── Distribution compatibility
+
+COMMON CROSS-PLATFORM CHECKS:
+├── Product version installed
+├── Definitions age
+├── Real-time protection status
+├── Cloud connectivity
+└── License status</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Run as admin</strong>: Requires elevated privileges for full data</li>
+                        <li><strong>Collect fresh data</strong>: Run immediately when issue occurs</li>
+                        <li><strong>Check HTML report first</strong>: Start with the summary report</li>
+                        <li><strong>Include in support cases</strong>: Attach ZIP to Microsoft support tickets</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Collect diagnostic data for MDE troubleshooting</li>
+                    <li><strong>Download</strong>: https://aka.ms/MDEClientAnalyzer</li>
+                    <li><strong>Output</strong>: MDEClientAnalyzerResult.zip with logs, config, tests</li>
+                    <li><strong>Key checks</strong>: Onboarding, services, connectivity, configuration</li>
+                    <li><strong>Cross-platform</strong>: Available for Windows, macOS, Linux</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="9-5-protection-issues.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Protection Issues</span>
+                </a>
+                <a href="10-1-deployment-planning.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Deployment Planning</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

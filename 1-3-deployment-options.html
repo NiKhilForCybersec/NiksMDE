@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Options | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Overview of MDE deployment options for different platforms and management scenarios. Learn which deployment method is right for your environment.</p>
+            </div>
+
+            <h1>Deployment Options</h1>
+
+            <p>MDE supports multiple deployment methods to accommodate different infrastructure types and management tools.</p>
+
+            <h2>Deployment Methods by Platform</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Deployment Matrix</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEPLOYMENT OPTIONS BY PLATFORM:
+
+WINDOWS 10/11:
+├── Microsoft Intune (Recommended for cloud)
+├── Group Policy (On-premises AD)
+├── SCCM/MECM (ConfigMgr managed)
+├── Local script (Testing/small scale)
+└── VDI script (Non-persistent VDI)
+
+WINDOWS SERVER:
+├── Group Policy
+├── SCCM/MECM
+├── Local script
+├── Azure Arc (hybrid management)
+└── Defender for Cloud (Azure VMs)
+
+MACOS:
+├── Microsoft Intune
+├── JAMF Pro
+├── Manual installation (PKG)
+└── Shell script deployment
+
+LINUX:
+├── Package manager (apt, yum, zypper)
+├── Ansible/Puppet/Chef
+├── Manual installation
+└── Azure Arc
+
+MOBILE (iOS/Android):
+├── Microsoft Intune (MAM/MDM)
+├── Third-party MDM with Intune MAM
+└── Standalone app installation</code></pre>
+                </div>
+            </div>
+
+            <h2>Choosing a Deployment Method</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Decision Guide</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEPLOYMENT DECISION GUIDE:
+
+CLOUD-MANAGED ENVIRONMENT:
+├── Primary: Microsoft Intune
+├── Benefits: Auto-onboarding, policy management
+├── Best for: Modern management, hybrid AAD
+└── Co-management: Works with SCCM
+
+ON-PREMISES AD ENVIRONMENT:
+├── Primary: Group Policy
+├── Benefits: Familiar, no additional tools
+├── Best for: Traditional infrastructure
+└── Alternative: SCCM for more control
+
+CONFIGMGR MANAGED:
+├── Primary: SCCM/MECM
+├── Benefits: Existing infrastructure
+├── Best for: Already using ConfigMgr
+└── Native: ATP connector available
+
+AZURE WORKLOADS:
+├── Primary: Defender for Cloud
+├── Benefits: Automatic, integrated billing
+├── Best for: Azure VMs
+└── Alternative: Azure Arc for hybrid
+
+TESTING/POC:
+├── Primary: Local script
+├── Benefits: Quick, no infrastructure
+├── Best for: Lab, evaluation
+└── Scale: Not for production
+
+VDI ENVIRONMENTS:
+├── Primary: VDI-specific script
+├── Benefits: Handles non-persistence
+├── Best for: Citrix, VMware Horizon, AVD
+└── Critical: Prevents duplicate devices</code></pre>
+                </div>
+            </div>
+
+            <h2>Deployment Prerequisites</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Prerequisites</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>UNIVERSAL PREREQUISITES:
+
+LICENSING:
+├── Microsoft Defender for Endpoint P1/P2
+├── Microsoft 365 E5/A5/G5
+├── Microsoft 365 E5 Security
+└── Standalone MDE license
+
+NETWORK CONNECTIVITY:
+├── *.securitycenter.windows.com (443)
+├── *.security.microsoft.com (443)
+├── *.wdcp.microsoft.com (443)
+├── *.wd.microsoft.com (443)
+└── Proxy configuration if needed
+
+PERMISSIONS:
+├── Global Admin (initial setup)
+├── Security Admin (ongoing management)
+└── Local admin on devices (installation)
+
+PLATFORM-SPECIFIC:
+
+WINDOWS:
+├── Windows 10 1607+ or Windows 11
+├── Windows Server 2012 R2+ (unified agent)
+└── Telemetry level: Basic minimum
+
+MACOS:
+├── macOS 11 (Big Sur) or later
+├── System extensions approved
+└── Full Disk Access granted
+
+LINUX:
+├── Supported distributions
+├── Kernel version requirements
+└── Package manager access</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Use Intune</strong>: Preferred for cloud-managed environments</li>
+                        <li><strong>Test first</strong>: Pilot with small group before rollout</li>
+                        <li><strong>Deployment rings</strong>: Gradual rollout (Pilot → Early → Broad)</li>
+                        <li><strong>Verify connectivity</strong>: Test URLs before deployment</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Cloud-managed</strong>: Intune with auto-onboarding</li>
+                    <li><strong>On-premises</strong>: Group Policy or SCCM</li>
+                    <li><strong>Azure VMs</strong>: Defender for Cloud integration</li>
+                    <li><strong>VDI</strong>: Special script for non-persistent</li>
+                    <li><strong>Cross-platform</strong>: Windows, macOS, Linux, Mobile supported</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="1-2-mde-architecture.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">MDE Architecture</span>
+                </a>
+                <a href="1-4-onboarding-windows.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Onboarding Windows</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

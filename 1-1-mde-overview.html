@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDE Overview | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Introduction to Microsoft Defender for Endpoint (MDE), understanding EDR vs EPP vs XDR, MDE's position in the Microsoft security stack, licensing tiers (P1, P2, E5), and high-level architecture overview.</p>
+            </div>
+
+            <h1>Microsoft Defender for Endpoint Overview</h1>
+
+            <p>Microsoft Defender for Endpoint (MDE) is Microsoft's enterprise-grade endpoint detection and response (EDR) platform. Originally known as Windows Defender ATP, MDE has evolved into a comprehensive endpoint security solution that provides preventive protection, post-breach detection, automated investigation, and response capabilities.</p>
+
+            <h2>What is MDE?</h2>
+
+            <p>MDE is a cloud-native endpoint security platform designed to help enterprise networks prevent, detect, investigate, and respond to advanced threats. It combines behavioral sensors, cloud security analytics, and threat intelligence to provide comprehensive endpoint protection.</p>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Core Components</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MICROSOFT DEFENDER FOR ENDPOINT                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │   ENDPOINT   │  │    CLOUD     │  │   THREAT     │  │   SECURITY   │ │
+│  │   SENSORS    │  │  ANALYTICS   │  │    INTEL     │  │    PORTAL    │ │
+│  │              │  │              │  │              │  │              │ │
+│  │ • Kernel     │  │ • Behavioral │  │ • Microsoft  │  │ • M365       │ │
+│  │ • User Mode  │  │ • ML Models  │  │   Research   │  │   Defender   │ │
+│  │ • Network    │  │ • Cloud AI   │  │ • Partners   │  │ • Unified    │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘ │
+│         │                  │                 │                 │         │
+│         └──────────────────┼─────────────────┼─────────────────┘         │
+│                            ▼                 ▼                           │
+│                   ┌─────────────────────────────────┐                    │
+│                   │     UNIFIED SECURITY VIEW       │                    │
+│                   │  Detection │ Investigation │    │                    │
+│                   │   Response │ Remediation   │    │                    │
+│                   └─────────────────────────────────┘                    │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>EDR vs EPP vs XDR: Understanding the Terminology</h2>
+
+            <p>Understanding these three concepts is crucial for any security professional:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Term</th>
+                            <th>Definition</th>
+                            <th>MDE Coverage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>EPP</strong><br><span class="text-muted">Endpoint Protection Platform</span></td>
+                            <td>Preventive security controls: antivirus, anti-malware, firewall, device control. Focus on <em>blocking</em> known threats.</td>
+                            <td>Microsoft Defender Antivirus, ASR rules, Exploit Protection, Network Protection</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EDR</strong><br><span class="text-muted">Endpoint Detection & Response</span></td>
+                            <td>Post-breach detection and investigation: behavioral monitoring, threat hunting, forensics, response actions.</td>
+                            <td>Behavioral sensors, Advanced Hunting, Live Response, Device Timeline</td>
+                        </tr>
+                        <tr>
+                            <td><strong>XDR</strong><br><span class="text-muted">Extended Detection & Response</span></td>
+                            <td>Cross-domain detection correlating endpoints, email, identity, and cloud apps for unified threat visibility.</td>
+                            <td>Microsoft 365 Defender (MDE + MDO + MDI + MDA)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout info">
+                <div class="callout-icon">ℹ️</div>
+                <div class="callout-content">
+                    <h5>Key Insight</h5>
+                    <p>MDE provides <strong>both</strong> EPP and EDR capabilities in a single agent. When combined with other Microsoft Defender products (MDO, MDI, MDA), it becomes part of the XDR solution called Microsoft 365 Defender.</p>
+                </div>
+            </div>
+
+            <h2>MDE in the Microsoft Security Stack</h2>
+
+            <p>MDE is part of the broader Microsoft security ecosystem:</p>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Microsoft Security Stack</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      MICROSOFT 365 DEFENDER (XDR)                        │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐   │
+│   │     MDE     │  │     MDO     │  │     MDI     │  │     MDA     │   │
+│   │  Defender   │  │  Defender   │  │  Defender   │  │  Defender   │   │
+│   │     for     │  │     for     │  │     for     │  │   Cloud     │   │
+│   │  Endpoint   │  │   Office    │  │  Identity   │  │    Apps     │   │
+│   │             │  │     365     │  │             │  │             │   │
+│   │ • Endpoints │  │ • Email     │  │ • AD/Entra  │  │ • SaaS Apps │   │
+│   │ • Servers   │  │ • Teams     │  │ • On-prem   │  │ • Shadow IT │   │
+│   │ • Mobile    │  │ • SharePt   │  │ • Cloud ID  │  │ • CASB      │   │
+│   └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘   │
+│          │                │                │                │           │
+│          └────────────────┴────────────────┴────────────────┘           │
+│                                    │                                     │
+│                                    ▼                                     │
+│                    ┌──────────────────────────────┐                      │
+│                    │    MICROSOFT SENTINEL        │                      │
+│                    │         (SIEM/SOAR)          │                      │
+│                    │   Centralized Log Analysis   │                      │
+│                    │   Advanced Analytics         │                      │
+│                    │   Automation & Playbooks     │                      │
+│                    └──────────────────────────────┘                      │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>MDE Licensing Tiers</h2>
+
+            <p>MDE is available in different licensing tiers with varying capabilities:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>P1 <span class="badge badge-p1">P1</span></th>
+                            <th>P2 <span class="badge badge-p2">P2</span></th>
+                            <th>Business Premium</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Next-Gen Protection (AV)</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Attack Surface Reduction</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Device Control</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                        </tr>
+                        <tr>
+                            <td>EDR (Full Capabilities)</td>
+                            <td class="text-muted">—</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Advanced Hunting</td>
+                            <td class="text-muted">—</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Automated Investigation</td>
+                            <td class="text-muted">—</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Threat & Vulnerability Mgmt</td>
+                            <td class="text-muted">—</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Live Response</td>
+                            <td class="text-muted">—</td>
+                            <td class="text-green">✓</td>
+                            <td class="text-green">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Device Limit</td>
+                            <td>Unlimited</td>
+                            <td>Unlimited</td>
+                            <td>300 users max</td>
+                        </tr>
+                        <tr>
+                            <td>Target Audience</td>
+                            <td>Basic protection</td>
+                            <td>Enterprise</td>
+                            <td>SMB (&lt;300 users)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Licensing Note</h5>
+                    <p>P1 does <strong>not</strong> include EDR capabilities. If you need behavioral detection, advanced hunting, or live response, you must have P2 or equivalent (E5, A5, etc.).</p>
+                </div>
+            </div>
+
+            <h3>Common License Bundles Including MDE P2</h3>
+
+            <ul>
+                <li><strong>Microsoft 365 E5</strong> - Full suite including MDE P2</li>
+                <li><strong>Microsoft 365 E5 Security</strong> - Security add-on for E3</li>
+                <li><strong>Microsoft Defender for Endpoint P2</strong> - Standalone</li>
+                <li><strong>Windows 365 Enterprise</strong> - Includes MDE</li>
+                <li><strong>Microsoft 365 A5</strong> - Education equivalent of E5</li>
+            </ul>
+
+            <h2>MDE Architecture Overview</h2>
+
+            <p>MDE uses a cloud-native architecture with lightweight endpoint sensors:</p>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Data Flow Architecture</div>
+<pre>
+                              CLOUD (Microsoft)
+    ┌─────────────────────────────────────────────────────────────┐
+    │                                                              │
+    │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
+    │  │   Security   │    │    Cloud     │    │    Threat    │  │
+    │  │   Portal     │◄───│   Backend    │◄───│    Intel     │  │
+    │  │              │    │              │    │              │  │
+    │  └──────────────┘    └──────────────┘    └──────────────┘  │
+    │         ▲                   ▲                              │
+    │         │                   │                              │
+    └─────────┼───────────────────┼──────────────────────────────┘
+              │                   │
+              │    HTTPS/443      │
+              │                   │
+    ──────────┼───────────────────┼───────────── Network Boundary
+              │                   │
+              │                   │
+    ┌─────────┴───────────────────┴──────────────────────────────┐
+    │                      ENDPOINTS                              │
+    │                                                              │
+    │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+    │  │  Windows    │  │   macOS     │  │   Linux     │         │
+    │  │  Sensor     │  │   Sensor    │  │   Agent     │         │
+    │  │             │  │             │  │             │         │
+    │  │ • Kernel    │  │ • System    │  │ • auditd    │         │
+    │  │   driver    │  │   Extension │  │   rules     │         │
+    │  │ • User svc  │  │ • Network   │  │ • eBPF      │         │
+    │  └─────────────┘  └─────────────┘  └─────────────┘         │
+    │                                                              │
+    └──────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h3>Key Architecture Points</h3>
+
+            <ul>
+                <li><strong>Cloud-Native</strong>: No on-premises infrastructure required; all processing happens in Microsoft cloud</li>
+                <li><strong>Lightweight Sensor</strong>: Minimal endpoint footprint; most processing offloaded to cloud</li>
+                <li><strong>Real-Time Telemetry</strong>: Continuous streaming of endpoint events to cloud for analysis</li>
+                <li><strong>30-Day Retention</strong>: Raw telemetry stored for 30 days (configurable up to 180 days)</li>
+                <li><strong>Multi-Platform</strong>: Support for Windows, macOS, Linux, iOS, and Android</li>
+            </ul>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>What You'll Do Daily With MDE</h4>
+                <ul>
+                    <li>Review and triage alerts in the security portal</li>
+                    <li>Investigate incidents using device timeline</li>
+                    <li>Verify onboarding status for new devices</li>
+                    <li>Check sensor health across the fleet</li>
+                    <li>Run advanced hunting queries for proactive detection</li>
+                </ul>
+
+                <h4>Common Tickets You'll Handle</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Device not showing in portal"</span>
+                    <span class="ticket-solution">→ Check onboarding status, verify connectivity to MDE URLs, run Client Analyzer</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"False positive alert"</span>
+                    <span class="ticket-solution">→ Investigate, classify, create suppression rule or adjust detection</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Need license verification"</span>
+                    <span class="ticket-solution">→ Check Azure portal > Licenses, verify P1 vs P2 assignment</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Know the difference</strong>: EPP = prevention, EDR = detection/response, XDR = cross-domain correlation</li>
+                    <li><strong>Licensing matters</strong>: P1 is prevention-only; P2 adds full EDR capabilities including hunting</li>
+                    <li><strong>Cloud-native architecture</strong>: No on-prem servers needed; sensor sends telemetry to Microsoft cloud</li>
+                    <li><strong>Part of larger ecosystem</strong>: MDE integrates with MDO, MDI, MDA to form Microsoft 365 Defender XDR</li>
+                    <li><strong>Multi-platform support</strong>: Not just Windows—covers macOS, Linux, iOS, Android</li>
+                    <li><strong>Data retention</strong>: Default 30 days, can extend to 180 days with configuration</li>
+                </ul>
+            </div>
+
+            <!-- Page Navigation -->
+            <nav class="page-nav">
+                <div></div>
+                <a href="1-2-mde-architecture.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Architecture Deep Dive</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

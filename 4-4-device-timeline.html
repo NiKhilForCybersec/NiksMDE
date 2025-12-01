@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Timeline | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to using the Device Timeline for forensic investigation in MDE. Learn event types, filtering techniques, investigation workflows, and how to reconstruct attack chains from timeline data.</p>
+            </div>
+
+            <h1>Device Timeline</h1>
+
+            <p>The Device Timeline is MDE's most powerful investigation tool, providing a chronological view of all security-relevant events on an endpoint. Mastering timeline analysis is essential for effective incident investigation.</p>
+
+            <h2>Accessing the Device Timeline</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Method 1: From Device Inventory
+security.microsoft.com → Devices → Select device → Timeline tab
+
+Method 2: From Alert
+Alert page → Click device name → Timeline tab
+
+Method 3: From Incident
+Incident page → Evidence & Response → Devices → Timeline
+
+Method 4: Direct URL
+https://security.microsoft.com/machines/[DeviceId]/timeline</code></pre>
+                </div>
+            </div>
+
+            <h2>Timeline Event Types</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event Category</th>
+                            <th>Event Types</th>
+                            <th>Investigation Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Process</strong></td>
+                            <td>ProcessCreate, ProcessTerminate</td>
+                            <td>Execution chain, parent-child relationships</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network</strong></td>
+                            <td>NetworkConnect, DNSQuery</td>
+                            <td>C2 communication, data exfiltration</td>
+                        </tr>
+                        <tr>
+                            <td><strong>File</strong></td>
+                            <td>FileCreate, FileModify, FileDelete, FileRename</td>
+                            <td>Payload drops, data staging</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Registry</strong></td>
+                            <td>RegistryValueSet, RegistryKeyCreate</td>
+                            <td>Persistence mechanisms</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Logon</strong></td>
+                            <td>LogonSuccess, LogonFailed</td>
+                            <td>Lateral movement, credential use</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Image Load</strong></td>
+                            <td>ImageLoad (DLL)</td>
+                            <td>DLL injection, living-off-the-land</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alert</strong></td>
+                            <td>Alert events</td>
+                            <td>Detection context</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Timeline Interface</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Timeline Interface Components</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         DEVICE TIMELINE                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  FILTER BAR                                                      │   │
+│  │  [Date Range ▼] [Event Types ▼] [Search...          ] [Flags ▼] │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  TIME NAVIGATION                                                 │   │
+│  │  |◄──────────────────[═══════]──────────────────►|               │   │
+│  │  Jan 15 09:00        Jan 15 14:32        Jan 15 18:00           │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  EVENTS                                                          │   │
+│  │  ▼ 14:32:15  🔴 Alert: Suspicious PowerShell execution           │   │
+│  │    14:32:14  ⚙️ Process: powershell.exe                          │   │
+│  │              └─ Parent: cmd.exe                                  │   │
+│  │              └─ CommandLine: powershell -enc SGVsbG8...          │   │
+│  │    14:32:12  🌐 Network: Connection to 185.x.x.x:443             │   │
+│  │    14:32:10  📁 File: C:\Users\Public\payload.exe created        │   │
+│  │    14:31:58  ⚙️ Process: cmd.exe                                 │   │
+│  │              └─ Parent: outlook.exe                              │   │
+│  │    14:31:55  📁 File: invoice.doc opened                         │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Filtering the Timeline</h2>
+
+            <h3>Event Type Filters</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Filter Combinations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code># Investigation: What did this process do?
+Event Types: Process, File, Network, Registry
+Search: [process name or PID]
+
+# Investigation: Network activity
+Event Types: Network connections, DNS queries
+Time: Narrow to incident window
+
+# Investigation: Persistence
+Event Types: Registry, File, Scheduled tasks
+Search: "Run", "RunOnce", "schtasks"
+
+# Investigation: Credential access
+Event Types: Process, Logon
+Search: "lsass", "mimikatz", "procdump"
+
+# Investigation: Full attack chain
+Event Types: All
+Flags: Alerts only (initial filter), then expand</code></pre>
+                </div>
+            </div>
+
+            <h3>Search Syntax</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Timeline Search Examples</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code># Search by file name
+powershell.exe
+payload.dll
+
+# Search by path
+C:\Users\Public
+\AppData\Local\Temp
+
+# Search by command line content
+-encodedcommand
+downloadstring
+invoke-expression
+
+# Search by hash (SHA256)
+a1b2c3d4e5f6...
+
+# Search by IP/domain
+185.123.45.67
+malicious-domain.com
+
+# Search by user
+DOMAIN\username</code></pre>
+                </div>
+            </div>
+
+            <h2>Investigation Workflows</h2>
+
+            <h3>Workflow 1: Alert Investigation</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Alert-Centric Investigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Step 1: START AT THE ALERT
+├── Click alert in timeline
+├── Note the timestamp
+├── Identify the triggering process
+└── Review alert details panel
+
+Step 2: GO BACKWARD (What happened before?)
+├── Expand time range: 30 min before alert
+├── Find the parent process
+├── Trace back to initial execution
+├── Look for: file drops, network downloads, user actions
+└── Question: How did malicious process get there?
+
+Step 3: GO FORWARD (What happened after?)
+├── Expand time range: 1 hour after alert
+├── Check for child processes
+├── Look for: persistence, lateral movement, data access
+└── Question: What damage was done?
+
+Step 4: CHECK RELATED ACTIVITY
+├── Network connections from suspicious processes
+├── Files created/modified
+├── Registry changes
+└── Additional logon events</code></pre>
+                </div>
+            </div>
+
+            <h3>Workflow 2: Reconstructing Attack Chain</h3>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Example Attack Chain Reconstruction</div>
+<pre>
+TIMELINE ANALYSIS - Phishing Attack Chain
+
+14:30:00  USER ACTION
+          └─ User opens email attachment (invoice.doc)
+          └─ Process: WINWORD.EXE
+
+14:30:15  MACRO EXECUTION
+          └─ WINWORD.EXE spawns cmd.exe
+          └─ Command: cmd.exe /c powershell -enc [base64]
+          └─ 🚩 RED FLAG: Office spawning shell
+
+14:30:18  DOWNLOAD CRADLE
+          └─ PowerShell connects to hxxp://evil[.]com/payload.exe
+          └─ DNS query for evil[.]com
+          └─ Network connection to 185.x.x.x:80
+          └─ 🚩 RED FLAG: Download from internet
+
+14:30:22  PAYLOAD DROP
+          └─ File created: C:\Users\Public\svchost.exe
+          └─ SHA256: [malware hash]
+          └─ 🚩 RED FLAG: File in Public folder
+
+14:30:25  EXECUTION
+          └─ Process: C:\Users\Public\svchost.exe
+          └─ Parent: powershell.exe
+          └─ 🚩 RED FLAG: Execution from unusual path
+
+14:30:30  PERSISTENCE
+          └─ Registry: HKCU\...\Run\WindowsUpdate = C:\Users\Public\svchost.exe
+          └─ 🚩 RED FLAG: Persistence mechanism
+
+14:30:45  C2 COMMUNICATION
+          └─ svchost.exe connects to 192.x.x.x:443
+          └─ Regular beaconing pattern observed
+          └─ 🚩 RED FLAG: Beaconing to unknown IP
+</pre>
+            </div>
+
+            <h3>Workflow 3: Lateral Movement Investigation</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Lateral Movement Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INDICATORS TO LOOK FOR:
+
+1. REMOTE EXECUTION TOOLS
+   └─ psexec.exe, wmic.exe, winrm, powershell remoting
+   └─ Connections to port 445, 135, 5985/5986
+
+2. CREDENTIAL USE
+   └─ Logon events with LogonType: 3 (Network), 10 (RemoteInteractive)
+   └─ New accounts appearing
+   └─ Elevated privilege usage
+
+3. SERVICE CREATION
+   └─ sc.exe commands
+   └─ Services with unusual paths
+
+4. SCHEDULED TASKS (Remote)
+   └─ schtasks.exe /create /s [remote]
+   └─ at.exe commands
+
+CROSS-DEVICE INVESTIGATION:
+1. Note source IP from logon events
+2. Search for that IP in other device timelines
+3. Correlate timestamps across devices
+4. Build lateral movement map</code></pre>
+                </div>
+            </div>
+
+            <h2>Timeline Event Details</h2>
+
+            <h3>Process Event Details</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Process Event Fields</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROCESS EVENT DETAILS:
+┌─────────────────────────────────────────────────────────────────┐
+│ Process: powershell.exe                                          │
+│ PID: 4532                                                        │
+│ Command Line: powershell.exe -nop -w hidden -enc SGVsbG8=        │
+│                                                                  │
+│ Parent Process: cmd.exe (PID: 2156)                             │
+│ Parent Command Line: cmd.exe /c powershell...                   │
+│                                                                  │
+│ User: CONTOSO\jsmith                                             │
+│ Integrity Level: Medium                                          │
+│                                                                  │
+│ File Path: C:\Windows\System32\WindowsPowerShell\v1.0\          │
+│ SHA256: de96a6e69944335375dc1ac238...                           │
+│ Signer: Microsoft Windows                                        │
+│                                                                  │
+│ Start Time: 2024-01-15 14:32:14 UTC                             │
+│ End Time: 2024-01-15 14:35:22 UTC                               │
+│                                                                  │
+│ [Go to process tree] [Hunt in timeline] [View in hunting]       │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h3>Network Event Details</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Network Event Fields</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>NETWORK EVENT DETAILS:
+┌─────────────────────────────────────────────────────────────────┐
+│ Connection Type: TCP                                             │
+│ Direction: Outbound                                              │
+│                                                                  │
+│ Remote IP: 185.123.45.67                                        │
+│ Remote Port: 443                                                 │
+│ Remote URL: hxxps://malicious-site[.]com/beacon                 │
+│                                                                  │
+│ Local IP: 10.0.1.50                                             │
+│ Local Port: 52341                                                │
+│                                                                  │
+│ Initiating Process: svchost.exe (PID: 4532)                     │
+│ Process Path: C:\Users\Public\svchost.exe                       │
+│                                                                  │
+│ Bytes Sent: 1,245                                               │
+│ Bytes Received: 45,678                                          │
+│                                                                  │
+│ [Block IP] [View in threat intel] [Hunt for this IP]            │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h2>Pro Tips for Timeline Analysis</h2>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Timeline Investigation Tips</h5>
+                    <ul>
+                        <li><strong>Work from the alert backward</strong>: Find root cause before assessing impact</li>
+                        <li><strong>Note timestamps precisely</strong>: Helps correlate across devices</li>
+                        <li><strong>Follow the parent chain</strong>: Click parent process to trace execution origin</li>
+                        <li><strong>Flag suspicious events</strong>: Use the flag feature to mark important findings</li>
+                        <li><strong>Export to hunting</strong>: Click "Hunt" to pivot to Advanced Hunting for deeper analysis</li>
+                        <li><strong>Check all child processes</strong>: Malware often spawns multiple processes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Timeline Investigation Tasks</h4>
+                <ul>
+                    <li>Investigate alerts by reviewing device timeline</li>
+                    <li>Reconstruct attack chains from timeline events</li>
+                    <li>Identify IOCs for blocking (IPs, hashes, domains)</li>
+                    <li>Document findings with timestamps for reports</li>
+                    <li>Correlate activity across multiple device timelines</li>
+                </ul>
+
+                <h4>Common Investigation Patterns</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"PowerShell alert"</span>
+                    <span class="ticket-solution">→ Check parent process, decode command, look for network/file activity</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Suspicious file created"</span>
+                    <span class="ticket-solution">→ Find creating process, check if executed, look for persistence</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Unusual network connection"</span>
+                    <span class="ticket-solution">→ Identify process, check reputation of destination, look for patterns</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Event types</strong>: Process, Network, File, Registry, Logon, Image Load</li>
+                    <li><strong>Investigation approach</strong>: Start at alert, go backward for root cause, forward for impact</li>
+                    <li><strong>Key fields</strong>: Parent process, command line, file path, network destination</li>
+                    <li><strong>Red flags</strong>: Office spawning shells, files in Public/Temp, unusual network destinations</li>
+                    <li><strong>Correlation</strong>: Use timestamps to correlate across multiple devices</li>
+                    <li><strong>Pivot to hunting</strong>: Timeline integrates with Advanced Hunting for deeper analysis</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-3-alert-types.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Alert Types</span>
+                </a>
+                <a href="4-5-live-response.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Live Response</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

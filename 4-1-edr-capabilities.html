@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDR Capabilities | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete overview of MDE's Endpoint Detection and Response (EDR) capabilities. Learn what EDR is, how it works, and the key features that enable threat detection and response.</p>
+            </div>
+
+            <h1>EDR Capabilities Overview</h1>
+
+            <p>EDR (Endpoint Detection and Response) is the core of MDE's threat detection capabilities. It continuously monitors endpoints, detects threats, and enables rapid response.</p>
+
+            <h2>EDR Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE EDR Components</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MDE EDR ARCHITECTURE                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ENDPOINT (SENSE Sensor)                                                │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  DATA COLLECTION                                                 │   │
+│  │  ├── Process creation/termination                               │   │
+│  │  ├── Network connections                                        │   │
+│  │  ├── File operations                                            │   │
+│  │  ├── Registry modifications                                     │   │
+│  │  ├── Logon events                                               │   │
+│  │  ├── Memory operations                                          │   │
+│  │  └── Script execution                                           │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                               │                                         │
+│                               ▼                                         │
+│  CLOUD (Microsoft Security Graph)                                      │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  DETECTION ENGINE                                                │   │
+│  │  ├── Behavioral analytics                                       │   │
+│  │  ├── Machine learning models                                    │   │
+│  │  ├── Threat intelligence correlation                           │   │
+│  │  ├── MITRE ATT&CK mapping                                       │   │
+│  │  └── Custom detection rules                                     │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                               │                                         │
+│                               ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  RESPONSE CAPABILITIES                                          │   │
+│  │  ├── Automated investigation                                    │   │
+│  │  ├── Device isolation                                           │   │
+│  │  ├── File quarantine                                            │   │
+│  │  ├── Live Response                                              │   │
+│  │  └── Remediation actions                                        │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Core EDR Capabilities</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">EDR Feature Summary</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CORE EDR CAPABILITIES:
+
+1. CONTINUOUS MONITORING
+   ├── 24/7 endpoint telemetry collection
+   ├── Real-time data streaming to cloud
+   ├── Historical data retention (180 days)
+   └── Low performance impact on endpoints
+
+2. THREAT DETECTION
+   ├── Behavioral detection (not just signatures)
+   ├── Machine learning models
+   ├── Threat intelligence integration
+   ├── MITRE ATT&CK technique detection
+   ├── Custom detection rules (KQL)
+   └── Cross-endpoint correlation
+
+3. ALERT GENERATION
+   ├── Severity-based alerts
+   ├── Alert correlation into incidents
+   ├── Rich alert context and evidence
+   ├── MITRE ATT&CK mapping
+   └── Recommended actions
+
+4. INVESTIGATION TOOLS
+   ├── Device timeline (visual event log)
+   ├── Advanced hunting (KQL queries)
+   ├── Incident investigation graph
+   ├── File and process analysis
+   └── Cross-device investigation
+
+5. RESPONSE ACTIONS
+   ├── Device isolation
+   ├── File quarantine
+   ├── App execution restriction
+   ├── Antivirus scan
+   ├── Investigation package
+   └── Live Response shell
+
+6. AUTOMATED INVESTIGATION
+   ├── Automatic alert triage
+   ├── Evidence collection
+   ├── Remediation recommendations
+   └── Auto-remediation (configurable)</code></pre>
+                </div>
+            </div>
+
+            <h2>EDR vs Traditional AV</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">EDR Comparison</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EDR vs TRADITIONAL ANTIVIRUS:
+
+┌──────────────────────────────────────────────────────────────────┐
+│ Capability          │ Traditional AV   │ EDR (MDE)              │
+├──────────────────────────────────────────────────────────────────┤
+│ Detection method    │ Signature-based  │ Behavioral + ML + Sig  │
+│ Data collection     │ Limited          │ Comprehensive telemetry│
+│ Historical data     │ Minimal          │ 180 days retention     │
+│ Investigation       │ Basic logs       │ Full timeline + hunting│
+│ Response actions    │ Quarantine only  │ Multiple actions       │
+│ Threat visibility   │ Local only       │ Cross-endpoint         │
+│ Automation          │ None             │ Auto-investigation     │
+│ Zero-day detection  │ Poor             │ Behavioral detection   │
+│ Fileless malware    │ Poor             │ Memory + behavior      │
+│ Post-breach         │ None             │ Full incident response │
+└──────────────────────────────────────────────────────────────────┘
+
+KEY DIFFERENCES:
+├── EDR assumes breach will happen, focuses on detection/response
+├── EDR provides visibility, not just prevention
+├── EDR enables hunting and investigation
+└── EDR correlates activity across the environment</code></pre>
+                </div>
+            </div>
+
+            <h2>Detection Types</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">How EDR Detects Threats</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EDR DETECTION TYPES:
+
+BEHAVIORAL DETECTION:
+├── Detects malicious behavior patterns
+├── Not reliant on known signatures
+├── Catches fileless malware
+├── Examples:
+│   ├── Process injection patterns
+│   ├── Credential dumping behavior
+│   ├── Lateral movement techniques
+│   └── Ransomware encryption behavior
+└── Most effective for zero-day threats
+
+MACHINE LEARNING:
+├── Cloud-based ML models
+├── Trained on millions of samples
+├── Continuously updated
+├── Detects novel malware variants
+└── Low false positive rate
+
+THREAT INTELLIGENCE:
+├── Known malware hashes
+├── C2 IP addresses and domains
+├── Campaign indicators
+├── Threat actor TTPs
+└── Updated in real-time
+
+CUSTOM DETECTIONS:
+├── KQL-based detection rules
+├── Organization-specific threats
+├── Compliance monitoring
+└── Tailored to your environment
+
+CROSS-SIGNAL CORRELATION:
+├── Correlates alerts across devices
+├── Identifies attack chains
+├── Links related activities
+└── Creates incidents from alerts</code></pre>
+                </div>
+            </div>
+
+            <h2>EDR Data Collection</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Telemetry Collected</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DATA COLLECTED BY EDR SENSOR:
+
+PROCESS EVENTS:
+├── Process creation
+├── Command line arguments
+├── Parent-child relationships
+├── Process termination
+├── Token manipulation
+└── Integrity level changes
+
+NETWORK EVENTS:
+├── Outbound connections
+├── Inbound connections
+├── DNS queries
+├── Port listening
+└── Connection metadata
+
+FILE EVENTS:
+├── File creation
+├── File modification
+├── File deletion
+├── File renames
+├── File hashes
+└── Digital signatures
+
+REGISTRY EVENTS:
+├── Key creation
+├── Value modification
+├── Key deletion
+└── Persistence locations monitored
+
+LOGON EVENTS:
+├── Interactive logons
+├── Network logons
+├── Service account logons
+├── Failed logon attempts
+└── Privilege use
+
+ADDITIONAL DATA:
+├── Script content (PowerShell, etc.)
+├── Memory operations
+├── Driver loading
+├── Service creation
+├── Scheduled task changes
+└── WMI activity</code></pre>
+                </div>
+            </div>
+
+            <h2>EDR in Block Mode</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">EDR Block Mode</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EDR IN BLOCK MODE:
+
+PURPOSE:
+├── Additional protection with third-party AV
+├── EDR can block threats even in passive mode
+├── Uses behavioral blocking post-breach
+└── Defense in depth strategy
+
+HOW IT WORKS:
+├── Defender AV in passive mode (third-party is primary)
+├── EDR still monitors and detects
+├── When EDR detects threat, it can block
+└── Provides extra protection layer
+
+ENABLE:
+Path: Settings → Endpoints → Advanced features
+Setting: EDR in block mode = ON
+
+CAPABILITIES:
+├── Block malicious artifacts detected by EDR
+├── Block behavioral detections
+├── Remediate threats automatically
+└── Works alongside third-party AV
+
+USE CASES:
+├── Running third-party AV (Symantec, CrowdStrike, etc.)
+├── Want EDR visibility AND blocking
+├── Defense in depth requirement
+└── Compliance requiring multiple layers</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Key Takeaways</h5>
+                    <ul>
+                        <li><strong>EDR = Detection + Response</strong>: Beyond prevention, enables investigation</li>
+                        <li><strong>Behavioral focus</strong>: Catches what signatures miss</li>
+                        <li><strong>180-day retention</strong>: Historical data for hunting and investigation</li>
+                        <li><strong>Cloud-powered</strong>: ML and threat intel continuously updated</li>
+                        <li><strong>Works with third-party AV</strong>: EDR in block mode adds protection</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>EDR definition</strong>: Continuous monitoring, threat detection, investigation, response</li>
+                    <li><strong>Data retention</strong>: 180 days of telemetry</li>
+                    <li><strong>Detection methods</strong>: Behavioral, ML, threat intel, custom rules</li>
+                    <li><strong>Key difference from AV</strong>: Post-breach visibility and response</li>
+                    <li><strong>EDR block mode</strong>: Works with third-party AV for extra protection</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="3-10-exclusions.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Exclusions</span>
+                </a>
+                <a href="4-2-detection-sources.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Detection Sources</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

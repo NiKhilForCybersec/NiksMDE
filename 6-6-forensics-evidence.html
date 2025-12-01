@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forensics & Evidence | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to digital forensics and evidence collection with MDE. Learn evidence preservation, chain of custody, investigation package analysis, and legal considerations.</p>
+            </div>
+
+            <h1>Forensics & Evidence Collection</h1>
+
+            <p>Proper evidence collection and preservation is critical for incident response, legal proceedings, and root cause analysis. MDE provides multiple methods for collecting forensic evidence from endpoints.</p>
+
+            <h2>Evidence Collection Methods</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Evidence Collection Options</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    EVIDENCE COLLECTION METHODS                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  INVESTIGATION PACKAGE           LIVE RESPONSE                          │
+│  ┌─────────────────────────────┐ ┌─────────────────────────────┐       │
+│  │ • Automated collection      │ │ • Interactive shell         │       │
+│  │ • Pre-defined artifacts     │ │ • Custom file collection    │       │
+│  │ • No user interaction       │ │ • Memory acquisition        │       │
+│  │ • ZIP file download         │ │ • Registry extraction       │       │
+│  │ • 10-30 min collection      │ │ • Real-time analysis        │       │
+│  └─────────────────────────────┘ └─────────────────────────────┘       │
+│                                                                          │
+│  ADVANCED HUNTING DATA           QUARANTINED FILES                      │
+│  ┌─────────────────────────────┐ ┌─────────────────────────────┐       │
+│  │ • Historical event data     │ │ • Malware samples           │       │
+│  │ • Up to 180 days            │ │ • Download for analysis     │       │
+│  │ • Process/network/file      │ │ • Hash verification         │       │
+│  │ • Timeline reconstruction   │ │ • Sandbox submission        │       │
+│  └─────────────────────────────┘ └─────────────────────────────┘       │
+│                                                                          │
+│  TIMELINE DATA                   ALERT EVIDENCE                         │
+│  ┌─────────────────────────────┐ ┌─────────────────────────────┐       │
+│  │ • Visual event timeline     │ │ • Alert-linked entities     │       │
+│  │ • Filter by event type      │ │ • IOCs from detection       │       │
+│  │ • Export capabilities       │ │ • Process trees             │       │
+│  │ • Contextual analysis       │ │ • File/IP/URL evidence      │       │
+│  └─────────────────────────────┘ └─────────────────────────────┘       │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Investigation Package</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Investigation Package Contents</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INVESTIGATION PACKAGE CONTENTS:
+
+AUTORUNS:
+├── File: Autoruns.csv
+├── Contents: All auto-start locations
+├── Registry Run keys
+├── Scheduled tasks
+├── Services
+├── Browser extensions
+└── Use: Identify persistence mechanisms
+
+INSTALLED PROGRAMS:
+├── File: InstalledPrograms.csv
+├── Contents: All installed software
+├── Install dates
+├── Publisher information
+└── Use: Identify suspicious software
+
+NETWORK CONNECTIONS:
+├── File: NetworkConnections.csv
+├── Contents: Active connections
+├── Listening ports
+├── Process-to-connection mapping
+└── Use: Identify C2 connections
+
+PREFETCH FILES:
+├── File: Prefetch/
+├── Contents: .pf files for executed programs
+├── Execution timestamps
+├── Loaded DLLs
+└── Use: Prove program execution
+
+PROCESSES:
+├── File: RunningProcesses.csv
+├── Contents: All running processes
+├── Parent-child relationships
+├── Command lines
+└── Use: Identify malicious processes
+
+SCHEDULED TASKS:
+├── File: ScheduledTasks.csv
+├── Contents: All scheduled tasks
+├── Task actions and triggers
+└── Use: Identify persistence
+
+SECURITY EVENT LOG:
+├── File: SecurityEvents/
+├── Contents: Windows Security log
+├── Authentication events
+├── Process creation (4688)
+└── Use: Timeline reconstruction
+
+SERVICES:
+├── File: Services.csv
+├── Contents: Windows services
+├── Service paths
+├── Startup type
+└── Use: Identify malicious services
+
+SMB SESSIONS:
+├── File: SMBSessions.csv
+├── Contents: Active SMB connections
+├── Connected users
+└── Use: Lateral movement evidence
+
+SYSTEM INFO:
+├── File: SystemInfo.txt
+├── Contents: OS version, patches
+├── Hardware information
+└── Use: System context
+
+TEMP DIRECTORIES:
+├── File: TempDirectories/
+├── Contents: Files from temp folders
+├── User and system temp
+└── Use: Dropped malware artifacts
+
+USERS AND GROUPS:
+├── File: UsersAndGroups.csv
+├── Contents: Local users and groups
+├── Group memberships
+└── Use: Privilege escalation evidence
+
+WMI:
+├── File: WMI/
+├── Contents: WMI repository data
+├── WMI subscriptions
+└── Use: WMI persistence</code></pre>
+                </div>
+            </div>
+
+            <h2>Live Response Evidence</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Live Response Collection Commands</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>LIVE RESPONSE EVIDENCE COLLECTION:
+
+COLLECT SPECIFIC FILES:
+# Download suspicious file
+getfile "C:\Users\victim\AppData\Local\Temp\malware.exe"
+
+# Collect browser history
+getfile "C:\Users\victim\AppData\Local\Google\Chrome\User Data\Default\History"
+
+# Collect registry hive
+getfile "C:\Windows\System32\config\SAM"
+
+COLLECT MEMORY:
+# Full memory dump (requires library upload)
+run memdump.exe -o memory.dmp
+
+# Process-specific memory
+run procdump.exe -ma [PID] process.dmp
+
+COLLECT REGISTRY:
+# Export specific keys
+registry export HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run run_keys.reg
+
+# Query specific value
+registry query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+
+COLLECT EVENT LOGS:
+# Export specific log
+run wevtutil.exe epl Security C:\evidence\security.evtx
+
+# Query recent events
+run wevtutil.exe qe Security /c:100 /rd:true /f:text
+
+COLLECT NETWORK STATE:
+# Current connections
+run netstat.exe -anob > connections.txt
+
+# DNS cache
+run ipconfig.exe /displaydns > dns_cache.txt
+
+# ARP table
+run arp.exe -a > arp_table.txt
+
+COLLECT PROCESS INFO:
+# Process list with details
+run tasklist.exe /v > processes.txt
+
+# Process with command lines
+run wmic.exe process get name,processid,commandline > process_cmdlines.txt
+
+LIVE RESPONSE BEST PRACTICES:
+├── Document every command run
+├── Hash files before and after collection
+├── Minimize changes to system
+├── Collect volatile data first (memory, connections)
+└── Use timestamps in evidence naming</code></pre>
+                </div>
+            </div>
+
+            <h2>Chain of Custody</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Evidence Documentation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CHAIN OF CUSTODY DOCUMENTATION:
+
+EVIDENCE LOG TEMPLATE:
+
+═══════════════════════════════════════════════════════════════
+                    EVIDENCE CHAIN OF CUSTODY
+═══════════════════════════════════════════════════════════════
+
+CASE INFORMATION:
+├── Case ID: INC-2024-001234
+├── Case Name: [Description]
+├── Lead Investigator: [Name]
+└── Date Opened: [Date]
+
+EVIDENCE ITEM:
+├── Evidence ID: EV-001
+├── Description: Investigation package from WKSTN-HR-042
+├── Source Device: WKSTN-HR-042
+├── Collection Method: MDE Investigation Package
+├── Collection Date/Time: 2024-01-15 14:32:00 UTC
+├── Collected By: [Analyst Name]
+├── Original Hash (SHA256): [hash value]
+└── File Size: 45.2 MB
+
+CUSTODY TRANSFERS:
+┌────────────────┬──────────────┬──────────────┬────────────────┐
+│ Date/Time      │ From         │ To           │ Purpose        │
+├────────────────┼──────────────┼──────────────┼────────────────┤
+│ 2024-01-15     │ MDE Portal   │ J. Smith     │ Collection     │
+│ 14:35          │              │              │                │
+├────────────────┼──────────────┼──────────────┼────────────────┤
+│ 2024-01-15     │ J. Smith     │ Evidence     │ Secure storage │
+│ 15:00          │              │ Server       │                │
+├────────────────┼──────────────┼──────────────┼────────────────┤
+│ 2024-01-16     │ Evidence     │ M. Johnson   │ Analysis       │
+│ 09:00          │ Server       │              │                │
+└────────────────┴──────────────┴──────────────┴────────────────┘
+
+HASH VERIFICATION:
+├── Original: [SHA256 at collection]
+├── Current: [SHA256 at each transfer]
+└── Match: Yes/No
+
+STORAGE LOCATION:
+├── Primary: \\evidence-server\cases\INC-2024-001234\
+├── Backup: Azure Blob evidence-archive
+└── Access: Restricted to IR team
+
+═══════════════════════════════════════════════════════════════</code></pre>
+                </div>
+            </div>
+
+            <h2>Timeline Reconstruction</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Forensic Timeline</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Build comprehensive timeline for device</span>
+<span class="keyword">let</span> TargetDevice = <span class="string">"WKSTN-HR-042"</span>;
+<span class="keyword">let</span> StartTime = <span class="function">datetime</span>(<span class="number">2024-01-15 08:00:00</span>);
+<span class="keyword">let</span> EndTime = <span class="function">datetime</span>(<span class="number">2024-01-15 18:00:00</span>);
+<span class="comment">// Process events</span>
+<span class="keyword">let</span> ProcessEvents = 
+    <span class="variable">DeviceProcessEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">==</span> TargetDevice
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">between</span> (StartTime .. EndTime)
+    <span class="operator">|</span> <span class="keyword">extend</span> EventType = <span class="string">"Process"</span>
+    <span class="operator">|</span> <span class="keyword">project</span> Timestamp, EventType, 
+             Details = <span class="function">strcat</span>(ActionType, <span class="string">": "</span>, FileName);
+<span class="comment">// File events</span>
+<span class="keyword">let</span> FileEvents = 
+    <span class="variable">DeviceFileEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">==</span> TargetDevice
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">between</span> (StartTime .. EndTime)
+    <span class="operator">|</span> <span class="keyword">extend</span> EventType = <span class="string">"File"</span>
+    <span class="operator">|</span> <span class="keyword">project</span> Timestamp, EventType,
+             Details = <span class="function">strcat</span>(ActionType, <span class="string">": "</span>, FileName);
+<span class="comment">// Network events</span>
+<span class="keyword">let</span> NetworkEvents = 
+    <span class="variable">DeviceNetworkEvents</span>
+    <span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">==</span> TargetDevice
+    <span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">between</span> (StartTime .. EndTime)
+    <span class="operator">|</span> <span class="keyword">extend</span> EventType = <span class="string">"Network"</span>
+    <span class="operator">|</span> <span class="keyword">project</span> Timestamp, EventType,
+             Details = <span class="function">strcat</span>(ActionType, <span class="string">": "</span>, RemoteIP);
+<span class="comment">// Combine all events</span>
+<span class="keyword">union</span> ProcessEvents, FileEvents, NetworkEvents
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">asc</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Legal Considerations</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Legal & Compliance</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>LEGAL CONSIDERATIONS FOR EVIDENCE:
+
+ADMISSIBILITY REQUIREMENTS:
+├── Authenticity: Prove evidence is genuine
+├── Integrity: Show no tampering occurred
+├── Chain of custody: Document all handling
+├── Relevance: Evidence relates to case
+└── Legality: Collected within legal bounds
+
+BEST PRACTICES:
+├── Hash all evidence immediately upon collection
+├── Use write-blockers for disk imaging
+├── Document every action taken
+├── Maintain detailed timestamps (UTC)
+├── Store evidence securely with access controls
+├── Create forensic copies, preserve originals
+└── Follow organizational IR procedures
+
+PRIVACY CONSIDERATIONS:
+├── Limit collection to incident-related data
+├── Follow data protection regulations (GDPR, CCPA)
+├── Document justification for collection
+├── Minimize personal data exposure
+├── Coordinate with Legal/HR as needed
+└── Consider employee privacy rights
+
+REGULATORY REQUIREMENTS:
+├── GDPR: 72-hour breach notification
+├── HIPAA: PHI breach reporting
+├── PCI-DSS: Card data incident procedures
+├── SOX: Financial data preservation
+└── Industry-specific requirements
+
+DOCUMENTATION TO MAINTAIN:
+├── Incident timeline
+├── Evidence inventory
+├── Chain of custody logs
+├── Analysis notes
+├── Tool versions used
+├── Analyst qualifications
+└── Final report</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Critical Reminders</h5>
+                    <ul>
+                        <li><strong>Preserve first</strong>: Collect evidence before remediation</li>
+                        <li><strong>Hash everything</strong>: Calculate and document SHA256 hashes</li>
+                        <li><strong>Document actions</strong>: Every command, every click, every transfer</li>
+                        <li><strong>Engage Legal</strong>: For cases that may involve litigation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Investigation package</strong>: Autoruns, prefetch, network connections, event logs</li>
+                    <li><strong>Live Response</strong>: getfile, registry, run commands for custom collection</li>
+                    <li><strong>Chain of custody</strong>: Document who, when, what, where for all evidence</li>
+                    <li><strong>Order of volatility</strong>: Memory first, then live data, then disk</li>
+                    <li><strong>Hash verification</strong>: SHA256 at collection and each transfer</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="6-5-ir-playbooks.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">IR Playbooks</span>
+                </a>
+                <a href="6-7-containment-strategies.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Containment Strategies</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

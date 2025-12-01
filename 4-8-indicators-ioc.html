@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indicators (IOC) Management | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to managing Indicators of Compromise (IOC) in MDE. Learn to create, manage, and automate custom indicators for blocking and alerting on known threats.</p>
+            </div>
+
+            <h1>Indicators (IOC) Management</h1>
+
+            <p>Indicators of Compromise (IOCs) allow you to define custom file hashes, IP addresses, URLs, domains, and certificates that MDE should block or alert on when detected.</p>
+
+            <h2>Indicator Types</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Indicator Types</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         INDICATOR TYPES                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  FILE HASH                        IP ADDRESS                            │
+│  ┌─────────────────────────────┐ ┌─────────────────────────────┐       │
+│  │ SHA-256 (recommended)       │ │ IPv4 and IPv6               │       │
+│  │ SHA-1                       │ │ Block outbound connections  │       │
+│  │ MD5 (legacy)                │ │ Network Protection required │       │
+│  │                             │ │                             │       │
+│  │ Actions:                    │ │ Actions:                    │       │
+│  │ • Block & Quarantine        │ │ • Block                     │       │
+│  │ • Alert Only                │ │ • Warn                      │       │
+│  │ • Allow                     │ │ • Audit                     │       │
+│  └─────────────────────────────┘ └─────────────────────────────┘       │
+│                                                                          │
+│  URL                              DOMAIN                                │
+│  ┌─────────────────────────────┐ ┌─────────────────────────────┐       │
+│  │ Full URL paths              │ │ Entire domain + subdomains  │       │
+│  │ With or without protocol    │ │ Block at DNS level          │       │
+│  │ Network Protection required │ │ Network Protection required │       │
+│  │                             │ │                             │       │
+│  │ Actions:                    │ │ Actions:                    │       │
+│  │ • Block                     │ │ • Block                     │       │
+│  │ • Warn                      │ │ • Warn                      │       │
+│  │ • Audit                     │ │ • Audit                     │       │
+│  └─────────────────────────────┘ └─────────────────────────────┘       │
+│                                                                          │
+│  CERTIFICATE                                                            │
+│  ┌─────────────────────────────┐                                        │
+│  │ Block by signing cert       │                                        │
+│  │ SHA-1 thumbprint            │                                        │
+│  │ Issuer + Serial number      │                                        │
+│  │                             │                                        │
+│  │ Actions:                    │                                        │
+│  │ • Block & Quarantine        │                                        │
+│  │ • Warn                      │                                        │
+│  │ • Audit                     │                                        │
+│  └─────────────────────────────┘                                        │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Indicator Actions</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Behavior</th>
+                            <th>User Experience</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Block</strong></td>
+                            <td>Prevents execution/connection</td>
+                            <td>Blocked notification</td>
+                            <td>Known malware, C2 servers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Warn</strong></td>
+                            <td>User can bypass after warning</td>
+                            <td>Warning popup</td>
+                            <td>Suspicious but not confirmed</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Audit</strong></td>
+                            <td>Log only, no blocking</td>
+                            <td>No user notification</td>
+                            <td>Monitoring, testing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Allow</strong></td>
+                            <td>Bypass Defender detection</td>
+                            <td>File allowed</td>
+                            <td>False positive override</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Creating Indicators</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal - Create Indicator</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PORTAL PATH:
+Settings → Endpoints → Indicators → Add indicator
+
+FILE HASH INDICATOR:
+1. Select "File hash"
+2. Enter hash value (SHA-256 recommended)
+3. Set action: Block and remediate / Alert only / Allow
+4. Set severity: High / Medium / Low / Informational
+5. Add title and description
+6. Set scope (all devices or specific groups)
+7. Optional: Set expiration date
+8. Click "Save"
+
+IP/DOMAIN/URL INDICATOR:
+1. Select indicator type
+2. Enter value (IP, domain, or full URL)
+3. Set action: Block / Warn / Audit
+4. Add title and description
+5. Set scope and expiration
+6. Click "Save"
+
+CERTIFICATE INDICATOR:
+1. Select "Certificate"
+2. Enter certificate thumbprint (SHA-1)
+3. Or enter: Issuer CN + Serial number
+4. Set action: Block and remediate / Warn / Audit
+5. Add title and description
+6. Click "Save"
+
+REQUIRED FIELDS:
+├── Indicator value (hash/IP/domain/URL/cert)
+├── Action (Block/Warn/Audit/Allow)
+├── Title (descriptive name)
+└── Description (why this indicator exists)</code></pre>
+                </div>
+            </div>
+
+            <h2>API-Based Indicator Management</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - API Examples</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Get access token</span>
+<span class="variable">$tenantId</span> = <span class="string">"your-tenant-id"</span>
+<span class="variable">$appId</span> = <span class="string">"your-app-id"</span>
+<span class="variable">$appSecret</span> = <span class="string">"your-app-secret"</span>
+
+<span class="variable">$body</span> = @{
+    grant_type    = <span class="string">"client_credentials"</span>
+    client_id     = <span class="variable">$appId</span>
+    client_secret = <span class="variable">$appSecret</span>
+    resource      = <span class="string">"https://api.securitycenter.microsoft.com"</span>
+}
+
+<span class="variable">$token</span> = (<span class="function">Invoke-RestMethod</span> <span class="variable">-Uri</span> <span class="string">"https://login.microsoftonline.com/$tenantId/oauth2/token"</span> `
+    <span class="variable">-Method</span> POST <span class="variable">-Body</span> <span class="variable">$body</span>).access_token
+
+<span class="variable">$headers</span> = @{
+    Authorization = <span class="string">"Bearer $token"</span>
+    <span class="string">"Content-Type"</span> = <span class="string">"application/json"</span>
+}
+
+<span class="comment"># Create file hash indicator</span>
+<span class="variable">$indicator</span> = @{
+    indicatorValue = <span class="string">"SHA256HASHHERE"</span>
+    indicatorType  = <span class="string">"FileSha256"</span>
+    action         = <span class="string">"AlertAndBlock"</span>
+    title          = <span class="string">"Malware Sample - Emotet"</span>
+    description    = <span class="string">"Blocked based on threat intel"</span>
+    severity       = <span class="string">"High"</span>
+    generateAlert  = <span class="variable">$true</span>
+}
+
+<span class="function">Invoke-RestMethod</span> <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/indicators"</span> `
+    <span class="variable">-Method</span> POST <span class="variable">-Headers</span> <span class="variable">$headers</span> <span class="variable">-Body</span> (<span class="variable">$indicator</span> | <span class="function">ConvertTo-Json</span>)
+
+<span class="comment"># Get all indicators</span>
+<span class="variable">$indicators</span> = <span class="function">Invoke-RestMethod</span> <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/indicators"</span> `
+    <span class="variable">-Method</span> GET <span class="variable">-Headers</span> <span class="variable">$headers</span>
+
+<span class="comment"># Delete indicator</span>
+<span class="variable">$indicatorId</span> = <span class="string">"indicator-id-here"</span>
+<span class="function">Invoke-RestMethod</span> <span class="variable">-Uri</span> <span class="string">"https://api.securitycenter.microsoft.com/api/indicators/$indicatorId"</span> `
+    <span class="variable">-Method</span> DELETE <span class="variable">-Headers</span> <span class="variable">$headers</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Bulk Import Indicators</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">CSV Format for Bulk Import</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CSV FORMAT:
+IndicatorType,IndicatorValue,Action,Title,Description,Severity,ExpirationTime
+
+EXAMPLE CSV:
+FileSha256,abc123...def,AlertAndBlock,Malware1,Emotet variant,High,
+FileSha256,xyz789...ghi,AlertAndBlock,Malware2,Trickbot,High,
+IpAddress,192.0.2.1,Block,C2 Server,Known C2,Medium,2024-12-31
+DomainName,evil.com,Block,Phishing,Known phishing domain,High,
+Url,http://bad.com/malware.exe,Block,Payload URL,Malware distribution,High,
+
+INDICATOR TYPES:
+├── FileSha256
+├── FileSha1
+├── FileMd5
+├── IpAddress
+├── DomainName
+├── Url
+└── CertificateThumbprint
+
+ACTIONS:
+├── AlertAndBlock (file hashes)
+├── Alert (file hashes)
+├── Allowed (file hashes - allowlist)
+├── Block (network indicators)
+├── Warn (network indicators)
+└── Audit (network indicators)
+
+IMPORT VIA PORTAL:
+Settings → Endpoints → Indicators → Import → Select CSV file</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL - Monitor Indicator Hits</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Indicator Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// File indicator hits</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"CustomBlockedFile"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, FolderPath, SHA256
+
+<span class="comment">// Network indicator blocks</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">has</span> <span class="string">"Block"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteUrl, RemoteIP, ActionType
+
+<span class="comment">// Most blocked indicators</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">startswith</span> <span class="string">"Custom"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Hits = <span class="function">count</span>() <span class="keyword">by</span> SHA256, FileName
+<span class="operator">|</span> <span class="keyword">order by</span> Hits <span class="keyword">desc</span>
+<span class="operator">|</span> <span class="keyword">take</span> <span class="number">20</span></code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Best Practices</h5>
+                    <ul>
+                        <li><strong>Use SHA-256</strong>: More collision-resistant than MD5/SHA-1</li>
+                        <li><strong>Set expiration dates</strong>: IOCs become stale; review regularly</li>
+                        <li><strong>Document thoroughly</strong>: Include source, threat name, context</li>
+                        <li><strong>Test in Audit mode first</strong>: Avoid blocking legitimate activity</li>
+                        <li><strong>Automate via API</strong>: Integrate with threat intel platforms</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Indicator types</strong>: File hash, IP, domain, URL, certificate</li>
+                    <li><strong>Actions</strong>: Block, Warn, Audit, Allow</li>
+                    <li><strong>Network indicators require</strong>: Network Protection enabled</li>
+                    <li><strong>Prefer SHA-256</strong>: Most secure hash algorithm</li>
+                    <li><strong>API automation</strong>: Essential for threat intel integration</li>
+                    <li><strong>Expiration</strong>: Set dates to prevent stale indicators</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="4-7-custom-detections.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Custom Detections</span>
+                </a>
+                <a href="4-9-threat-intelligence.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Threat Intelligence</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

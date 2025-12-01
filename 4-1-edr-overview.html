@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDR Overview | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Endpoint Detection and Response (EDR) capabilities in MDE. Learn how EDR works, detection types, telemetry collection, behavioral analysis, and how to leverage EDR for threat hunting and investigation.</p>
+            </div>
+
+            <h1>EDR Overview</h1>
+
+            <p>Endpoint Detection and Response (EDR) is the core detection engine of MDE, providing continuous monitoring, behavioral analysis, and detailed telemetry for threat detection and investigation. Unlike signature-based antivirus, EDR focuses on detecting malicious behavior patterns.</p>
+
+            <h2>EDR vs Traditional Antivirus</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Traditional AV (EPP)</th>
+                            <th>EDR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Detection Method</strong></td>
+                            <td>Signatures, heuristics</td>
+                            <td>Behavioral analysis, ML, threat intel</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Focus</strong></td>
+                            <td>Known malware</td>
+                            <td>Malicious behavior, TTPs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Visibility</strong></td>
+                            <td>File-level</td>
+                            <td>Process, network, registry, file, memory</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Investigation</strong></td>
+                            <td>Limited (detection logs)</td>
+                            <td>Full timeline, process tree, hunting</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Response</strong></td>
+                            <td>Quarantine/block file</td>
+                            <td>Isolate, Live Response, automated remediation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Threat Coverage</strong></td>
+                            <td>Known threats</td>
+                            <td>Known + unknown + fileless + living-off-the-land</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>EDR Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">EDR Data Flow</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           ENDPOINT                                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  TELEMETRY SOURCES                                                       │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│  │  Process    │ │  Network    │ │   File      │ │  Registry   │       │
+│  │  Events     │ │  Events     │ │   Events    │ │   Events    │       │
+│  └──────┬──────┘ └──────┬──────┘ └──────┬──────┘ └──────┬──────┘       │
+│         │               │               │               │               │
+│  ┌──────┴───────────────┴───────────────┴───────────────┴──────┐       │
+│  │              MDE SENSOR (MsSense.exe)                        │       │
+│  │  • Collects telemetry                                        │       │
+│  │  • Local behavioral analysis                                 │       │
+│  │  • Compresses and encrypts data                             │       │
+│  └───────────────────────────┬──────────────────────────────────┘       │
+│                              │                                          │
+└──────────────────────────────┼──────────────────────────────────────────┘
+                               │ HTTPS (TLS 1.2+)
+                               │ ~10-20 MB/day per device
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MICROSOFT CLOUD                                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  DETECTION ENGINES                                               │   │
+│  │  ┌───────────────┐ ┌───────────────┐ ┌───────────────┐          │   │
+│  │  │  Behavioral   │ │   Machine     │ │    Threat     │          │   │
+│  │  │  Rules        │ │   Learning    │ │    Intel      │          │   │
+│  │  └───────────────┘ └───────────────┘ └───────────────┘          │   │
+│  │  ┌───────────────┐ ┌───────────────┐ ┌───────────────┐          │   │
+│  │  │   MITRE       │ │   Custom      │ │    Cross-     │          │   │
+│  │  │   ATT&CK      │ │   Detections  │ │    Product    │          │   │
+│  │  └───────────────┘ └───────────────┘ └───────────────┘          │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              │                                          │
+│                              ▼                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  OUTPUTS                                                         │   │
+│  │  • Alerts          • Incidents        • Hunting Data            │   │
+│  │  • Recommendations • Threat Analytics • Reports                 │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Telemetry Collection</h2>
+
+            <h3>What EDR Collects</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">EDR Telemetry Categories</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PROCESS TELEMETRY
+├── Process creation (with full command line)
+├── Process termination
+├── Parent-child relationships
+├── User context (SID, account name)
+├── Integrity level
+├── Token information
+└── Image file information (path, hash, signer)
+
+NETWORK TELEMETRY
+├── TCP/UDP connections (source, destination, port)
+├── DNS queries and responses
+├── HTTP/HTTPS metadata (not content)
+├── Network listen events
+├── Connection direction (inbound/outbound)
+└── Protocol information
+
+FILE TELEMETRY
+├── File create/modify/delete/rename
+├── File path and name
+├── SHA1/SHA256 hashes
+├── File size
+├── File attributes
+└── NTFS alternate data streams
+
+REGISTRY TELEMETRY
+├── Key create/delete
+├── Value set/modify/delete
+├── Registry path
+├── Value name and data
+└── Focus on security-relevant keys (Run, Services, etc.)
+
+OTHER TELEMETRY
+├── Scheduled tasks created/modified
+├── WMI events
+├── Service installations
+├── Driver loads
+├── DLL loads (for specific processes)
+├── Memory injections
+├── Logon events
+└── PowerShell/script execution</code></pre>
+                </div>
+            </div>
+
+            <h3>Data Tables in Advanced Hunting</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Table Name</th>
+                            <th>Contains</th>
+                            <th>Common Use Cases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>DeviceProcessEvents</code></td>
+                            <td>Process creation/termination</td>
+                            <td>Execution analysis, process trees</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceNetworkEvents</code></td>
+                            <td>Network connections</td>
+                            <td>C2 detection, data exfiltration</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceFileEvents</code></td>
+                            <td>File operations</td>
+                            <td>Payload drops, data staging</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceRegistryEvents</code></td>
+                            <td>Registry modifications</td>
+                            <td>Persistence detection</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceLogonEvents</code></td>
+                            <td>Authentication events</td>
+                            <td>Lateral movement, credential use</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceImageLoadEvents</code></td>
+                            <td>DLL loads</td>
+                            <td>DLL injection, hijacking</td>
+                        </tr>
+                        <tr>
+                            <td><code>DeviceEvents</code></td>
+                            <td>Miscellaneous events</td>
+                            <td>ASR, tamper protection, AMSI</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Detection Types</h2>
+
+            <h3>Built-in Detection Categories</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">MDE Detection Categories</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DETECTION CATEGORIES (Aligned with MITRE ATT&CK):
+
+INITIAL ACCESS
+├── Spearphishing attachment/link opened
+├── Exploit attempt detected
+└── Drive-by download attempt
+
+EXECUTION
+├── Suspicious PowerShell command
+├── Malicious script execution
+├── Unusual process launch
+├── Office macro execution
+└── WMI abuse
+
+PERSISTENCE
+├── Registry Run key modification
+├── Scheduled task created
+├── Service installation
+├── Startup folder modification
+└── Boot configuration change
+
+PRIVILEGE ESCALATION
+├── Token manipulation
+├── UAC bypass attempt
+├── Kernel exploit attempt
+└── Access token theft
+
+DEFENSE EVASION
+├── Process injection detected
+├── Timestomping detected
+├── File signature removed
+├── AMSI bypass attempt
+└── Logging disabled
+
+CREDENTIAL ACCESS
+├── Credential dumping (LSASS access)
+├── Keylogger activity
+├── Credential file access
+└── Kerberos attack (AS-REP roasting)
+
+DISCOVERY
+├── Network discovery activity
+├── System information enumeration
+├── Account enumeration
+└── Domain trust discovery
+
+LATERAL MOVEMENT
+├── Remote service abuse
+├── Pass-the-hash/ticket
+├── Remote execution (PsExec, WMI)
+└── RDP brute force
+
+COLLECTION
+├── Clipboard capture
+├── Screen capture
+├── Email collection
+└── Data from local system
+
+COMMAND AND CONTROL
+├── Connection to known C2
+├── Unusual DNS patterns
+├── Beaconing behavior
+└── Encrypted channel detected
+
+EXFILTRATION
+├── Large data transfer
+├── Data staged for exfiltration
+├── Upload to cloud storage
+└── DNS tunneling</code></pre>
+                </div>
+            </div>
+
+            <h2>Behavioral Detection Examples</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">How Behavioral Detection Works</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXAMPLE 1: RANSOMWARE DETECTION
+
+Observed Behavior:
+1. Process enumerates files recursively
+2. Process reads files in bulk
+3. Process writes files with entropy changes
+4. Process deletes shadow copies (vssadmin delete shadows)
+5. Process modifies many file extensions
+
+Detection: "Ransomware behavior detected"
+Action: Alert + Block + Isolate (if configured)
+
+---
+
+EXAMPLE 2: CREDENTIAL THEFT DETECTION
+
+Observed Behavior:
+1. Non-system process opens handle to lsass.exe
+2. Handle has PROCESS_VM_READ permission
+3. Process is not a known security tool
+4. Memory read operation detected
+
+Detection: "Suspicious LSASS access"
+Mapped to: MITRE T1003.001
+
+---
+
+EXAMPLE 3: FILELESS ATTACK DETECTION
+
+Observed Behavior:
+1. PowerShell spawned by Office application
+2. PowerShell uses -EncodedCommand parameter
+3. Decoded command contains "IEX" or "Invoke-Expression"
+4. Network connection from PowerShell to external IP
+5. No file written to disk
+
+Detection: "Suspicious fileless attack pattern"
+Mapped to: Multiple MITRE techniques
+
+---
+
+EXAMPLE 4: LATERAL MOVEMENT DETECTION
+
+Observed Behavior:
+1. New logon from unusual source
+2. Source device has previous alerts
+3. Logon followed by service creation
+4. Service executes command via cmd.exe
+
+Detection: "Lateral movement using service creation"
+Mapped to: MITRE T1021, T1543</code></pre>
+                </div>
+            </div>
+
+            <h2>EDR in Block Mode</h2>
+
+            <p>EDR in Block Mode allows the EDR engine to block malicious artifacts even when a third-party antivirus is the primary AV solution:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">EDR Block Mode Configuration</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EDR BLOCK MODE SCENARIOS:
+
+Scenario 1: MDE as Primary AV
+├── Real-time protection: Active
+├── EDR: Active
+└── EDR Block Mode: Not applicable (full protection active)
+
+Scenario 2: Third-Party AV with MDE
+├── Third-party AV: Primary protection
+├── Defender AV: Passive mode
+├── EDR: Active (detection)
+├── EDR Block Mode: Can be enabled
+└── Result: EDR can block even with passive AV
+
+ENABLE EDR BLOCK MODE:
+Microsoft 365 Defender → Settings → Endpoints → 
+Advanced features → "EDR in block mode" → On
+
+WHAT EDR BLOCK MODE CAN DO:
+✓ Block malicious files post-execution
+✓ Remediate detected threats
+✓ Block based on behavioral detection
+✓ Work alongside third-party AV
+
+REQUIREMENTS:
+• Defender AV must be in passive mode
+• Cloud protection must be enabled
+• Platform version 4.18.1906.3 or later</code></pre>
+                </div>
+            </div>
+
+            <h2>Verifying EDR Functionality</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Check EDR Status</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check Sense service (EDR sensor)</span>
+<span class="function">Get-Service</span> Sense <span class="operator">|</span> <span class="function">Select-Object</span> Name, Status, StartType
+
+<span class="comment"># Check MDE onboarding status</span>
+<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span>
+<span class="comment"># OnboardingState = 1 means onboarded</span>
+
+<span class="comment"># Check sensor version</span>
+(<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection"</span>).InstallLocation
+
+<span class="comment"># Verify telemetry is being sent</span>
+<span class="comment"># Check for recent connections to MDE cloud</span>
+<span class="function">Get-NetTCPConnection</span> <span class="operator">|</span> 
+    <span class="function">Where-Object</span> { <span class="variable">$_</span>.RemoteAddress <span class="operator">-like</span> <span class="string">"*.microsoft.com"</span> } <span class="operator">|</span>
+    <span class="function">Where-Object</span> { <span class="variable">$_</span>.OwningProcess <span class="operator">-eq</span> (<span class="function">Get-Process</span> MsSense).Id }
+
+<span class="comment"># Test EDR detection capability (safe test file)</span>
+<span class="comment"># Download EICAR test file - will trigger detection</span>
+<span class="function">Invoke-WebRequest</span> <span class="string">"https://www.eicar.org/download/eicar.com"</span> <span class="variable">-OutFile</span> <span class="string">"$env:TEMP\eicar.com"</span>
+
+<span class="comment"># Run MDE Client Analyzer for full diagnostics</span>
+<span class="comment"># Download from: https://aka.ms/MDEClientAnalyzer</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Data Retention</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data Type</th>
+                            <th>Retention Period</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Raw telemetry (Advanced Hunting)</td>
+                            <td>30 days</td>
+                            <td>Default, can extend to 180 days</td>
+                        </tr>
+                        <tr>
+                            <td>Alerts</td>
+                            <td>180 days</td>
+                            <td>Alert metadata and evidence</td>
+                        </tr>
+                        <tr>
+                            <td>Incidents</td>
+                            <td>180 days</td>
+                            <td>Includes linked alerts</td>
+                        </tr>
+                        <tr>
+                            <td>Device information</td>
+                            <td>180 days after last seen</td>
+                            <td>Then device record removed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>KQL Queries for EDR Analysis</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - EDR Investigation Queries</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Process creation timeline for specific device</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="operator">=~</span> <span class="string">"DESKTOP-ABC123"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, FileName, ProcessCommandLine, 
+         InitiatingProcessFileName, AccountName
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">asc</span>
+
+<span class="comment">// Full process tree from suspicious process</span>
+<span class="keyword">let</span> suspiciousPID <span class="operator">=</span> <span class="number">1234</span>;
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ProcessId <span class="operator">==</span> suspiciousPID <span class="keyword">or</span> InitiatingProcessId <span class="operator">==</span> suspiciousPID
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, FileName, ProcessId, InitiatingProcessFileName, 
+         InitiatingProcessId, ProcessCommandLine
+
+<span class="comment">// Network connections from specific process</span>
+<span class="variable">DeviceNetworkEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> RemoteIPType <span class="operator">==</span> <span class="string">"Public"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteIP, RemotePort, 
+         InitiatingProcessCommandLine
+
+<span class="comment">// Files created in suspicious locations</span>
+<span class="variable">DeviceFileEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"FileCreated"</span>
+<span class="operator">|</span> <span class="keyword">where</span> FolderPath <span class="function">has_any</span> (<span class="string">"\\Users\\Public"</span>, <span class="string">"\\ProgramData"</span>, <span class="string">"\\Temp"</span>)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="function">endswith</span> <span class="string">".exe"</span> <span class="keyword">or</span> FileName <span class="function">endswith</span> <span class="string">".dll"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, FolderPath, SHA256
+
+<span class="comment">// Registry persistence mechanisms</span>
+<span class="variable">DeviceRegistryEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">24</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"RegistryValueSet"</span>
+<span class="operator">|</span> <span class="keyword">where</span> RegistryKey <span class="function">has_any</span> (<span class="string">"\\Run"</span>, <span class="string">"\\RunOnce"</span>, <span class="string">"\\Services"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RegistryKey, RegistryValueName, 
+         RegistryValueData, InitiatingProcessFileName</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>EDR Operations</h4>
+                <ul>
+                    <li>Review EDR alerts and investigate behavioral detections</li>
+                    <li>Use Advanced Hunting to investigate incidents</li>
+                    <li>Analyze process trees and execution chains</li>
+                    <li>Correlate network activity with process behavior</li>
+                    <li>Create custom detection rules for organization-specific threats</li>
+                    <li>Monitor sensor health and telemetry flow</li>
+                </ul>
+
+                <h4>Investigation Workflow</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"EDR alert for suspicious behavior"</span>
+                    <span class="ticket-solution">→ Check device timeline, examine process tree, review command lines, check network connections</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Device not sending telemetry"</span>
+                    <span class="ticket-solution">→ Check Sense service, verify onboarding, test connectivity to MDE cloud</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Need historical data for investigation"</span>
+                    <span class="ticket-solution">→ Use Advanced Hunting (30-180 days retention), export results if needed</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>EDR vs AV</strong>: EDR detects behavior, AV detects signatures. EDR provides investigation capability.</li>
+                    <li><strong>Telemetry</strong>: Process, network, file, registry, logon events - all correlated</li>
+                    <li><strong>Sensor</strong>: MsSense.exe collects and sends telemetry to cloud (~10-20 MB/day)</li>
+                    <li><strong>Data tables</strong>: DeviceProcessEvents, DeviceNetworkEvents, DeviceFileEvents, etc.</li>
+                    <li><strong>Retention</strong>: 30 days default for hunting, 180 days for alerts</li>
+                    <li><strong>EDR Block Mode</strong>: Allows blocking even with third-party AV in passive mode</li>
+                    <li><strong>MITRE mapping</strong>: Detections mapped to ATT&CK techniques</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="3-10-web-protection.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Web Protection</span>
+                </a>
+                <a href="4-2-detection-sources.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Detection Sources</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

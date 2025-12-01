@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Response Actions | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo"><div class="logo-icon">MDE</div><div class="logo-text"><span>MDE</span> Ultimate Guide</div></a>
+        </div>
+        <div class="search-container"><button class="search-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg><span>Search...</span></button></div>
+        <div class="header-right"><a href="12-2-interview-questions.html" class="header-link">Interview Prep</a></div>
+    </header>
+    <div class="sidebar-overlay"></div><aside class="sidebar"></aside>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box"><h4>🎯 What This Page Covers</h4><p>Complete guide to file-based response actions. Learn to quarantine files, create indicators, and perform deep analysis.</p></div>
+            <h1>File Response Actions</h1>
+            <p>File actions enable containment and analysis of malicious files during incident response and threat hunting.</p>
+            
+            <h2>Available File Actions</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">File Action Overview</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>FILE RESPONSE ACTIONS:
+
+STOP AND QUARANTINE FILE:
+├── What it does:
+│   ├── Terminates process if file is running
+│   ├── Quarantines file on the device
+│   ├── Prevents future execution
+│   └── Creates backup in quarantine folder
+├── Scope: Single device
+├── Reversible: Yes (restore from quarantine)
+├── Time: Immediate (when device online)
+├── Use case: Confirmed malicious file on specific device
+└── Permissions: Security Operator or higher
+
+ADD INDICATOR (BLOCK FILE):
+├── What it does:
+│   ├── Blocks file by hash organization-wide
+│   ├── Prevents execution on all devices
+│   ├── Can alert, block, or allow
+│   └── Custom response actions possible
+├── Scope: All devices in organization
+├── Propagation: ~15 minutes
+├── Reversible: Yes (remove indicator)
+├── Use case: Block malware across environment
+└── Hash types: SHA256 (preferred), SHA1, MD5
+
+DOWNLOAD FILE (Live Response):
+├── What it does:
+│   ├── Downloads copy of file from device
+│   ├── For offline analysis
+│   └── Creates password-protected ZIP
+├── Command: getfile "C:\path\to\file"
+├── Password: "infected" (standard convention)
+├── Use case: Forensic analysis, sandbox submission
+└── Permissions: Live Response enabled
+
+DEEP ANALYSIS:
+├── What it does:
+│   ├── Submits file to Microsoft cloud sandbox
+│   ├── Executes in isolated environment
+│   ├── Records all behavior
+│   └── Returns detailed analysis report
+├── Time: Several minutes to complete
+├── Output: Behavioral report with IOCs
+├── Use case: Analyze unknown suspicious files
+└── Limitations: Some files may not detonate</code></pre></div></div>
+
+            <h2>Stop and Quarantine</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Quarantine Process</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>STOP AND QUARANTINE WORKFLOW:
+
+FROM FILE PAGE:
+1. Navigate to file (via alert, timeline, or search)
+2. Click "Stop and Quarantine File"
+3. Add comment explaining reason
+4. Confirm action
+5. Monitor in Action Center
+
+FROM ALERT:
+1. Open alert details
+2. Find malicious file in evidence
+3. Click file → Actions → Stop and Quarantine
+4. Confirm with comment
+
+WHAT HAPPENS:
+├── Process terminated (if running)
+├── File moved to: C:\ProgramData\Microsoft\Windows Defender\Quarantine
+├── File encrypted in quarantine
+├── Event logged
+├── Alert updated with action
+└── Action visible in Action Center
+
+RESTORE FROM QUARANTINE:
+├── Windows Security → Virus & threat protection
+├── Protection history
+├── Find quarantined item
+├── Click Restore (if false positive)
+└── Or via PowerShell: Restore-MpPreference
+
+POWERSHELL - VIEW QUARANTINE:
+Get-MpThreatDetection | Where-Object {$_.ActionSuccess -eq $true}
+Get-MpThreat | Select-Object ThreatName, IsActive, DidThreatExecute</code></pre></div></div>
+
+            <h2>File Indicators</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Creating File Indicators</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>FILE INDICATOR CREATION:
+
+PORTAL METHOD:
+Settings → Endpoints → Indicators → File hashes
+
+Steps:
+1. Click "+ Add indicator"
+2. Enter file hash:
+   ├── SHA256 (64 characters) - PREFERRED
+   ├── SHA1 (40 characters)
+   └── MD5 (32 characters)
+3. Select action:
+   ├── Allow: Whitelist the file
+   ├── Audit: Log only, no block
+   ├── Warn: User warning, can proceed
+   └── Block and remediate: Full block
+4. Configure response:
+   ├── Generate alert: Yes/No
+   ├── Alert severity: Low/Medium/High
+   └── Alert category: Select appropriate
+5. Set metadata:
+   ├── Title: Descriptive name
+   ├── Description: Why blocked, ticket number
+   └── Expiration: Optional date
+6. Choose scope:
+   ├── All devices
+   └── Specific device groups
+7. Save
+
+API METHOD:
+POST https://api.securitycenter.microsoft.com/api/indicators
+{
+    "indicatorValue": "A1B2C3D4E5F6...", 
+    "indicatorType": "FileSha256",
+    "action": "AlertAndBlock",
+    "title": "Ransomware - LockBit variant",
+    "description": "Blocked per INC-12345",
+    "severity": "High",
+    "recommendedActions": "Isolate affected device",
+    "generateAlert": true
+}
+
+BEST PRACTICES:
+├── Always use SHA256 (collision-resistant)
+├── Document incident number in description
+├── Set expiration for temporary blocks
+├── Use device groups for targeted blocking
+├── Review and clean up indicators quarterly</code></pre></div></div>
+
+            <h2>Deep Analysis</h2>
+            <div class="code-block"><div class="code-header"><span class="code-lang">Deep Analysis Process</span><button class="code-copy">📋 Copy</button></div><div class="code-content">
+<pre><code>DEEP ANALYSIS WORKFLOW:
+
+SUBMITTING FILE:
+1. Navigate to file page
+2. Click "Deep analysis"
+3. Add comment
+4. Submit for analysis
+
+ANALYSIS PROCESS:
+├── File uploaded to Microsoft cloud
+├── Executed in isolated sandbox
+├── Multiple OS environments tested
+├── Behavior monitored and recorded
+├── Analysis takes 5-30 minutes
+└── Report generated
+
+REPORT CONTENTS:
+├── Verdict: Clean, Suspicious, Malicious
+├── Process activity:
+│   ├── Processes created
+│   ├── Command lines executed
+│   └── Parent-child relationships
+├── File activity:
+│   ├── Files created/modified/deleted
+│   ├── Dropped files with hashes
+│   └── File paths
+├── Registry activity:
+│   ├── Keys created/modified
+│   └── Persistence mechanisms
+├── Network activity:
+│   ├── DNS queries
+│   ├── HTTP/HTTPS connections
+│   ├── C2 communication
+│   └── Downloaded content
+└── MITRE ATT&CK mapping
+
+LIMITATIONS:
+├── Some samples don't detonate (VM detection)
+├── Password-protected files need password
+├── Large files may timeout
+├── Packed files may not fully unpack
+└── Some behaviors only in specific environments</code></pre></div></div>
+
+            <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-content"><h5>Best Practices</h5><ul>
+                <li><strong>SHA256 always</strong>: Most reliable, collision-resistant hash</li>
+                <li><strong>Document everything</strong>: Include incident numbers and reasons</li>
+                <li><strong>Deep analysis first</strong>: Analyze unknown files before blocking org-wide</li>
+                <li><strong>15 min propagation</strong>: Wait for indicators to spread</li>
+                <li><strong>Use expiration</strong>: Set dates for temporary blocks</li>
+            </ul></div></div>
+
+            <div class="interview-tips"><h3>💡 Key Interview Points</h3><ul>
+                <li><strong>Stop & quarantine</strong>: Single device, terminates process, quarantines file</li>
+                <li><strong>Indicators</strong>: SHA256 preferred, org-wide blocking, ~15 min propagation</li>
+                <li><strong>Deep analysis</strong>: Cloud sandbox, behavioral report, MITRE mapping</li>
+                <li><strong>Actions</strong>: Allow, Audit, Warn, Block and remediate</li>
+                <li><strong>Quarantine location</strong>: C:\ProgramData\Microsoft\Windows Defender\Quarantine</li>
+            </ul></div>
+
+            <nav class="page-nav"><a href="6-2-device-actions.html" class="page-nav-link prev"><span class="page-nav-label">← Previous</span></a><a href="6-4-automated-remediation.html" class="page-nav-link next"><span class="page-nav-label">Next →</span></a></nav>
+        </div>
+    </main>
+    <script src="main.js"></script>
+</body>
+</html>

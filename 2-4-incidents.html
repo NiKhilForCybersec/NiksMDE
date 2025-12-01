@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incidents Management | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Incident Management in Microsoft 365 Defender. Learn how incidents correlate alerts, investigation workflows, incident classification, attack story visualization, and managing incidents through resolution.</p>
+            </div>
+
+            <h1>Incidents Management</h1>
+
+            <p>Incidents in Microsoft 365 Defender automatically correlate related alerts, entities, and evidence into a single investigation unit. This correlation reduces alert fatigue and provides analysts with a comprehensive view of an attack.</p>
+
+            <h2>Understanding Incidents vs Alerts</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Incident Correlation Engine</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        ALERT CORRELATION                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  INDIVIDUAL ALERTS                           CORRELATED INCIDENT        │
+│  ┌─────────────────┐                        ┌─────────────────────────┐ │
+│  │ Alert 1         │                        │ INCIDENT-2024-0542      │ │
+│  │ Suspicious      │───┐                    │                         │ │
+│  │ PowerShell      │   │                    │ Attack Story:           │ │
+│  └─────────────────┘   │                    │ ┌─────────────────────┐ │ │
+│  ┌─────────────────┐   │    Correlation     │ │ 1. Phishing email   │ │ │
+│  │ Alert 2         │   │    Engine          │ │ 2. Macro execution  │ │ │
+│  │ Malware         │───┼───────────────────►│ │ 3. PowerShell       │ │ │
+│  │ Downloaded      │   │                    │ │ 4. Malware drop     │ │ │
+│  └─────────────────┘   │                    │ │ 5. C2 communication │ │ │
+│  ┌─────────────────┐   │                    │ └─────────────────────┘ │ │
+│  │ Alert 3         │   │                    │                         │ │
+│  │ C2 Connection   │───┘                    │ Entities: 2 devices,   │ │
+│  │ Detected        │                        │ 1 user, 3 files        │ │
+│  └─────────────────┘                        └─────────────────────────┘ │
+│                                                                          │
+│  CORRELATION FACTORS:                                                   │
+│  • Same device                    • Time proximity (within hours)       │
+│  • Same user                      • Related file hashes                 │
+│  • Same process tree              • Same network IOCs                   │
+│  • MITRE ATT&CK chain             • Cross-product signals (MDO, MDI)   │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Alert</th>
+                            <th>Incident</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Definition</strong></td>
+                            <td>Single detection event</td>
+                            <td>Collection of related alerts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Scope</strong></td>
+                            <td>One suspicious activity</td>
+                            <td>Complete attack chain</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Entities</strong></td>
+                            <td>Usually 1-2 entities</td>
+                            <td>Multiple devices, users, files</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Investigation</strong></td>
+                            <td>Point investigation</td>
+                            <td>Full attack investigation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Response</strong></td>
+                            <td>Single action</td>
+                            <td>Coordinated response</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Incident Queue</h2>
+
+            <h3>Accessing the Incident Queue</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Microsoft 365 Defender Portal (security.microsoft.com)
+├── Incidents & alerts
+│   └── Incidents          ← Primary incident queue
+│
+└── Quick access via URL:
+    https://security.microsoft.com/incidents</code></pre>
+                </div>
+            </div>
+
+            <h3>Incident Queue Columns</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Queue Interface</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INCIDENT QUEUE COLUMNS:
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Severity │ Incident │ Tags │ Status │ Investigation │ Categories │ Assigned │
+│          │  Name    │      │        │    State      │            │    To    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ 🔴 High  │ Multi-   │ VIP  │ Active │ Running       │ Malware,   │ J.Smith  │
+│          │ stage    │      │        │               │ C2         │          │
+│          │ attack   │      │        │               │            │          │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ 🟠 Med   │ Suspi-   │      │ Active │ PendingAction │ Execution  │ Unas-    │
+│          │ cious    │      │        │               │            │ signed   │
+│          │ activity │      │        │               │            │          │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+KEY COLUMNS EXPLAINED:
+• Severity: High, Medium, Low, Informational
+• Status: Active, Resolved, Redirected
+• Investigation State:
+  - Running: AIR actively investigating
+  - PendingAction: Waiting for approval/action
+  - Benign: Determined not malicious
+  - Remediated: Threat addressed
+  - PartiallyRemediated: Some actions completed
+  - Failed: Remediation failed
+• Categories: MITRE-aligned (Initial Access, Execution, etc.)</code></pre>
+                </div>
+            </div>
+
+            <h3>Filtering Incidents</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Filter Combinations</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code># High Priority Active Incidents
+Status: Active
+Severity: High
+Assigned to: Unassigned
+Service sources: Microsoft Defender for Endpoint
+
+# My Assigned Incidents
+Status: Active
+Assigned to: [Your name]
+
+# Pending Investigation Actions
+Investigation state: PendingAction
+
+# Incidents by Attack Category
+Categories: Ransomware, Exfiltration, Command and Control
+
+# Multi-Product Incidents
+Service sources: Multiple selected (MDE + MDO + MDI)
+
+# Tagged Incidents
+Tags: VIP, Critical Asset, Executive</code></pre>
+                </div>
+            </div>
+
+            <h2>Incident Details Page</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Incident Page Layout</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    INCIDENT: Multi-stage attack on DESKTOP-ABC         │
+├─────────────────────────────────────────────────────────────────────────┤
+│ Severity: 🔴 High    Status: Active    Assigned: John Smith            │
+│ Created: Jan 15, 14:32 UTC    Updated: Jan 15, 16:45 UTC              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  TABS:                                                                   │
+│  ┌────────────┬─────────────┬──────────┬───────────┬─────────────────┐ │
+│  │Attack Story│ Alerts (12) │ Assets   │ Invest-   │ Evidence &      │ │
+│  │            │             │          │ igations  │ Response        │ │
+│  └────────────┴─────────────┴──────────┴───────────┴─────────────────┘ │
+│                                                                          │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │  ATTACK STORY (Visual Timeline)                                   │  │
+│  │                                                                   │  │
+│  │  14:30 ──► 14:32 ──► 14:35 ──► 14:40 ──► 14:45 ──► 15:00        │  │
+│  │    │         │         │         │         │         │           │  │
+│  │  Email    Macro     PowerShell Malware   C2 Conn  Lateral       │  │
+│  │  Opened   Executed  Download   Executed  Detected  Movement     │  │
+│  │                                                                   │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                                                          │
+│  ┌─────────────────────┐  ┌─────────────────────────────────────────┐  │
+│  │ IMPACTED ENTITIES   │  │ MITRE ATT&CK TECHNIQUES                 │  │
+│  │ • 2 Devices         │  │ • T1566.001 Spearphishing Attachment   │  │
+│  │ • 1 User            │  │ • T1059.001 PowerShell                  │  │
+│  │ • 4 Files           │  │ • T1105 Ingress Tool Transfer          │  │
+│  │ • 3 IPs             │  │ • T1071.001 Web Protocols              │  │
+│  └─────────────────────┘  └─────────────────────────────────────────┘  │
+│                                                                          │
+│  [Manage incident] [Run playbook] [Link incidents] [Export to PDF]     │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h3>Attack Story Tab</h3>
+
+            <p>The Attack Story provides a visual, chronological representation of the attack:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Attack Story Features</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ATTACK STORY ELEMENTS:
+
+1. TIMELINE VIEW
+   • Chronological order of events
+   • Click any node to see details
+   • Expand/collapse event groups
+   • Filter by entity type
+
+2. PROCESS TREE
+   • Visual parent-child relationships
+   • Command line visibility
+   • File hash information
+   • Click to pivot to timeline
+
+3. ENTITY CONNECTIONS
+   • See relationships between:
+     - Devices ←→ Users
+     - Processes ←→ Files
+     - Processes ←→ Network connections
+   • Understand attack scope
+
+4. EVIDENCE MARKERS
+   • 🔴 Malicious (confirmed threat)
+   • 🟡 Suspicious (needs review)
+   • 🟢 Clean (verified benign)
+   • 📎 Evidence collected</code></pre>
+                </div>
+            </div>
+
+            <h3>Alerts Tab</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Alerts Within Incident</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ALERTS TAB SHOWS:
+┌────────────────────────────────────────────────────────────────────────┐
+│ Alert Title                    │ Severity │ Status  │ Detection Source│
+├────────────────────────────────────────────────────────────────────────┤
+│ Suspicious PowerShell command  │ High     │ New     │ EDR             │
+│ Malware was detected           │ High     │ New     │ AV              │
+│ Connection to known C2         │ Medium   │ New     │ EDR             │
+│ Unusual process tree           │ Medium   │ Resolved│ EDR             │
+│ Office app launched script     │ Low      │ New     │ EDR             │
+└────────────────────────────────────────────────────────────────────────┘
+
+ACTIONS ON ALERTS:
+• Open alert in new tab
+• Link/unlink alert from incident
+• Resolve individual alerts
+• Classify alerts (TP/FP)</code></pre>
+                </div>
+            </div>
+
+            <h3>Assets Tab</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Assets (Entities) View</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ASSET CATEGORIES:
+
+DEVICES (2)
+├── DESKTOP-FINANCE01
+│   ├── Risk Level: High
+│   ├── Exposure Level: Medium
+│   ├── Tags: Finance, Windows 11
+│   └── Actions: Isolate, Scan, Collect package
+└── SERVER-APP02
+    ├── Risk Level: Medium
+    └── Actions: Available
+
+USERS (1)
+├── <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef85808781c19c82869b87af8c80819b809c80c18c8082">[email&#160;protected]</a>
+│   ├── Job Title: Financial Analyst
+│   ├── Department: Finance
+│   ├── Risk Level: High
+│   └── Related alerts: 5
+└── Actions: View profile, Disable account
+
+MAILBOXES (1)
+└── <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d47424543035e404459456d4e424359425e42034e4240">[email&#160;protected]</a>
+    └── Suspicious emails: 2
+
+FILES (4)
+├── payload.exe (SHA256: abc123...)
+│   ├── Verdict: Malicious
+│   ├── First seen: 2 hours ago
+│   └── Actions: Block, Deep analysis
+├── invoice.docm
+├── update.ps1
+└── config.dat
+
+IP ADDRESSES (3)
+├── 185.123.45.67 (C2 Server)
+├── 192.168.1.50 (Internal)
+└── 45.33.22.11 (Staging Server)</code></pre>
+                </div>
+            </div>
+
+            <h3>Evidence & Response Tab</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Evidence and Response Actions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EVIDENCE COLLECTED:
+┌────────────────────────────────────────────────────────────────────────┐
+│ Type        │ Entity              │ Verdict    │ Actions              │
+├────────────────────────────────────────────────────────────────────────┤
+│ File        │ payload.exe         │ Malicious  │ Quarantined          │
+│ File        │ invoice.docm        │ Suspicious │ Pending review       │
+│ Process     │ powershell.exe      │ Suspicious │ Terminated           │
+│ IP Address  │ 185.123.45.67       │ Malicious  │ Blocked              │
+│ URL         │ hxxp://evil.com/dl  │ Malicious  │ Blocked              │
+│ Registry    │ Run\WindowsUpdate   │ Malicious  │ Removed              │
+└────────────────────────────────────────────────────────────────────────┘
+
+PENDING ACTIONS (Require Approval):
+┌────────────────────────────────────────────────────────────────────────┐
+│ Action                          │ Target              │ Approve/Reject │
+├────────────────────────────────────────────────────────────────────────┤
+│ Quarantine file                 │ update.ps1          │ [✓] [✗]       │
+│ Block IP                        │ 45.33.22.11         │ [✓] [✗]       │
+└────────────────────────────────────────────────────────────────────────┘
+
+COMPLETED ACTIONS:
+• File quarantined: payload.exe (15:32 UTC)
+• Process terminated: powershell.exe PID 4532 (15:33 UTC)
+• IP blocked: 185.123.45.67 (15:35 UTC)</code></pre>
+                </div>
+            </div>
+
+            <h2>Incident Investigation Workflow</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Complete Investigation Workflow</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INCIDENT INVESTIGATION WORKFLOW:
+
+PHASE 1: INITIAL ASSESSMENT (5-10 min)
+├── 1. Review incident summary
+│   ├── Severity and status
+│   ├── Number of alerts and entities
+│   └── Time span of activity
+├── 2. Check Attack Story
+│   ├── Understand the sequence of events
+│   ├── Identify key pivot points
+│   └── Note initial access vector
+├── 3. Assess scope
+│   ├── How many devices affected?
+│   ├── Which users involved?
+│   └── Is it actively spreading?
+└── 4. Determine urgency
+    ├── Ransomware indicators → IMMEDIATE
+    ├── Data exfiltration → HIGH
+    ├── C2 communication → HIGH
+    └── Isolated activity → NORMAL
+
+PHASE 2: DEEP INVESTIGATION (30-60 min)
+├── 5. Review each alert
+│   ├── Examine alert evidence
+│   ├── Check device timelines
+│   └── Analyze command lines
+├── 6. Investigate entities
+│   ├── Device: Check timeline, health, exposure
+│   ├── User: Review sign-ins, other alerts
+│   ├── Files: Check reputation, deep analysis
+│   └── IPs: Threat intel lookup
+├── 7. Hunt for related activity
+│   ├── Search for IOCs across environment
+│   ├── Check if other devices contacted same C2
+│   └── Look for similar process patterns
+└── 8. Determine full scope
+    └── Document all affected entities
+
+PHASE 3: CONTAINMENT (15-30 min)
+├── 9. Isolate affected devices
+│   └── Full isolation for confirmed compromise
+├── 10. Block IOCs
+│   ├── File hashes
+│   ├── Domains/IPs
+│   └── URLs
+├── 11. Disable compromised accounts
+│   └── Reset passwords, revoke sessions
+└── 12. Prevent spread
+    └── Block lateral movement paths
+
+PHASE 4: REMEDIATION (30-60 min)
+├── 13. Remove malware
+│   ├── Quarantine malicious files
+│   ├── Remove persistence
+│   └── Clean registry entries
+├── 14. Verify remediation
+│   ├── Run full AV scan
+│   ├── Check for remaining IOCs
+│   └── Verify services restored
+└── 15. Restore operations
+    ├── Release isolation
+    ├── Re-enable accounts
+    └── Monitor for recurrence
+
+PHASE 5: DOCUMENTATION (15-30 min)
+├── 16. Document findings
+│   ├── Timeline of events
+│   ├── Root cause analysis
+│   └── Scope of impact
+├── 17. Classify incident
+│   ├── True Positive: Confirmed attack
+│   ├── False Positive: Incorrect correlation
+│   └── Informational: Benign activity
+├── 18. Add determination
+│   ├── SecurityTesting
+│   ├── UnwantedSoftware
+│   ├── MultiStagedAttack
+│   └── Other options
+└── 19. Resolve incident
+    └── Add detailed comments</code></pre>
+                </div>
+            </div>
+
+            <h2>Incident Classification</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Classification</th>
+                            <th>When to Use</th>
+                            <th>Determination Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>True Positive</strong></td>
+                            <td>Confirmed malicious activity</td>
+                            <td>MultiStagedAttack, Malware, Phishing, Compromised Account, etc.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Informational, Expected Activity</strong></td>
+                            <td>Real activity but authorized</td>
+                            <td>SecurityTesting, ConfirmedActivity, LineOfBusinessApplication</td>
+                        </tr>
+                        <tr>
+                            <td><strong>False Positive</strong></td>
+                            <td>Incorrect detection</td>
+                            <td>NotMalicious, NotEnoughDataToValidate, Other</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Incident Management Actions</h2>
+
+            <h3>Managing Incidents</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Incident Actions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INCIDENT MANAGEMENT OPTIONS:
+
+1. ASSIGN INCIDENT
+   • Assign to yourself
+   • Assign to team member
+   • Reassign during shift handoff
+
+2. SET STATUS
+   • Active: Under investigation
+   • Resolved: Investigation complete
+
+3. ADD TAGS
+   • VIP: Executive device/user
+   • CriticalAsset: Server, infrastructure
+   • Escalated: Needs senior review
+   • Custom tags for your organization
+
+4. LINK INCIDENTS
+   • Merge related incidents
+   • Link for reference without merging
+
+5. ADD COMMENTS
+   • Document investigation steps
+   • Note findings for team
+   • Record decisions made
+
+6. RUN PLAYBOOK (if configured)
+   • Automated response actions
+   • Notification workflows
+
+7. EXPORT
+   • Export to PDF for reporting
+   • Share with stakeholders</code></pre>
+                </div>
+            </div>
+
+            <h2>Automated Investigation and Response (AIR)</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">AIR Investigation States</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>AIR INVESTIGATION FLOW:
+
+Incident Created
+      │
+      ▼
+┌─────────────────┐
+│ AIR TRIGGERED   │ ← Automatic for most incidents
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ RUNNING         │ ← Collecting evidence, analyzing
+└────────┬────────┘
+         │
+         ▼
+    ┌────┴────┐
+    │         │
+    ▼         ▼
+┌───────┐  ┌──────────────┐
+│BENIGN │  │PENDING ACTION│ ← Remediation needs approval
+└───────┘  └──────┬───────┘
+                  │
+            ┌─────┴─────┐
+            │           │
+            ▼           ▼
+      ┌──────────┐  ┌────────────────┐
+      │REMEDIATED│  │PARTIALLY       │
+      └──────────┘  │REMEDIATED      │
+                    └────────────────┘
+
+AIR AUTOMATION LEVELS:
+• Full: Auto-remediate without approval
+• Semi: Require approval for actions
+• No automation: Manual only
+
+Configure at:
+Settings → Endpoints → Features → Automation levels</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL Queries for Incidents</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Incident Analytics</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Incident volume by severity (last 30 days)</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    AlertCount <span class="operator">=</span> <span class="function">count</span>(),
+    UniqueIncidents <span class="operator">=</span> <span class="function">dcount</span>(AttackTechniques)
+    <span class="keyword">by</span> Severity
+<span class="operator">|</span> <span class="keyword">order by</span> AlertCount <span class="keyword">desc</span>
+
+<span class="comment">// Incidents by MITRE technique</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">mv-expand</span> AttackTechniques
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> <span class="function">tostring</span>(AttackTechniques)
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">10</span> <span class="keyword">by</span> Count
+
+<span class="comment">// Mean time to resolve incidents</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> <span class="function">isnotempty</span>(ServiceSource)
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    FirstAlert <span class="operator">=</span> <span class="function">min</span>(Timestamp),
+    LastAlert <span class="operator">=</span> <span class="function">max</span>(Timestamp)
+    <span class="keyword">by</span> Title
+<span class="operator">|</span> <span class="keyword">extend</span> Duration <span class="operator">=</span> LastAlert <span class="operator">-</span> FirstAlert
+<span class="operator">|</span> <span class="keyword">summarize</span> <span class="function">avg</span>(Duration)
+
+<span class="comment">// Most targeted users</span>
+<span class="variable">AlertInfo</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">30</span>d)
+<span class="operator">|</span> <span class="keyword">join</span> <span class="variable">AlertEvidence</span> <span class="keyword">on</span> AlertId
+<span class="operator">|</span> <span class="keyword">where</span> EntityType <span class="operator">==</span> <span class="string">"User"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> IncidentCount <span class="operator">=</span> <span class="function">dcount</span>(AlertId) <span class="keyword">by</span> AccountName
+<span class="operator">|</span> <span class="keyword">top</span> <span class="number">10</span> <span class="keyword">by</span> IncidentCount</code></pre>
+                </div>
+            </div>
+
+            <h2>Best Practices</h2>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Incident Management Best Practices</h5>
+                    <ul>
+                        <li><strong>Work incidents, not just alerts</strong>: Incidents provide context; avoid cherry-picking alerts</li>
+                        <li><strong>Use Attack Story first</strong>: Get the big picture before diving into details</li>
+                        <li><strong>Document as you go</strong>: Add comments during investigation, not just at the end</li>
+                        <li><strong>Classify accurately</strong>: Good classification improves future detection</li>
+                        <li><strong>Check related incidents</strong>: Same user/device may have connected activity</li>
+                        <li><strong>Review AIR findings</strong>: Automated investigation often finds additional evidence</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Daily Incident Operations</h4>
+                <ul>
+                    <li>Review high-severity incidents first thing each shift</li>
+                    <li>Check for incidents pending action approval</li>
+                    <li>Investigate assigned incidents to resolution</li>
+                    <li>Escalate complex incidents to senior analysts</li>
+                    <li>Document findings and close resolved incidents</li>
+                    <li>Update shift handoff notes with active incidents</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Incident keeps growing with new alerts"</span>
+                    <span class="ticket-solution">→ Active attack; prioritize containment. Isolate affected devices immediately.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Multiple incidents for same user"</span>
+                    <span class="ticket-solution">→ Consider linking incidents. May indicate targeted attack or compromised account.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"AIR stuck in PendingAction"</span>
+                    <span class="ticket-solution">→ Review pending actions and approve/reject. Check automation level settings.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"False positive incident"</span>
+                    <span class="ticket-solution">→ Classify as FP, add detailed notes, consider creating suppression rules.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Incident vs Alert</strong>: Incident = correlated collection of related alerts</li>
+                    <li><strong>Correlation factors</strong>: Same device/user, time proximity, process tree, MITRE chain</li>
+                    <li><strong>Attack Story</strong>: Visual timeline of attack; first thing to review</li>
+                    <li><strong>Investigation states</strong>: Running, PendingAction, Remediated, PartiallyRemediated, Benign</li>
+                    <li><strong>Classification</strong>: True Positive, Informational, False Positive</li>
+                    <li><strong>AIR</strong>: Automated Investigation and Response; can auto-remediate or require approval</li>
+                    <li><strong>Entity types</strong>: Devices, Users, Files, IPs, URLs, Mailboxes</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="2-3-alerts-queue.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Alerts Queue</span>
+                </a>
+                <a href="2-5-action-center.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Action Center</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input"

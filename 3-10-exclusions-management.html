@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exclusions Management | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to managing exclusions in Microsoft Defender for Endpoint. Learn exclusion types, best practices, security risks, and how to properly configure exclusions while maintaining security.</p>
+            </div>
+
+            <h1>Exclusions Management</h1>
+
+            <p>Exclusions prevent Microsoft Defender from scanning specific files, folders, processes, or extensions. While sometimes necessary for application compatibility, exclusions create security gaps and must be managed carefully.</p>
+
+            <h2>Exclusion Types</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Types of Exclusions</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       EXCLUSION TYPES                                    │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  FILE EXCLUSIONS                     FOLDER EXCLUSIONS                  │
+│  ┌─────────────────────────────┐    ┌─────────────────────────────┐    │
+│  │ Specific file paths         │    │ Entire folder and subfolders│    │
+│  │                             │    │                             │    │
+│  │ Example:                    │    │ Example:                    │    │
+│  │ C:\App\data.mdf             │    │ C:\CustomApp\               │    │
+│  │ D:\Database\*.ldf           │    │ %ProgramData%\VendorApp\    │    │
+│  └─────────────────────────────┘    └─────────────────────────────┘    │
+│                                                                          │
+│  EXTENSION EXCLUSIONS                PROCESS EXCLUSIONS                 │
+│  ┌─────────────────────────────┐    ┌─────────────────────────────┐    │
+│  │ File types by extension     │    │ Files opened by process     │    │
+│  │                             │    │                             │    │
+│  │ Example:                    │    │ Example:                    │    │
+│  │ .mdf                        │    │ C:\App\app.exe              │    │
+│  │ .ldf                        │    │ sqlservr.exe                │    │
+│  │ .bak                        │    │                             │    │
+│  └─────────────────────────────┘    └─────────────────────────────┘    │
+│                                                                          │
+│  SCOPE:                                                                  │
+│  ├── File/Folder: Excludes from real-time and scheduled scans          │
+│  ├── Extension: Excludes all files with that extension                  │
+│  └── Process: Excludes files opened/modified by that process           │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Configuration Methods</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Exclusion Management</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># View current exclusions</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> ExclusionPath, ExclusionExtension, ExclusionProcess
+
+<span class="comment"># Add folder exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionPath</span> <span class="string">"C:\CustomApp"</span>
+
+<span class="comment"># Add file exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionPath</span> <span class="string">"C:\Data\database.mdf"</span>
+
+<span class="comment"># Add extension exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionExtension</span> <span class="string">".mdf"</span>
+
+<span class="comment"># Add process exclusion</span>
+<span class="function">Add-MpPreference</span> <span class="variable">-ExclusionProcess</span> <span class="string">"C:\App\myapp.exe"</span>
+
+<span class="comment"># Remove exclusion</span>
+<span class="function">Remove-MpPreference</span> <span class="variable">-ExclusionPath</span> <span class="string">"C:\CustomApp"</span>
+
+<span class="comment"># View all exclusions formatted</span>
+<span class="variable">$prefs</span> = <span class="function">Get-MpPreference</span>
+Write-Host <span class="string">"Path Exclusions:"</span>
+<span class="variable">$prefs</span>.ExclusionPath
+Write-Host <span class="string">"Extension Exclusions:"</span>
+<span class="variable">$prefs</span>.ExclusionExtension
+Write-Host <span class="string">"Process Exclusions:"</span>
+<span class="variable">$prefs</span>.ExclusionProcess</code></pre>
+                </div>
+            </div>
+
+            <h3>Intune Configuration</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Intune Deployment</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INTUNE PATH:
+Endpoint security → Antivirus → Create policy
+Platform: Windows 10 and later
+Profile: Microsoft Defender Antivirus exclusions
+
+SETTINGS:
+├── Excluded files and folders
+│   └── Add paths to exclude
+├── Excluded extensions  
+│   └── Add file extensions (without dot)
+└── Excluded processes
+    └── Add process paths
+
+ALTERNATIVE PATH (Configuration Profiles):
+Devices → Configuration profiles → Create profile
+Platform: Windows 10 and later
+Profile type: Templates → Device restrictions
+Section: Microsoft Defender Antivirus → Exclusions
+
+GROUP POLICY PATH:
+Computer Configuration → Administrative Templates
+→ Windows Components → Microsoft Defender Antivirus → Exclusions
+├── Extension Exclusions
+├── Path Exclusions
+└── Process Exclusions</code></pre>
+                </div>
+            </div>
+
+            <h2>Common Exclusion Scenarios</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Recommended Exclusions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SQL SERVER:
+├── Data files: *.mdf, *.ndf, *.ldf
+├── Backup files: *.bak, *.trn
+├── Paths: Default data directories
+└── Process: sqlservr.exe
+
+EXCHANGE SERVER:
+├── Database paths
+├── Log paths
+├── Queue folders
+└── Process: EdgeTransport.exe, w3wp.exe
+
+SHAREPOINT:
+├── Search index folders
+├── Log files
+└── Specific web app processes
+
+BACKUP SOFTWARE:
+├── Backup destination folders
+├── Catalog/index files
+└── Backup agent processes
+
+DEVELOPMENT TOOLS:
+├── Build output folders
+├── Package cache
+├── IDE temp folders
+└── Note: Be cautious - malware can hide here
+
+VIRTUALIZATION:
+├── VM disk files: *.vhd, *.vhdx, *.avhd
+├── VM configuration: *.xml
+├── Checkpoint files
+└── Process: vmms.exe, vmwp.exe
+
+ANTIVIRUS COEXISTENCE:
+├── Third-party AV installation folder
+├── Signature/definition folders
+├── Scan engine processes
+└── Quarantine folders</code></pre>
+                </div>
+            </div>
+
+            <h2>Security Risks</h2>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Exclusion Security Risks</h5>
+                    <p>Every exclusion is a potential security gap. Attackers actively target excluded paths.</p>
+                    <ul>
+                        <li><strong>Malware hiding</strong>: Attackers drop malware in excluded folders</li>
+                        <li><strong>Extension abuse</strong>: Malware uses excluded extensions</li>
+                        <li><strong>Process masquerading</strong>: Malware named after excluded processes</li>
+                        <li><strong>Lateral movement</strong>: Excluded network paths enable spreading</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Risky Exclusions to Avoid</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>NEVER EXCLUDE (unless absolutely necessary):
+
+HIGH-RISK FOLDERS:
+├── C:\Windows\Temp
+├── C:\Users\*\AppData\Local\Temp
+├── C:\Users\*\Downloads
+├── C:\ProgramData (entire folder)
+└── Any folder writable by users
+
+HIGH-RISK EXTENSIONS:
+├── .exe (executables)
+├── .dll (libraries)
+├── .ps1 (PowerShell scripts)
+├── .bat, .cmd (batch files)
+├── .js, .vbs (script files)
+└── .scr (screensavers/malware)
+
+RISKY PROCESS EXCLUSIONS:
+├── powershell.exe
+├── cmd.exe
+├── wscript.exe, cscript.exe
+├── rundll32.exe
+└── Any LOLBAS binary
+
+INSTEAD:
+├── Use most specific path possible
+├── Exclude specific files, not folders when possible
+├── Use process exclusions to limit scope
+├── Document every exclusion
+└── Review exclusions regularly</code></pre>
+                </div>
+            </div>
+
+            <h2>Exclusion Best Practices</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Best Practices</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXCLUSION GOVERNANCE:
+
+1. REQUIRE JUSTIFICATION
+   ├── Document why exclusion is needed
+   ├── Identify what breaks without it
+   ├── Get approval from security team
+   └── Record ticket/change number
+
+2. USE MINIMUM SCOPE
+   ├── Specific file > folder > extension
+   ├── Use full paths, not wildcards when possible
+   ├── Prefer process exclusions for performance
+   └── Avoid user-writable locations
+
+3. APPLY TO MINIMUM DEVICES
+   ├── Don't apply globally if not needed
+   ├── Use device groups for targeted exclusions
+   ├── Different exclusions for servers vs workstations
+   └── Remove from devices that don't need it
+
+4. REVIEW REGULARLY
+   ├── Quarterly exclusion audits
+   ├── Remove obsolete exclusions
+   ├── Verify applications still need them
+   └── Check for abuse/misuse
+
+5. MONITOR EXCLUDED PATHS
+   ├── Use EDR to monitor excluded locations
+   ├── Alert on new files in excluded folders
+   ├── Watch for suspicious process launches
+   └── Review with threat hunting queries
+
+6. DOCUMENT EVERYTHING
+   ├── Central exclusion registry
+   ├── Business justification
+   ├── Owner/requester
+   ├── Review date
+   └── Associated application/vendor</code></pre>
+                </div>
+            </div>
+
+            <h2>Auditing Exclusions</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Monitor Excluded Paths</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Files created in commonly excluded locations</span>
+<span class="variable">DeviceFileEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"FileCreated"</span>
+<span class="operator">|</span> <span class="keyword">where</span> FolderPath <span class="function">has_any</span> (
+    <span class="string">"\\ExcludedApp\\"</span>,  <span class="comment">// Add your excluded paths</span>
+    <span class="string">"\\BackupFolder\\"</span>
+)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="function">endswith</span> <span class="string">".exe"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, FileName, FolderPath, 
+         InitiatingProcessFileName
+
+<span class="comment">// Process launches from excluded folders</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> FolderPath <span class="function">has_any</span> (
+    <span class="string">"\\ExcludedApp\\"</span>
+)
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> FileName, FolderPath
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Exclusion Management</h4>
+                <ul>
+                    <li>Review and approve exclusion requests</li>
+                    <li>Audit existing exclusions quarterly</li>
+                    <li>Monitor excluded paths for suspicious activity</li>
+                    <li>Remove obsolete exclusions</li>
+                    <li>Document exclusions and justifications</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Application being blocked by Defender"</span>
+                    <span class="ticket-solution">→ Verify legitimate FP, use minimum exclusion scope, document justification.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Vendor says to exclude entire folder"</span>
+                    <span class="ticket-solution">→ Push back, request specific files/extensions, use process exclusion if possible.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Need to audit all exclusions"</span>
+                    <span class="ticket-solution">→ Export from Intune/GPO, review each, verify still needed, remove obsolete.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Types</strong>: File, folder, extension, process exclusions</li>
+                    <li><strong>Risk</strong>: Exclusions create security gaps attackers exploit</li>
+                    <li><strong>Best practice</strong>: Minimum scope, document everything, review regularly</li>
+                    <li><strong>Avoid excluding</strong>: Temp folders, user-writable locations, script engines</li>
+                    <li><strong>Process exclusions</strong>: Exclude files opened BY process, not the process itself</li>
+                    <li><strong>Monitoring</strong>: Use EDR to watch excluded paths for abuse</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="3-9-tamper-protection.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Tamper Protection</span>
+                </a>
+                <a href="4-1-edr-overview.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">EDR Overview</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

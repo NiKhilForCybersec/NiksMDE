@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDE Architecture | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Deep dive into MDE sensor architecture, kernel vs user-mode components, cloud connectivity requirements, data flow from endpoint to portal, multi-tenant architecture, and data residency considerations.</p>
+            </div>
+
+            <h1>MDE Architecture Deep Dive</h1>
+
+            <p>Understanding MDE's architecture is essential for deployment, troubleshooting, and explaining how the product works. MDE uses a distributed architecture with lightweight endpoint sensors communicating with Microsoft's cloud backend.</p>
+
+            <h2>Sensor Architecture</h2>
+
+            <p>The MDE sensor on Windows consists of multiple components working together to capture security telemetry:</p>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Windows MDE Sensor Components</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           WINDOWS ENDPOINT                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  USER MODE (Ring 3)                                                      │
+│  ┌────────────────────────────────────────────────────────────────────┐ │
+│  │                                                                     │ │
+│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐    │ │
+│  │  │ MsSense.exe     │  │ SenseCncProxy   │  │ SenseIR.exe     │    │ │
+│  │  │ Main Sensor     │  │ Cloud Comm      │  │ Live Response   │    │ │
+│  │  │ Service         │  │ Proxy           │  │ Handler         │    │ │
+│  │  └────────┬────────┘  └────────┬────────┘  └─────────────────┘    │ │
+│  │           │                    │                                   │ │
+│  │           │     ┌──────────────┘                                   │ │
+│  │           ▼     ▼                                                  │ │
+│  │  ┌─────────────────────────────────────────────────────────────┐  │ │
+│  │  │              Windows Event Tracing (ETW)                     │  │ │
+│  │  │         Process │ Network │ File │ Registry Events          │  │ │
+│  │  └─────────────────────────────────────────────────────────────┘  │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+│                                    ▲                                     │
+│  ──────────────────────────────────┼─────────────────────────────────── │
+│                                    │                                     │
+│  KERNEL MODE (Ring 0)              │                                     │
+│  ┌─────────────────────────────────┴──────────────────────────────────┐ │
+│  │                                                                     │ │
+│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐    │ │
+│  │  │ WdFilter.sys    │  │ WdNisDrv.sys    │  │ MpKslDrv.sys    │    │ │
+│  │  │ File System     │  │ Network         │  │ Kernel          │    │ │
+│  │  │ Minifilter      │  │ Inspection      │  │ Shim Layer      │    │ │
+│  │  └─────────────────┘  └─────────────────┘  └─────────────────┘    │ │
+│  │                                                                     │ │
+│  │  ┌─────────────────────────────────────────────────────────────┐  │ │
+│  │  │           ELAM (Early Launch Anti-Malware)                   │  │ │
+│  │  │              WdBoot.sys - Boot Protection                    │  │ │
+│  │  └─────────────────────────────────────────────────────────────┘  │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h3>Key Components Explained</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Mode</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>MsSense.exe</code></td>
+                            <td>User</td>
+                            <td>Main MDE sensor service; collects and processes telemetry</td>
+                        </tr>
+                        <tr>
+                            <td><code>SenseCncProxy.exe</code></td>
+                            <td>User</td>
+                            <td>Handles communication with cloud backend</td>
+                        </tr>
+                        <tr>
+                            <td><code>SenseIR.exe</code></td>
+                            <td>User</td>
+                            <td>Live Response session handler for remote investigation</td>
+                        </tr>
+                        <tr>
+                            <td><code>WdFilter.sys</code></td>
+                            <td>Kernel</td>
+                            <td>File system minifilter; monitors file operations</td>
+                        </tr>
+                        <tr>
+                            <td><code>WdNisDrv.sys</code></td>
+                            <td>Kernel</td>
+                            <td>Network inspection driver; monitors network activity</td>
+                        </tr>
+                        <tr>
+                            <td><code>WdBoot.sys</code></td>
+                            <td>Kernel</td>
+                            <td>ELAM driver for early boot protection</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Cloud Connectivity Requirements</h2>
+
+            <p>MDE sensors must communicate with Microsoft cloud services. Here are the critical URLs that must be accessible:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Required URLs (US Region)</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code># Core MDE Services
+*.securitycenter.windows.com
+*.security.microsoft.com
+
+# Telemetry Upload
+winatp-gw-cus.microsoft.com    # Central US
+winatp-gw-eus.microsoft.com    # East US
+winatp-gw-weu.microsoft.com    # West Europe
+winatp-gw-neu.microsoft.com    # North Europe
+
+# Sample Submission / Deep Analysis
+us.vortex-win.data.microsoft.com
+eu.vortex-win.data.microsoft.com
+uk.vortex-win.data.microsoft.com
+
+# CRL / OCSP (Certificate Validation)
+crl.microsoft.com
+ctldl.windowsupdate.com
+
+# Definition Updates
+definitionupdates.microsoft.com
+*.wdcp.microsoft.com
+*.wdcpalt.microsoft.com</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>SSL Inspection Warning</h5>
+                    <p>MDE uses certificate pinning for security. If you use SSL inspection (proxy decryption), you must <strong>bypass</strong> MDE URLs or onboarding and telemetry will fail.</p>
+                </div>
+            </div>
+
+            <h2>Data Flow: Endpoint to Portal</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Telemetry Data Flow</div>
+<pre>
+ENDPOINT                                              MICROSOFT CLOUD
+┌─────────────────┐                           ┌────────────────────────┐
+│                 │     ┌───────────────┐     │                        │
+│  Process Event  │────►│               │     │  ┌──────────────────┐  │
+│  File Event     │     │  MsSense.exe  │     │  │   Ingestion      │  │
+│  Network Event  │     │               │     │  │   Pipeline       │  │
+│  Registry Event │     │  Batching &   │────►│  │                  │  │
+│  Logon Event    │     │  Compression  │     │  │  • Parse         │  │
+│                 │     │               │     │  │  • Enrich        │  │
+└─────────────────┘     └───────────────┘     │  │  • Correlate     │  │
+                                              │  └────────┬─────────┘  │
+                               HTTPS/443      │           │            │
+                              Certificate     │           ▼            │
+                                Pinned        │  ┌──────────────────┐  │
+                                              │  │  Detection       │  │
+                                              │  │  Engine          │  │
+                                              │  │                  │  │
+                                              │  │  • ML Models     │  │
+                                              │  │  • Threat Intel  │  │
+                                              │  │  • Behavior      │  │
+                                              │  └────────┬─────────┘  │
+                                              │           │            │
+                                              │           ▼            │
+                                              │  ┌──────────────────┐  │
+                                              │  │  Alert / Store   │  │
+                                              │  │  30-180 days     │  │
+                                              │  └──────────────────┘  │
+                                              └────────────────────────┘
+                                                          │
+                                                          ▼
+                                              ┌────────────────────────┐
+                                              │   SECURITY PORTAL      │
+                                              │   security.microsoft   │
+                                              │   .com                 │
+                                              └────────────────────────┘
+</pre>
+            </div>
+
+            <h3>Data Flow Steps</h3>
+
+            <ol>
+                <li><strong>Event Collection</strong>: Kernel and user-mode components capture security events via ETW</li>
+                <li><strong>Local Processing</strong>: MsSense.exe batches, compresses, and performs initial filtering</li>
+                <li><strong>Secure Upload</strong>: Data sent to regional gateway over HTTPS with certificate pinning</li>
+                <li><strong>Cloud Processing</strong>: Microsoft backend parses, enriches with threat intel, runs ML models</li>
+                <li><strong>Detection & Storage</strong>: Alerts generated; raw data stored for hunting (30-180 days)</li>
+                <li><strong>Portal Display</strong>: Security team accesses via security.microsoft.com</li>
+            </ol>
+
+            <h2>Multi-Tenant Architecture</h2>
+
+            <p>MDE supports multi-tenant scenarios for MSSPs and organizations with multiple tenants:</p>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Multi-Tenant MSSP Architecture</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          MSSP SOC TENANT                                 │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────┐│
+│  │                    MSSP MANAGEMENT PORTAL                            ││
+│  │                                                                      ││
+│  │   ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐ ││
+│  │   │ Customer  │    │ Customer  │    │ Customer  │    │ Customer  │ ││
+│  │   │    A      │    │    B      │    │    C      │    │    D      │ ││
+│  │   │ (View)    │    │ (View)    │    │ (View)    │    │ (View)    │ ││
+│  │   └─────┬─────┘    └─────┬─────┘    └─────┬─────┘    └─────┬─────┘ ││
+│  │         │                │                │                │        ││
+│  └─────────┼────────────────┼────────────────┼────────────────┼────────┘│
+└────────────┼────────────────┼────────────────┼────────────────┼─────────┘
+             │                │                │                │
+             │    Delegated   │    Access      │                │
+             │    Permissions │                │                │
+             ▼                ▼                ▼                ▼
+    ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+    │ Customer A  │  │ Customer B  │  │ Customer C  │  │ Customer D  │
+    │   Tenant    │  │   Tenant    │  │   Tenant    │  │   Tenant    │
+    │             │  │             │  │             │  │             │
+    │  Endpoints  │  │  Endpoints  │  │  Endpoints  │  │  Endpoints  │
+    │  Alerts     │  │  Alerts     │  │  Alerts     │  │  Alerts     │
+    │  Hunting    │  │  Hunting    │  │  Hunting    │  │  Hunting    │
+    └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘
+</pre>
+            </div>
+
+            <h3>Multi-Tenant Access Options</h3>
+
+            <ul>
+                <li><strong>Azure Lighthouse</strong>: Delegated resource management across tenants</li>
+                <li><strong>MSSP Portal</strong>: Dedicated multi-tenant management interface</li>
+                <li><strong>API Access</strong>: Service principal with cross-tenant permissions</li>
+                <li><strong>Guest Accounts (B2B)</strong>: External users with specific role assignments</li>
+            </ul>
+
+            <h2>Data Residency & Compliance</h2>
+
+            <p>MDE stores data in specific geographic regions based on tenant location:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Data Center Location</th>
+                            <th>Gateway</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>United States</td>
+                            <td>US Data Centers</td>
+                            <td>winatp-gw-cus / eus.microsoft.com</td>
+                        </tr>
+                        <tr>
+                            <td>European Union</td>
+                            <td>EU Data Centers</td>
+                            <td>winatp-gw-weu / neu.microsoft.com</td>
+                        </tr>
+                        <tr>
+                            <td>United Kingdom</td>
+                            <td>UK Data Centers</td>
+                            <td>winatp-gw-uks / ukw.microsoft.com</td>
+                        </tr>
+                        <tr>
+                            <td>Australia</td>
+                            <td>Australia Data Centers</td>
+                            <td>winatp-gw-aue / aus.microsoft.com</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout info">
+                <div class="callout-icon">ℹ️</div>
+                <div class="callout-content">
+                    <h5>Compliance Certifications</h5>
+                    <p>MDE is compliant with: SOC 1/2, ISO 27001, ISO 27018, HIPAA, FedRAMP High, GDPR, and many more. Check Microsoft Trust Center for full list.</p>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Architecture-Related Tasks</h4>
+                <ul>
+                    <li>Verify endpoint connectivity to MDE cloud services</li>
+                    <li>Work with network team on proxy/firewall rules for MDE URLs</li>
+                    <li>Troubleshoot sensor communication issues</li>
+                    <li>Monitor sensor service health across endpoints</li>
+                </ul>
+
+                <h4>Common Tickets You'll Handle</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Sensor not communicating"</span>
+                    <span class="ticket-solution">→ Check MsSense service, verify URL connectivity, check proxy settings</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"SSL inspection breaking MDE"</span>
+                    <span class="ticket-solution">→ Work with network team to bypass MDE URLs from SSL inspection</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Data residency question"</span>
+                    <span class="ticket-solution">→ Check tenant region in portal, provide compliance documentation</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Dual-mode architecture</strong>: MDE uses both kernel (WdFilter.sys) and user-mode (MsSense.exe) components</li>
+                    <li><strong>Certificate pinning</strong>: SSL inspection will break MDE unless bypassed</li>
+                    <li><strong>Cloud-native</strong>: No on-prem backend servers; processing happens in Microsoft cloud</li>
+                    <li><strong>ETW-based collection</strong>: Windows Event Tracing is the primary telemetry source</li>
+                    <li><strong>Regional data storage</strong>: Data stays in region based on tenant configuration</li>
+                    <li><strong>Key service</strong>: MsSense.exe is the main sensor service to check when troubleshooting</li>
+                </ul>
+            </div>
+
+            <!-- Page Navigation -->
+            <nav class="page-nav">
+                <a href="1-1-mde-overview.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">MDE Overview</span>
+                </a>
+                <a href="1-3-deployment-options.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Deployment Options</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

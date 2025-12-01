@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protection Issues | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Troubleshooting guide for MDE protection issues. Learn to diagnose and fix problems with real-time protection, cloud connectivity, definitions, and feature functionality.</p>
+            </div>
+
+            <h1>Protection Issues Troubleshooting</h1>
+
+            <p>This guide covers common protection issues and their resolutions for Microsoft Defender for Endpoint.</p>
+
+            <h2>Common Protection Issues</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Protection Issue Categories</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    PROTECTION ISSUE CATEGORIES                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  REAL-TIME PROTECTION           CLOUD PROTECTION                        │
+│  ├── RTP disabled               ├── Cloud connectivity failed          │
+│  ├── RTP won't enable           ├── Sample submission failing          │
+│  ├── Files not being scanned    ├── Cloud verdict timeout              │
+│  └── High resource usage        └── Block at first sight issues        │
+│                                                                          │
+│  DEFINITIONS                    FEATURES                                │
+│  ├── Outdated definitions       ├── ASR rules not working              │
+│  ├── Update failures            ├── Network Protection disabled        │
+│  ├── Signature corruption       ├── Controlled Folder Access issues    │
+│  └── WSUS/SCCM update issues    └── Tamper Protection conflicts        │
+│                                                                          │
+│  THIRD-PARTY CONFLICTS          EDR ISSUES                              │
+│  ├── Another AV installed       ├── Sensor not reporting               │
+│  ├── Passive mode issues        ├── Limited functionality              │
+│  ├── Conflicting settings       ├── EDR block mode issues              │
+│  └── Driver conflicts           └── Timeline missing data              │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Real-Time Protection Issues</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">RTP Troubleshooting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>REAL-TIME PROTECTION ISSUES:
+
+ISSUE: RTP Disabled
+SYMPTOMS:
+├── Windows Security shows RTP off
+├── Portal shows AV disabled
+└── No real-time scanning
+
+DIAGNOSIS:
+# Check RTP status
+Get-MpComputerStatus | Select-Object RealTimeProtectionEnabled, 
+    AntivirusEnabled, AMServiceEnabled
+
+# Check for third-party AV
+Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntivirusProduct
+
+# Check if in passive mode
+Get-MpComputerStatus | Select-Object AMRunningMode
+
+SOLUTIONS:
+# Enable RTP via PowerShell
+Set-MpPreference -DisableRealtimeMonitoring $false
+
+# If blocked by GPO, check:
+# Computer Config → Admin Templates → Windows Components → 
+# Microsoft Defender Antivirus → Real-time Protection
+
+# If third-party AV, Defender may be in passive mode (expected)
+
+ISSUE: RTP Won't Enable
+CAUSES:
+├── Third-party AV installed (expected)
+├── GPO/Intune policy disabling
+├── Tamper Protection preventing change
+├── Service not running
+└── Corruption
+
+SOLUTIONS:
+# Check service status
+Get-Service WinDefend | Select-Object Status, StartType
+
+# Start service
+Start-Service WinDefend
+
+# Check for policy conflicts
+gpresult /h gpreport.html
+# Review Windows Defender settings
+
+# Reset Defender (if corrupted)
+# Requires running in Safe Mode or using DISM</code></pre>
+                </div>
+            </div>
+
+            <h2>Cloud Protection Issues</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Cloud Connectivity Troubleshooting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CLOUD PROTECTION ISSUES:
+
+ISSUE: Cloud Connectivity Failed
+SYMPTOMS:
+├── "Cloud-delivered protection is off" warning
+├── Block at First Sight not working
+├── Slow threat detection
+└── Sample submission failing
+
+DIAGNOSIS:
+# Test cloud connectivity
+"%ProgramFiles%\Windows Defender\MpCmdRun.exe" -ValidateMapsConnection
+
+# Check cloud settings
+Get-MpPreference | Select-Object MAPSReporting, 
+    CloudBlockLevel, CloudExtendedTimeout
+
+# Test URL connectivity
+Test-NetConnection -ComputerName "wdcp.microsoft.com" -Port 443
+Test-NetConnection -ComputerName "wdcpalt.microsoft.com" -Port 443
+
+REQUIRED URLS:
+├── *.wdcp.microsoft.com
+├── *.wdcpalt.microsoft.com
+├── *.wd.microsoft.com
+├── *.smartscreen.microsoft.com
+└── *.smartscreen-prod.microsoft.com
+
+SOLUTIONS:
+# Enable MAPS reporting
+Set-MpPreference -MAPSReporting Advanced
+
+# Set cloud block level
+Set-MpPreference -CloudBlockLevel High
+
+# Configure proxy if needed
+Set-MpPreference -ProxyServer "http://proxy:8080"
+Set-MpPreference -ProxyBypass "*.local"
+
+# Firewall rules - ensure outbound HTTPS allowed
+
+ISSUE: Sample Submission Failing
+# Check sample sharing setting
+Get-MpPreference | Select-Object SubmitSamplesConsent
+
+# Enable sample sharing
+Set-MpPreference -SubmitSamplesConsent SendAllSamples
+# Options: 0=AlwaysPrompt, 1=SendSafeSamples, 2=NeverSend, 3=SendAllSamples</code></pre>
+                </div>
+            </div>
+
+            <h2>Definition Update Issues</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Definition Troubleshooting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEFINITION UPDATE ISSUES:
+
+ISSUE: Outdated Definitions
+DIAGNOSIS:
+# Check definition age
+Get-MpComputerStatus | Select-Object AntivirusSignatureAge,
+    AntivirusSignatureLastUpdated, AntivirusSignatureVersion
+
+# Signature age should be < 1 day
+
+MANUAL UPDATE:
+# Force signature update
+Update-MpSignature
+
+# Or via command line
+"%ProgramFiles%\Windows Defender\MpCmdRun.exe" -SignatureUpdate
+
+ISSUE: Update Failures
+COMMON CAUSES:
+├── No internet connectivity
+├── WSUS misconfiguration
+├── Proxy blocking updates
+├── Disk space issues
+└── Corrupted update cache
+
+SOLUTIONS:
+# Clear update cache and retry
+"%ProgramFiles%\Windows Defender\MpCmdRun.exe" -RemoveDefinitions -All
+Update-MpSignature
+
+# Check Windows Update service
+Get-Service wuauserv | Select-Object Status
+
+# Direct download fallback
+# Download from: https://www.microsoft.com/en-us/wdsi/definitions
+# Run: mpam-fe.exe (full engine update)
+
+WSUS/SCCM ISSUES:
+├── Verify WSUS has Defender definitions approved
+├── Check SCCM Endpoint Protection settings
+├── Force software update scan
+└── Review Windows Update logs
+
+# Check update source configuration
+Get-MpPreference | Select-Object SignatureFallbackOrder,
+    SignatureDefinitionUpdateFileSharesSources</code></pre>
+                </div>
+            </div>
+
+            <h2>Third-Party AV Conflicts</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Third-Party AV Troubleshooting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>THIRD-PARTY AV CONFLICTS:
+
+EXPECTED BEHAVIOR:
+├── Third-party AV installed → Defender in Passive Mode
+├── Passive Mode: No real-time protection, EDR still works
+├── After AV removal → Defender should auto-enable
+└── EDR in Block Mode can provide additional protection
+
+CHECK DEFENDER MODE:
+Get-MpComputerStatus | Select-Object AMRunningMode
+# Normal = Active, Passive = Another AV present
+
+ISSUE: Defender Won't Activate After AV Removal
+SOLUTIONS:
+1. Restart the computer
+2. Check for leftover AV services/drivers
+3. Run: sc query | findstr -i "antivirus"
+4. Check registry for third-party AV entries
+5. Use vendor's removal tool
+
+# Force Defender to re-evaluate
+Set-MpPreference -DisableRealtimeMonitoring $false
+Start-Service WinDefend
+
+ISSUE: Want Both Running (EDR + Third-Party AV)
+CONFIGURATION:
+├── MDE EDR works alongside third-party AV
+├── Enable "EDR in Block Mode" for extra protection
+├── Defender AV stays in Passive Mode
+└── Gives visibility without AV conflicts
+
+ENABLE EDR IN BLOCK MODE:
+# Via Intune or portal:
+# Settings → Endpoints → Advanced features → EDR in block mode: ON
+
+# This allows:
+├── EDR behavioral detections still block threats
+├── No conflict with third-party AV
+├── Additional protection layer
+└── Full MDE visibility maintained</code></pre>
+                </div>
+            </div>
+
+            <h2>Feature-Specific Issues</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Feature Troubleshooting</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>FEATURE-SPECIFIC TROUBLESHOOTING:
+
+ASR RULES NOT WORKING:
+# Check ASR status
+Get-MpPreference | Select-Object AttackSurfaceReductionRules_Ids,
+    AttackSurfaceReductionRules_Actions
+
+# Verify rules are in Block (1) not Audit (2)
+# Check Windows version (some rules need newer versions)
+# Review exclusions that might be too broad
+
+NETWORK PROTECTION ISSUES:
+# Check status
+Get-MpPreference | Select-Object EnableNetworkProtection
+# 0=Disabled, 1=Enabled, 2=AuditMode
+
+# Enable
+Set-MpPreference -EnableNetworkProtection Enabled
+
+# Test connectivity
+# Visit: https://smartscreentestratings2.net (should block)
+
+CONTROLLED FOLDER ACCESS ISSUES:
+# Check status
+Get-MpPreference | Select-Object EnableControlledFolderAccess
+
+# Check allowed apps
+Get-MpPreference | Select-Object ControlledFolderAccessAllowedApplications
+
+# Add allowed app
+Add-MpPreference -ControlledFolderAccessAllowedApplications "C:\Program Files\App\app.exe"
+
+TAMPER PROTECTION ISSUES:
+# Check status
+Get-MpComputerStatus | Select-Object IsTamperProtected
+
+# If can't change settings locally:
+├── Tamper Protection is working as intended
+├── Manage via Intune or MDE portal
+├── Cannot disable locally (by design)
+└── Check Intune policies if changes needed</code></pre>
+                </div>
+            </div>
+
+            <h2>Diagnostic Commands</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Comprehensive Diagnostics</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Full Defender status check</span>
+Get-MpComputerStatus | Format-List
+
+<span class="comment"># Check all preferences</span>
+Get-MpPreference | Format-List
+
+<span class="comment"># Recent threat detections</span>
+Get-MpThreat | Select-Object -Last 10
+
+<span class="comment"># Check Defender event logs</span>
+Get-WinEvent -LogName "Microsoft-Windows-Windows Defender/Operational" -MaxEvents 50 |
+    Where-Object { $_.LevelDisplayName -eq "Error" -or $_.LevelDisplayName -eq "Warning" }
+
+<span class="comment"># Run MDE Client Analyzer</span>
+<span class="comment"># Download from Microsoft, extracts detailed diagnostics</span>
+.\MDEClientAnalyzer.cmd
+
+<span class="comment"># Collect support diagnostics</span>
+"%ProgramFiles%\Windows Defender\MpCmdRun.exe" -GetFiles
+
+<span class="comment"># Output location: C:\ProgramData\Microsoft\Windows Defender\Support</span></code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Important Notes</h5>
+                    <ul>
+                        <li><strong>Tamper Protection</strong>: Prevents local changes to Defender settings</li>
+                        <li><strong>Passive Mode</strong>: Expected when third-party AV is installed</li>
+                        <li><strong>Policy precedence</strong>: Intune/GPO settings override local changes</li>
+                        <li><strong>Support logs</strong>: Use MpCmdRun -GetFiles for support cases</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Passive Mode</strong>: Defender state when third-party AV is installed</li>
+                    <li><strong>Cloud connectivity</strong>: wdcp.microsoft.com required for cloud protection</li>
+                    <li><strong>EDR in Block Mode</strong>: Additional protection with third-party AV</li>
+                    <li><strong>Tamper Protection</strong>: Prevents unauthorized setting changes</li>
+                    <li><strong>Diagnostics</strong>: Get-MpComputerStatus, MpCmdRun -GetFiles</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="9-4-performance-issues.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Performance Issues</span>
+                </a>
+                <a href="9-6-client-analyzer.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Client Analyzer</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

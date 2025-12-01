@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recovery Procedures | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to recovery procedures after security incidents. Learn post-incident recovery, system restoration, credential resets, and return-to-operations procedures.</p>
+            </div>
+
+            <h1>Recovery Procedures</h1>
+
+            <p>Recovery is the final phase of incident response, focused on restoring systems to normal operations while ensuring the threat is fully eliminated and preventing recurrence.</p>
+
+            <h2>Recovery Workflow</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Incident Recovery Process</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    INCIDENT RECOVERY WORKFLOW                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  1. VERIFICATION          2. REMEDIATION         3. RESTORATION         │
+│  ┌─────────────────┐     ┌─────────────────┐    ┌─────────────────┐    │
+│  │ • Threat gone   │ ──▶ │ • Remove malware│ ──▶│ • Restore data  │    │
+│  │ • Scope known   │     │ • Fix vulns     │    │ • Rebuild if    │    │
+│  │ • Evidence saved│     │ • Reset creds   │    │   needed        │    │
+│  └─────────────────┘     └─────────────────┘    └─────────────────┘    │
+│           │                      │                      │               │
+│           ▼                      ▼                      ▼               │
+│  4. VALIDATION           5. MONITORING          6. CLOSURE             │
+│  ┌─────────────────┐     ┌─────────────────┐    ┌─────────────────┐    │
+│  │ • Test systems  │ ──▶ │ • Enhanced      │ ──▶│ • Document      │    │
+│  │ • Verify clean  │     │   monitoring    │    │ • Lessons       │    │
+│  │ • User testing  │     │ • Watch for     │    │   learned       │    │
+│  │                 │     │   re-infection  │    │ • Close case    │    │
+│  └─────────────────┘     └─────────────────┘    └─────────────────┘    │
+│                                                                          │
+│  KEY PRINCIPLE: Never rush recovery - ensure threat is fully gone      │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Pre-Recovery Verification</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Verification Checklist</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PRE-RECOVERY VERIFICATION:
+
+BEFORE ANY RECOVERY ACTIONS:
+
+1. CONFIRM THREAT ELIMINATED
+   [ ] All malicious files quarantined/removed
+   [ ] All persistence mechanisms removed
+   [ ] C2 connections blocked
+   [ ] Malicious accounts disabled
+   [ ] No active attacker presence
+
+2. CONFIRM SCOPE IS KNOWN
+   [ ] All affected devices identified
+   [ ] All compromised accounts identified
+   [ ] Data exfiltration scope understood
+   [ ] Initial access vector identified
+   [ ] Lateral movement mapped
+
+3. EVIDENCE PRESERVED
+   [ ] Investigation packages collected
+   [ ] Memory dumps (if needed)
+   [ ] Log data exported
+   [ ] Timeline documented
+   [ ] IOCs catalogued</code></pre>
+                </div>
+            </div>
+
+            <h2>Device Recovery Options</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Recovery Decision Matrix</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEVICE RECOVERY OPTIONS:
+
+OPTION 1: CLEAN IN PLACE (Low severity)
+When: Simple malware, no persistence, limited impact
+Steps:
+├── Run full AV scan (verify clean)
+├── Remove app execution restrictions
+├── Release from isolation
+├── Verify all services running
+├── Test user functionality
+└── Monitor for 24-48 hours
+
+MDE ACTIONS:
+1. Device page → Run antivirus scan (Full)
+2. Wait for scan completion
+3. Verify no threats found
+4. Release from isolation
+5. Remove app restrictions (if applied)
+
+OPTION 2: RESTORE FROM BACKUP (Medium severity)
+When: Persistence present, unknown scope
+Steps:
+├── Identify clean backup point
+├── Restore system from backup
+├── Apply latest security patches
+├── Re-run onboarding if needed
+├── Verify MDE connectivity
+└── Monitor closely
+
+OPTION 3: FULL REBUILD (High severity)
+When: Rootkit, bootkit, deep compromise
+Steps:
+├── Wipe device completely
+├── Reinstall OS from known-good media
+├── Apply all security patches
+├── Install required applications
+├── Restore user data from backup
+├── Re-onboard to MDE
+└── Return to user
+
+DECISION MATRIX:
+┌─────────────────────────────────────────────────────────────┐
+│ Scenario                    │ Recommended Action            │
+├─────────────────────────────────────────────────────────────┤
+│ Simple malware, blocked     │ Clean in place               │
+│ Malware executed, no persist│ Clean in place + monitor     │
+│ Persistence found           │ Restore from backup          │
+│ Credential theft            │ Clean + credential reset     │
+│ Rootkit/bootkit             │ Full rebuild                 │
+│ Unknown scope               │ Full rebuild (safest)        │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+                </div>
+            </div>
+
+            <h2>Credential Recovery</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Credential Reset Procedures</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CREDENTIAL RECOVERY BY SEVERITY:
+
+STANDARD USER ACCOUNT:
+├── Force password reset
+├── Revoke active sessions
+├── Review recent activity
+├── Re-enable MFA if disabled
+└── Monitor for suspicious use
+
+PRIVILEGED ACCOUNT COMPROMISE:
+├── Immediately disable account
+├── Reset password
+├── Revoke all sessions
+├── Review privileged access
+├── Check for created accounts
+└── Audit admin actions
+
+DOMAIN ADMIN COMPROMISE (CRITICAL):
+├── Disable compromised account immediately
+├── Reset KRBTGT password (twice, 10+ hours apart)
+├── Reset all Domain Admin passwords
+├── Reset all service account passwords
+├── Check for Golden Ticket attacks
+├── Review AD for backdoor accounts
+└── Consider full AD recovery
+
+# Azure AD - Force password reset
+Set-AzureADUserPassword -ObjectId "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="720701170032111d1f02131c0b5c111d1f">[email&#160;protected]</a>" `
+    -Password $NewPassword -ForceChangePasswordNextLogin $true
+
+# Revoke all sessions
+Revoke-AzureADUserAllRefreshToken -ObjectId "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1c696f796e5c7f73716c7d7265327f7371">[email&#160;protected]</a>"</code></pre>
+                </div>
+            </div>
+
+            <h2>Post-Recovery Monitoring</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Enhanced Monitoring</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// Monitor recovered devices for 30 days</span>
+<span class="keyword">let</span> RecoveredDevices = <span class="function">dynamic</span>([<span class="string">"WKSTN-HR-042"</span>]);
+<span class="keyword">let</span> ThreatIndicators = <span class="function">dynamic</span>([<span class="string">"malware.exe"</span>]);
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> DeviceName <span class="function">in</span> (RecoveredDevices)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="function">in</span> (ThreatIndicators) <span class="operator">or</span> 
+        ProcessCommandLine <span class="function">has_any</span> (<span class="string">"-enc"</span>, <span class="string">"downloadstring"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Critical Recovery Rules</h5>
+                    <ul>
+                        <li><strong>Never rush</strong>: Incomplete recovery leads to re-infection</li>
+                        <li><strong>Verify clean</strong>: Run full scans before releasing devices</li>
+                        <li><strong>Reset credentials</strong>: Assume compromised if any doubt</li>
+                        <li><strong>Monitor closely</strong>: 30+ days enhanced monitoring</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Recovery options</strong>: Clean in place, restore from backup, full rebuild</li>
+                    <li><strong>KRBTGT reset</strong>: Twice, 10+ hours apart for domain compromise</li>
+                    <li><strong>Verification</strong>: Never release without confirming clean</li>
+                    <li><strong>Post-recovery</strong>: 30-day enhanced monitoring period</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="6-7-containment-strategies.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Containment Strategies</span>
+                </a>
+                <a href="7-1-tvm-overview.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">TVM Overview</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder

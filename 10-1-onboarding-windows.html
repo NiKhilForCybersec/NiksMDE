@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Windows | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to onboarding Windows devices to MDE. Learn deployment methods (Intune, GPO, SCCM, local script), prerequisites, verification steps, and troubleshooting common issues.</p>
+            </div>
+
+            <h1>Onboarding Windows Devices</h1>
+
+            <p>Onboarding is the process of configuring Windows devices to send telemetry to MDE and receive protection. Multiple deployment methods are available depending on your infrastructure.</p>
+
+            <h2>Prerequisites</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Onboarding Prerequisites</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SUPPORTED OPERATING SYSTEMS:
+
+WINDOWS CLIENT:
+├── Windows 11 (all versions)
+├── Windows 10 (1607 and later)
+├── Windows 8.1 (with prerequisites)
+└── Windows 7 SP1 (with prerequisites, limited support)
+
+WINDOWS SERVER:
+├── Windows Server 2022
+├── Windows Server 2019
+├── Windows Server 2016
+├── Windows Server 2012 R2 (with MMA agent)
+└── Windows Server 2008 R2 SP1 (limited, with MMA)
+
+NETWORK REQUIREMENTS:
+├── HTTPS (443) outbound to Microsoft cloud
+├── Proxy support available
+└── URLs to allow:
+    ├── *.securitycenter.windows.com
+    ├── *.blob.core.windows.net
+    ├── *.ods.opinsights.azure.com
+    └── See full list in documentation
+
+LICENSING:
+├── Microsoft Defender for Endpoint P1 or P2
+├── Microsoft 365 E5/E5 Security
+├── Microsoft 365 A5 (Education)
+└── Standalone MDE licenses</code></pre>
+                </div>
+            </div>
+
+            <h2>Deployment Methods</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Best For</th>
+                            <th>Scale</th>
+                            <th>Management</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Intune</strong></td>
+                            <td>Cloud-managed devices</td>
+                            <td>Enterprise</td>
+                            <td>Cloud</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Group Policy</strong></td>
+                            <td>Domain-joined devices</td>
+                            <td>Enterprise</td>
+                            <td>On-premises</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SCCM/MECM</strong></td>
+                            <td>Existing ConfigMgr environment</td>
+                            <td>Enterprise</td>
+                            <td>On-premises/Cloud</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Local Script</strong></td>
+                            <td>Testing, small deployments</td>
+                            <td>Small</td>
+                            <td>Manual</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Method 1: Intune (Recommended)</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Intune Onboarding Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INTUNE ONBOARDING:
+
+STEP 1: Connect Intune to MDE
+├── Go to endpoint.microsoft.com
+├── Endpoint security → Microsoft Defender for Endpoint
+├── Open Microsoft Defender Security Center
+└── Enable Intune connection
+
+STEP 2: Enable Endpoint Security
+├── Endpoint security → Setup → Microsoft Defender for Endpoint
+├── Set "Connect Windows devices..." to On
+└── Wait for sync (can take up to 24 hours first time)
+
+STEP 3: Create Onboarding Policy
+├── Endpoint security → Endpoint detection and response
+├── Create policy
+├── Platform: Windows 10 and later
+├── Profile: Endpoint detection and response
+├── Settings:
+│   ├── Expedite telemetry reporting: Yes
+│   ├── Sample sharing: All file types
+│   └── Microsoft Defender for Endpoint client configuration package type: Auto from connector
+
+STEP 4: Assign Policy
+├── Select device groups
+├── All devices OR specific groups
+└── Save and deploy
+
+STEP 5: Verify
+├── Devices appear in MDE portal within 20-30 min
+├── Check device inventory
+└── Verify sensor health</code></pre>
+                </div>
+            </div>
+
+            <h2>Method 2: Group Policy</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Group Policy Onboarding</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>GROUP POLICY ONBOARDING:
+
+STEP 1: Download Onboarding Package
+├── security.microsoft.com
+├── Settings → Endpoints → Onboarding
+├── Select OS: Windows 10/11
+├── Deployment method: Group Policy
+└── Download package (ZIP file)
+
+STEP 2: Extract Files
+├── WindowsDefenderATPOnboardingScript.cmd
+└── OptionalParamsPolicy folder (ADMX files)
+
+STEP 3: Copy ADMX Files (Optional but recommended)
+├── Copy .admx to: \\domain\sysvol\domain\Policies\PolicyDefinitions
+├── Copy .adml to: \\domain\sysvol\domain\Policies\PolicyDefinitions\en-US
+└── Refresh Group Policy Management Console
+
+STEP 4: Create GPO
+├── Open Group Policy Management
+├── Create new GPO: "MDE Onboarding"
+├── Link to target OU
+
+STEP 5: Configure GPO Settings
+├── Computer Configuration → Policies → Administrative Templates
+├── Windows Components → Windows Defender ATP
+├── Enable: Onboarding
+│   └── Value: (paste content from .cmd file)
+├── Enable: Sample sharing (All file types)
+└── Enable: Expedite telemetry reporting
+
+STEP 6: Deploy
+├── Link GPO to device OUs
+├── Run gpupdate /force on test devices
+└── Verify in MDE portal
+
+GPO SCRIPT ALTERNATIVE:
+├── Create GPO with startup script
+├── Script: The WindowsDefenderATPOnboardingScript.cmd
+└── Runs once per device at startup</code></pre>
+                </div>
+            </div>
+
+            <h2>Method 3: SCCM/MECM</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">ConfigMgr Onboarding</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SCCM ONBOARDING:
+
+STEP 1: Download Package
+├── security.microsoft.com → Settings → Onboarding
+├── Select: System Center Configuration Manager
+└── Download package
+
+STEP 2: Import to ConfigMgr
+├── ConfigMgr Console → Assets and Compliance
+├── Endpoint Protection → Microsoft Defender ATP Policies
+├── Right-click → Create Microsoft Defender ATP Policy
+├── Browse to onboarding file
+└── Complete wizard
+
+STEP 3: Deploy Policy
+├── Right-click policy → Deploy
+├── Select target collection
+├── Schedule deployment
+└── Monitor compliance
+
+STEP 4: Verify
+├── Check MDE portal for devices
+├── ConfigMgr reports for deployment status
+└── Client logs: %ProgramData%\Microsoft\Windows Defender Advanced Threat Protection\Logs</code></pre>
+                </div>
+            </div>
+
+            <h2>Method 4: Local Script</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Local Script Onboarding</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>LOCAL SCRIPT ONBOARDING:
+
+STEP 1: Download Package
+├── security.microsoft.com → Settings → Onboarding
+├── Select OS: Windows 10/11
+├── Deployment method: Local Script
+└── Download package
+
+STEP 2: Run Script
+├── Extract ZIP file
+├── Run as Administrator:
+│   └── WindowsDefenderATPLocalOnboardingScript.cmd
+├── Wait for completion message
+└── Reboot if prompted
+
+STEP 3: Verify Onboarding
+├── Run detection test (see below)
+├── Check MDE portal in 20-30 minutes
+└── Verify device appears in inventory
+
+DETECTION TEST:
+Open PowerShell as admin and run:
+powershell.exe -NoExit -ExecutionPolicy Bypass -WindowStyle Hidden $ErrorActionPreference= 'silentlycontinue';(New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/microsoft/mdatp-test/main/scripts/detection-test.ps1')|IEX
+
+OR simpler test:
+cmd.exe /c "powershell -command ""&{Write-Host 'Test'}"" & echo %TEMP%\MpCmdRun.log"</code></pre>
+                </div>
+            </div>
+
+            <h2>Verify Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Verification Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>VERIFY ONBOARDING SUCCESS:
+
+1. CHECK MDE PORTAL
+   ├── security.microsoft.com → Devices
+   ├── Device should appear within 20-30 minutes
+   └── Health state should be "Active"
+
+2. CHECK LOCAL REGISTRY
+   reg query "HKLM\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"
+   └── OnboardingState should be 1
+
+3. CHECK SENSE SERVICE
+   sc query sense
+   └── State should be RUNNING
+
+4. CHECK EVENT LOGS
+   Event Viewer → Applications and Services Logs → 
+   Microsoft → Windows → SENSE → Operational
+   └── Look for Event ID 1 (service started)
+
+5. POWERSHELL VERIFICATION
+   <span class="function">Get-Service</span> Sense
+   <span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status"</span>
+
+6. RUN DETECTION TEST
+   └── Triggers test alert in portal
+   └── Confirms full pipeline working</code></pre>
+                </div>
+            </div>
+
+            <h2>Troubleshooting Onboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Common Issues and Solutions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ISSUE: Device not appearing in portal
+SOLUTIONS:
+├── Wait 20-30 minutes (normal delay)
+├── Check Sense service is running
+├── Verify network connectivity
+├── Check proxy settings
+└── Review event logs for errors
+
+ISSUE: Sense service not starting
+SOLUTIONS:
+├── Check Windows version compatibility
+├── Verify onboarding script ran successfully
+├── Check for third-party AV conflicts
+├── Run: sc start sense
+└── Check dependencies: sc qc sense
+
+ISSUE: OnboardingState = 0
+SOLUTIONS:
+├── Re-run onboarding script
+├── Check for policy conflicts
+├── Verify package downloaded correctly
+└── Check script ran with admin rights
+
+ISSUE: Network connectivity errors
+SOLUTIONS:
+├── Verify proxy settings configured
+├── Test URLs manually:
+│   └── Invoke-WebRequest "https://x.cp.wd.microsoft.com/api/report"
+├── Check firewall rules
+├── Verify certificate trust
+└── Use MDEClientAnalyzer tool
+
+MDE CLIENT ANALYZER:
+├── Download from: https://aka.ms/MDEClientAnalyzer
+├── Run as Administrator
+├── Review output for connectivity issues
+└── Follow remediation suggestions</code></pre>
+                </div>
+            </div>
+
+            <h2>Offboarding</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Offboarding Process</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>OFFBOARDING DEVICES:
+
+WHEN TO OFFBOARD:
+├── Device decommissioned
+├── Moving to different tenant
+├── Testing/lab cleanup
+└── License changes
+
+DOWNLOAD OFFBOARDING PACKAGE:
+├── security.microsoft.com → Settings → Offboarding
+├── Select deployment method
+├── Package valid for 30 days
+└── Generate new package if expired
+
+RUN OFFBOARDING:
+├── Same methods as onboarding
+├── Script stops Sense service
+├── Clears onboarding data
+└── Device removed from portal after 7 days
+
+IMPORTANT:
+├── Offboarding removes protection
+├── Historical data retained per policy
+├── Device can be re-onboarded
+└── Don't offboard during active incident</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Deployment Operations</h4>
+                <ul>
+                    <li>Deploy MDE to new devices</li>
+                    <li>Verify successful onboarding</li>
+                    <li>Troubleshoot onboarding failures</li>
+                    <li>Monitor deployment coverage</li>
+                    <li>Process offboarding requests</li>
+                    <li>Maintain deployment documentation</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"New device not showing in MDE"</span>
+                    <span class="ticket-solution">→ Check Sense service, verify policy applied, wait 30 min, check connectivity.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Mass deployment failing"</span>
+                    <span class="ticket-solution">→ Check GPO/Intune policy, verify network access, run MDEClientAnalyzer on sample.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Need to remove device from MDE"</span>
+                    <span class="ticket-solution">→ Download offboarding package, run on device, wait 7 days for removal.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Methods</strong>: Intune (cloud), GPO (domain), SCCM (ConfigMgr), Local script</li>
+                    <li><strong>Intune</strong>: Preferred for cloud-managed devices, automatic from connector</li>
+                    <li><strong>GPO</strong>: Uses onboarding script content in policy setting</li>
+                    <li><strong>Verify</strong>: Check Sense service, registry OnboardingState=1, portal appearance</li>
+                    <li><strong>Timeline</strong>: Devices appear in portal within 20-30 minutes</li>
+                    <li><strong>Troubleshooting</strong>: MDEClientAnalyzer tool, event logs, connectivity tests</li>
+                    <li><strong>Offboarding</strong>: Package valid 30 days, device removed after 7 days</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="9-5-performance-tuning.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Performance Tuning</span>
+                </a>
+                <a href="10-2-onboarding-macos.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Onboarding macOS</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

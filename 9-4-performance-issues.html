@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Issues | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to troubleshooting MDE performance issues. Learn to diagnose high CPU usage, memory consumption, scan performance, and optimization techniques.</p>
+            </div>
+
+            <h1>Performance Troubleshooting</h1>
+
+            <p>Microsoft Defender for Endpoint is designed to be lightweight, but performance issues can occur. This guide covers diagnosis and resolution of common performance problems.</p>
+
+            <h2>Common Performance Issues</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">MDE Performance Problem Areas</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    PERFORMANCE ISSUE CATEGORIES                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  HIGH CPU USAGE                    HIGH MEMORY USAGE                    │
+│  ┌─────────────────────────────┐  ┌─────────────────────────────┐      │
+│  │ • Real-time scanning        │  │ • Large definition files    │      │
+│  │ • Full disk scans           │  │ • Memory leaks (rare)       │      │
+│  │ • Cloud sample upload       │  │ • High event volume         │      │
+│  │ • ASR rule processing       │  │ • Investigation package     │      │
+│  └─────────────────────────────┘  └─────────────────────────────┘      │
+│                                                                          │
+│  SLOW SCANS                        SLOW APPLICATIONS                    │
+│  ┌─────────────────────────────┐  ┌─────────────────────────────┐      │
+│  │ • Large files/archives      │  │ • Real-time scan overhead   │      │
+│  │ • Network drives            │  │ • ASR rule interference     │      │
+│  │ • High file count           │  │ • CFA blocking access       │      │
+│  │ • Outdated hardware         │  │ • Missing exclusions        │      │
+│  └─────────────────────────────┘  └─────────────────────────────┘      │
+│                                                                          │
+│  MDE SERVICES:                                                          │
+│  ├── MsMpEng.exe - Antimalware Service Executable                      │
+│  ├── MsSense.exe - MDE Sensor (EDR)                                    │
+│  ├── SenseCncProxy.exe - Cloud connectivity                            │
+│  └── SenseIR.exe - Investigation/Response                              │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Diagnosing CPU Issues</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - CPU Diagnosis</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check MsMpEng CPU usage</span>
+Get-Process MsMpEng | Select-Object Name, CPU, WorkingSet64, 
+    @{N='CPU%';E={($.CPU / (Get-Date - $.StartTime).TotalSeconds) * 100}}
+
+<span class="comment"># Monitor real-time CPU usage</span>
+while ($true) {
+    $cpu = (Get-Process MsMpEng).CPU
+    $mem = [math]::Round((Get-Process MsMpEng).WorkingSet64/1MB, 2)
+    Write-Host "$(Get-Date) - CPU: $cpu, Memory: $mem MB"
+    Start-Sleep -Seconds 5
+}
+
+<span class="comment"># Check what Defender is scanning</span>
+Get-MpThreat | Select-Object -Last 10
+
+<span class="comment"># Check active scan status</span>
+Get-MpComputerStatus | Select-Object QuickScanAge, FullScanAge, 
+    RealTimeProtectionEnabled, AntivirusEnabled
+
+<span class="comment"># View Defender performance statistics</span>
+Get-MpPerformanceReport
+
+<span class="comment"># Run performance recording (30 seconds)</span>
+New-MpPerformanceRecording -RecordTo C:\temp\defender-perf.etl -Seconds 30
+
+<span class="comment"># Analyze the recording</span>
+Get-MpPerformanceReport -Path C:\temp\defender-perf.etl | 
+    Sort-Object Duration -Descending | Select-Object -First 20</code></pre>
+                </div>
+            </div>
+
+            <h2>Performance Analyzer</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Performance Analysis Tool</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>DEFENDER PERFORMANCE ANALYZER:
+
+CAPTURE PERFORMANCE DATA:
+# Start recording (runs for specified duration)
+New-MpPerformanceRecording -RecordTo C:\temp\perf.etl -Seconds 60
+
+# User continues working during recording
+# Reproduce the performance issue
+
+ANALYZE RESULTS:
+
+# Top files by scan duration
+Get-MpPerformanceReport -Path C:\temp\perf.etl -TopFiles 20
+
+# Top processes triggering scans
+Get-MpPerformanceReport -Path C:\temp\perf.etl -TopProcesses 20
+
+# Top file extensions
+Get-MpPerformanceReport -Path C:\temp\perf.etl -TopExtensions 20
+
+# Top folders
+Get-MpPerformanceReport -Path C:\temp\perf.etl -TopPaths 20
+
+SAMPLE OUTPUT:
+┌──────────────────────────────────────────────────────────────────┐
+│ Path                              | Duration  | Count           │
+├──────────────────────────────────────────────────────────────────┤
+│ C:\Databases\*.mdf                | 45.2 sec  | 847            │
+│ C:\BuildOutput\*.dll              | 32.1 sec  | 2341           │
+│ C:\Logs\*.log                     | 18.7 sec  | 5623           │
+│ C:\VMs\*.vhdx                     | 15.3 sec  | 12             │
+└──────────────────────────────────────────────────────────────────┘
+
+ACTION: Add exclusions for high-duration items (if safe)</code></pre>
+                </div>
+            </div>
+
+            <h2>Exclusion Configuration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Performance-Based Exclusions</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EXCLUSIONS FOR PERFORMANCE:
+
+COMMON HIGH-IMPACT ITEMS:
+├── Database files: .mdf, .ldf, .ndf
+├── Virtual machines: .vhd, .vhdx, .vmdk
+├── Build output: bin\, obj\, Debug\, Release\
+├── Source control: .git\, .svn\
+├── Backup files: .bak, .tmp
+└── Log files: High-volume log directories
+
+ADDING EXCLUSIONS:
+
+# PowerShell - Add path exclusion
+Add-MpPreference -ExclusionPath "C:\Databases"
+
+# PowerShell - Add extension exclusion
+Add-MpPreference -ExclusionExtension "mdf"
+
+# PowerShell - Add process exclusion
+Add-MpPreference -ExclusionProcess "sqlservr.exe"
+
+# View current exclusions
+Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
+Get-MpPreference | Select-Object -ExpandProperty ExclusionExtension
+Get-MpPreference | Select-Object -ExpandProperty ExclusionProcess
+
+EXCLUSION BEST PRACTICES:
+├── Use specific paths over broad exclusions
+├── Prefer process exclusions for known apps
+├── Never exclude user-writable folders (Temp, Downloads)
+├── Document all exclusions with justification
+├── Review exclusions quarterly
+└── Test performance impact before and after
+
+MICROSOFT RECOMMENDED EXCLUSIONS:
+├── SQL Server: Specific file/process exclusions
+├── Exchange Server: Specific file/process exclusions
+├── IIS: Web server specific exclusions
+├── Hyper-V: VM file exclusions
+└── Check Microsoft docs for complete lists</code></pre>
+                </div>
+            </div>
+
+            <h2>Scan Optimization</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Scan Performance Tuning</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SCAN OPTIMIZATION:
+
+CPU THROTTLING:
+# Limit CPU usage during scans (0-100%)
+Set-MpPreference -ScanAvgCPULoadFactor 30
+
+# Low priority scans (less impact on system)
+Set-MpPreference -EnableLowCpuPriority $true
+
+SCHEDULE OPTIMIZATION:
+# Schedule scans during off-hours
+Set-MpPreference -ScanScheduleDay 0  # Sunday
+Set-MpPreference -ScanScheduleTime 120  # 2:00 AM
+
+# Use quick scans for daily, full for weekly
+Set-MpPreference -ScanParameters 1  # Quick scan
+
+SCAN SCOPE REDUCTION:
+# Don't scan network files (if appropriate)
+Set-MpPreference -DisableScanningNetworkFiles $true
+
+# Don't scan mapped network drives during full scan
+Set-MpPreference -DisableScanningMappedNetworkDrivesForFullScan $true
+
+# Skip archive files for performance
+Set-MpPreference -DisableArchiveScanning $true
+# WARNING: Reduces security, use carefully
+
+SERVER OPTIMIZATION:
+# Reduce real-time protection overhead for servers
+Set-MpPreference -DisableRealtimeMonitoring $false  # Keep enabled
+Set-MpPreference -RealTimeScanDirection 0  # Both (0), Incoming (1), or Outgoing (2)
+
+# Reduce cloud lookup timeout
+Set-MpPreference -CloudBlockLevel 1  # Default (2=High, 4=HighPlus, 6=ZeroTolerance)
+Set-MpPreference -CloudExtendedTimeout 10  # Seconds (default 50)</code></pre>
+                </div>
+            </div>
+
+            <h2>EDR Performance</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">EDR/Sensor Performance</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EDR SENSOR PERFORMANCE:
+
+SENSOR PROCESSES:
+├── MsSense.exe: Main sensor service
+├── SenseIR.exe: Investigation/Response
+└── SenseCncProxy.exe: Cloud connectivity
+
+COMMON SENSOR ISSUES:
+├── High event volume (busy servers)
+├── Investigation package collection
+├── Live Response sessions
+└── Large file uploads
+
+DIAGNOSIS:
+# Check sensor service status
+Get-Service Sense | Select-Object Status, StartType
+
+# Check sensor resource usage
+Get-Process MsSense* | Select-Object Name, CPU, WorkingSet64
+
+# View sensor logs
+Get-WinEvent -LogName "Microsoft-Windows-SENSE/Operational" -MaxEvents 100
+
+SENSOR OPTIMIZATION:
+├── Reduce telemetry on high-volume servers (if allowed)
+├── Schedule investigation packages during off-hours
+├── Limit concurrent Live Response sessions
+└── Review network bandwidth to cloud
+
+EVENT VOLUME REDUCTION:
+# High-volume benign events can be filtered
+# Contact Microsoft support for advanced tuning
+# Use automation exclusions for benign folders</code></pre>
+                </div>
+            </div>
+
+            <h2>Troubleshooting Checklist</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Performance Troubleshooting Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PERFORMANCE TROUBLESHOOTING CHECKLIST:
+
+1. IDENTIFY THE ISSUE
+   [ ] Which process is consuming resources? (MsMpEng, MsSense)
+   [ ] CPU, memory, or disk I/O?
+   [ ] Continuous or periodic?
+   [ ] Started after specific change?
+
+2. GATHER DATA
+   [ ] Run performance recording
+   [ ] Capture Task Manager/Resource Monitor data
+   [ ] Note applications running during issue
+   [ ] Check Windows Event Logs
+
+3. ANALYZE
+   [ ] Review top files/processes from perf report
+   [ ] Check for missing exclusions
+   [ ] Look for scan schedule conflicts
+   [ ] Review recent policy changes
+
+4. IMPLEMENT FIXES
+   [ ] Add necessary exclusions
+   [ ] Adjust scan schedules
+   [ ] Tune CPU limits
+   [ ] Optimize cloud settings
+
+5. VERIFY
+   [ ] Monitor for 24-48 hours
+   [ ] Compare before/after metrics
+   [ ] Confirm user complaints resolved
+   [ ] Document changes made
+
+ESCALATION TRIGGERS:
+├── Issue persists after exclusions
+├── Sensor service crashes
+├── Unexplained memory growth
+└── Performance degrades over time</code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Important Notes</h5>
+                    <ul>
+                        <li><strong>Security tradeoff</strong>: Exclusions reduce protection - use sparingly</li>
+                        <li><strong>Test changes</strong>: Monitor after changes to verify improvement</li>
+                        <li><strong>Document exclusions</strong>: Track what was excluded and why</li>
+                        <li><strong>Don't disable protection</strong>: Tune rather than turn off features</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Key processes</strong>: MsMpEng.exe (AV), MsSense.exe (EDR sensor)</li>
+                    <li><strong>Performance analyzer</strong>: New-MpPerformanceRecording cmdlet</li>
+                    <li><strong>CPU throttling</strong>: ScanAvgCPULoadFactor setting (0-100)</li>
+                    <li><strong>Exclusion types</strong>: Path, extension, process</li>
+                    <li><strong>Tradeoff</strong>: Performance vs. security coverage</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="9-3-onboarding-troubleshooting.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Onboarding Troubleshooting</span>
+                </a>
+                <a href="9-5-protection-issues.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Protection Issues</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

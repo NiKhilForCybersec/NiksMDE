@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Mobile Devices | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to onboarding iOS and Android devices to MDE. Learn Mobile Threat Defense capabilities, deployment methods, and configuration.</p>
+            </div>
+
+            <h1>Onboarding Mobile Devices</h1>
+
+            <p>Microsoft Defender for Endpoint provides Mobile Threat Defense (MTD) capabilities for iOS and Android devices, protecting against phishing, malicious apps, and network threats.</p>
+
+            <h2>Mobile Threat Defense Capabilities</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">MTD Features by Platform</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>iOS CAPABILITIES:
+├── Web Protection
+│   ├── Anti-phishing (blocks malicious URLs)
+│   ├── Unsafe site blocking
+│   ├── Custom indicators (block/allow URLs)
+│   └── Works with Safari and all browsers
+├── Network Protection
+│   ├── Rogue Wi-Fi detection
+│   ├── Certificate-based detection
+│   └── Network anomaly alerts
+├── Jailbreak Detection
+│   ├── Detects jailbroken devices
+│   ├── Compliance signal to Intune
+│   └── Conditional access integration
+├── App Vulnerability Assessment
+│   ├── Scans installed apps
+│   ├── Identifies vulnerable versions
+│   └── Reports to TVM dashboard
+└── Privacy Controls
+    ├── No access to personal data
+    ├── Work profile isolation
+    └── User consent required
+
+ANDROID CAPABILITIES:
+├── Malware Protection
+│   ├── Real-time app scanning
+│   ├── On-demand scans
+│   ├── Blocks malicious apps
+│   └── PUA detection
+├── Web Protection
+│   ├── Anti-phishing
+│   ├── Unsafe site blocking
+│   ├── Custom indicators
+│   └── Browser-agnostic (VPN-based)
+├── Network Protection
+│   ├── Rogue Wi-Fi detection
+│   ├── Man-in-the-middle detection
+│   └── Unsecured network alerts
+├── Root Detection
+│   ├── Detects rooted devices
+│   ├── Compliance signal
+│   └── Conditional access
+└── App Vulnerability Assessment
+    ├── Installed app inventory
+    ├── CVE correlation
+    └── TVM integration</code></pre>
+                </div>
+            </div>
+
+            <h2>Deployment Requirements</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Prerequisites</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>iOS REQUIREMENTS:
+├── iOS 14.0 or later
+├── Device enrolled in Intune (MDM or MAM)
+├── Microsoft Authenticator app
+├── Company Portal app (for MDM)
+├── Network connectivity to Microsoft services
+└── User must accept VPN profile (for web protection)
+
+ANDROID REQUIREMENTS:
+├── Android 8.0 (Oreo) or later
+├── Device enrolled in Intune
+├── Google Play Services
+├── Company Portal app
+├── Network connectivity
+└── User must accept VPN profile
+
+LICENSING:
+├── Microsoft Defender for Endpoint P1 or P2
+├── Microsoft 365 E5/A5/G5
+├── Microsoft 365 E5 Security
+└── Standalone MDE license
+
+INTUNE REQUIREMENTS:
+├── Intune subscription
+├── MDE-Intune connector enabled
+├── App configuration policies
+└── Compliance policies (optional)</code></pre>
+                </div>
+            </div>
+
+            <h2>iOS Deployment</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">iOS Deployment Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>iOS DEPLOYMENT VIA INTUNE:
+
+STEP 1: ADD APP TO INTUNE
+├── Intune admin center → Apps → iOS/iPadOS
+├── Add → iOS store app
+├── Search: "Microsoft Defender"
+├── Select Microsoft Defender: Security
+└── Assign to user/device groups
+
+STEP 2: CREATE APP CONFIGURATION POLICY
+├── Apps → App configuration policies → Add
+├── Platform: iOS/iPadOS
+├── Associated app: Microsoft Defender
+├── Configuration settings:
+│   ├── MDM channel (for supervised devices)
+│   └── MAM channel (for BYOD)
+├── Key-value pairs:
+│   ├── WebProtection: true
+│   ├── NetworkProtection: true
+│   └── VPN: true (auto-creates VPN profile)
+└── Assign to same groups as app
+
+STEP 3: (OPTIONAL) COMPLIANCE POLICY
+├── Devices → Compliance policies → Create
+├── Platform: iOS/iPadOS
+├── Device Health:
+│   ├── Require device not jailbroken
+│   └── Require threat level: Secured
+└── Actions for noncompliance: Block access
+
+STEP 4: USER EXPERIENCE
+├── User receives app via Company Portal
+├── Opens Microsoft Defender app
+├── Signs in with work account
+├── Accepts VPN profile installation
+├── App begins protecting device
+└── Status shows in MDE portal</code></pre>
+                </div>
+            </div>
+
+            <h2>Android Deployment</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Android Deployment Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ANDROID DEPLOYMENT VIA INTUNE:
+
+STEP 1: ADD APP TO INTUNE
+├── Apps → Android → Add
+├── App type: Managed Google Play app
+├── Search: "Microsoft Defender"
+├── Select and approve
+└── Assign to user/device groups
+
+STEP 2: CREATE APP CONFIGURATION POLICY
+├── Apps → App configuration policies → Add
+├── Platform: Android Enterprise
+├── Profile type: Work profile or Fully managed
+├── Associated app: Microsoft Defender
+├── Configuration settings (JSON):
+{
+  "vpn": "1",
+  "antiphishing": "1",
+  "deviceControl": "1"
+}
+└── Assign to groups
+
+STEP 3: CREATE VPN PROFILE (Required for web protection)
+├── Devices → Configuration profiles → Create
+├── Platform: Android Enterprise
+├── Profile type: VPN
+├── Connection type: Microsoft Defender
+├── Always-on VPN: Enable
+└── Assign to groups
+
+STEP 4: (OPTIONAL) COMPLIANCE POLICY
+├── Devices → Compliance policies → Create
+├── Platform: Android Enterprise
+├── Device Health:
+│   ├── Require device not rooted
+│   └── Require threat level: Secured
+└── Conditional access integration
+
+STEP 5: USER EXPERIENCE
+├── App auto-installs via managed Google Play
+├── User signs in with work account
+├── Accepts permissions
+├── VPN activates for web protection
+└── Real-time protection begins</code></pre>
+                </div>
+            </div>
+
+            <h2>Verification and Monitoring</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Verify Deployment</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>VERIFICATION STEPS:
+
+MDE PORTAL:
+├── security.microsoft.com → Devices
+├── Filter by: OS Platform = iOS or Android
+├── Device should appear within 24 hours
+├── Check: Health state = Active
+└── View device page for details
+
+INTUNE:
+├── Devices → All devices
+├── Find mobile device
+├── Check: Compliance state
+├── Check: App installation status
+└── Review detected apps
+
+ON DEVICE (iOS):
+├── Open Microsoft Defender app
+├── Dashboard should show "Protected"
+├── Settings → About → Organization ID
+└── Test: Visit smartscreentestratings2.net
+
+ON DEVICE (Android):
+├── Open Microsoft Defender app
+├── Dashboard shows protection status
+├── Run manual scan
+├── Check VPN indicator in status bar
+└── Test anti-phishing with test URL
+
+TROUBLESHOOTING:
+├── Device not appearing: Check Intune enrollment
+├── Web protection not working: Verify VPN profile
+├── Compliance failing: Check threat level
+└── App won't sign in: Verify licensing</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Key Tips</h5>
+                    <ul>
+                        <li><strong>VPN is required</strong>: Web protection needs VPN profile accepted</li>
+                        <li><strong>User consent</strong>: Users must accept permissions for full protection</li>
+                        <li><strong>Compliance integration</strong>: Combine with Conditional Access for enforcement</li>
+                        <li><strong>BYOD considerations</strong>: Use MAM policies for personal devices</li>
+                        <li><strong>Battery impact</strong>: Minimal impact with modern OS versions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>MTD</strong>: Mobile Threat Defense for iOS and Android</li>
+                    <li><strong>Capabilities</strong>: Anti-phishing, malware (Android), jailbreak/root detection</li>
+                    <li><strong>Deployment</strong>: Via Intune (MDM or MAM)</li>
+                    <li><strong>VPN required</strong>: For web protection to work</li>
+                    <li><strong>Compliance</strong>: Integrates with Conditional Access</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="1-6-onboarding-linux.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Onboarding Linux</span>
+                </a>
+                <a href="1-8-offboarding.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Offboarding Devices</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>

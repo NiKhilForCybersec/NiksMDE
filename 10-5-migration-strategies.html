@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migration Strategies | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to migrating from third-party EDR solutions to Microsoft Defender for Endpoint. Covers migrations from CrowdStrike, Symantec, McAfee, Carbon Black, and Cortex XDR with coexistence strategies and validation procedures.</p>
+            </div>
+
+            <h1>EDR Migration Strategies</h1>
+
+            <p>Migrating from one EDR solution to another requires careful planning to ensure continuous protection. This guide covers migration strategies, coexistence configurations, and validation procedures for transitioning to MDE.</p>
+
+            <h2>Migration Overview</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">EDR Migration Phases</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        EDR MIGRATION TIMELINE                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  PHASE 1          PHASE 2          PHASE 3          PHASE 4             │
+│  PLANNING         COEXISTENCE      TRANSITION       CLEANUP             │
+│  (2-4 weeks)      (2-4 weeks)      (2-4 weeks)      (1-2 weeks)         │
+│                                                                          │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐          │
+│  │ Audit    │    │ Deploy   │    │ Switch   │    │ Remove   │          │
+│  │ Current  │───►│ MDE in   │───►│ MDE to   │───►│ Legacy   │          │
+│  │ State    │    │ Passive  │    │ Active   │    │ EDR      │          │
+│  │          │    │ Mode     │    │ Mode     │    │          │          │
+│  └──────────┘    └──────────┘    └──────────┘    └──────────┘          │
+│                                                                          │
+│  • Inventory     • Side-by-side  • MDE primary   • Uninstall           │
+│  • Exclusions    • Validate      • Legacy to     • Verify removal      │
+│  • Detections    • Test alerts     passive       • Final validation    │
+│  • Integrations  • Compare       • Monitor gaps  • Documentation       │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Phase 1: Planning & Assessment</h2>
+
+            <h3>Current State Audit</h3>
+
+            <p>Before migration, document your existing EDR configuration:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>What to Document</th>
+                            <th>Why It Matters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Custom Detections</td>
+                            <td>All custom rules, IOC lists, behavioral detections</td>
+                            <td>Recreate in MDE as custom detection rules</td>
+                        </tr>
+                        <tr>
+                            <td>Exclusions</td>
+                            <td>Path, process, extension exclusions</td>
+                            <td>Migrate to MDE exclusion policies</td>
+                        </tr>
+                        <tr>
+                            <td>Response Playbooks</td>
+                            <td>Automated response actions, workflows</td>
+                            <td>Recreate using MDE AIR or Logic Apps</td>
+                        </tr>
+                        <tr>
+                            <td>SIEM Integration</td>
+                            <td>Log forwarding, alert connectors</td>
+                            <td>Update SIEM connectors for MDE</td>
+                        </tr>
+                        <tr>
+                            <td>API Integrations</td>
+                            <td>SOAR playbooks, ticketing systems</td>
+                            <td>Update to use MDE APIs</td>
+                        </tr>
+                        <tr>
+                            <td>Alert Tuning</td>
+                            <td>Suppressed alerts, severity adjustments</td>
+                            <td>Plan similar tuning in MDE</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Phase 2: Coexistence Configuration</h2>
+
+            <h3>MDE Passive Mode</h3>
+
+            <p>Deploy MDE alongside the existing EDR in passive mode to validate without disruption:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Check/Set Passive Mode</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check current mode</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> AMRunningMode
+
+<span class="comment"># AMRunningMode values:</span>
+<span class="comment"># Normal         = MDE is active (primary AV)</span>
+<span class="comment"># Passive        = MDE monitoring only, another AV is active</span>
+<span class="comment"># EDR Block Mode = MDE EDR active, AV in passive</span>
+
+<span class="comment"># Force passive mode via registry (if needed)</span>
+<span class="function">Set-ItemProperty</span> <span class="variable">-Path</span> <span class="string">"HKLM:\SOFTWARE\Policies\Microsoft\Windows Advanced Threat Protection"</span> `
+    <span class="variable">-Name</span> <span class="string">"ForceDefenderPassiveMode"</span> <span class="variable">-Value</span> <span class="number">1</span>
+
+<span class="comment"># Verify passive mode after reboot</span>
+<span class="function">Get-MpComputerStatus</span> <span class="operator">|</span> <span class="function">Select-Object</span> AMRunningMode, IsTamperProtected</code></pre>
+                </div>
+            </div>
+
+            <div class="callout info">
+                <div class="callout-icon">ℹ️</div>
+                <div class="callout-content">
+                    <h5>Passive Mode Behavior</h5>
+                    <p>In passive mode, MDE still collects telemetry and can detect threats, but it won't take blocking actions. The existing EDR remains the primary protection. EDR capabilities (timeline, hunting) work fully in passive mode.</p>
+                </div>
+            </div>
+
+            <h3>Coexistence Considerations by Vendor</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Existing EDR</th>
+                            <th>Coexistence Notes</th>
+                            <th>Known Issues</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CrowdStrike Falcon</strong></td>
+                            <td>Generally coexists well. CS stays active, MDE in passive.</td>
+                            <td>Potential kernel-level conflicts on older OS. Test thoroughly.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Symantec (Broadcom)</strong></td>
+                            <td>Add MDE exclusions in SEP. SEP may need tamper protection disabled for MDE install.</td>
+                            <td>SEP can block MDE sensor installation. Order matters.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>McAfee/Trellix</strong></td>
+                            <td>Add MDE paths to McAfee exclusions. Disable McAfee firewall if using MDE network protection.</td>
+                            <td>ENS can conflict with MDE ASR rules.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Carbon Black</strong></td>
+                            <td>Coexists with proper exclusions. CB sensor bypass may be needed.</td>
+                            <td>Both use kernel drivers; test for BSOD scenarios.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cortex XDR</strong></td>
+                            <td>Generally compatible. Cortex in prevention, MDE in passive.</td>
+                            <td>Similar telemetry collection; minor performance impact.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SentinelOne</strong></td>
+                            <td>S1 stays active. MDE can run in passive mode alongside.</td>
+                            <td>Both have aggressive kernel hooks; monitor stability.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Recommended Exclusions During Coexistence</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">MDE Exclusions for Legacy EDR</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># CrowdStrike exclusions for MDE</span>
+C:\Windows\System32\drivers\CrowdStrike\
+C:\Program Files\CrowdStrike\
+CSFalconService.exe
+
+<span class="comment"># Symantec/Broadcom exclusions for MDE</span>
+C:\Program Files\Symantec\
+C:\Program Files (x86)\Symantec\
+C:\ProgramData\Symantec\
+ccSvcHst.exe, Rtvscan.exe, SMC.exe
+
+<span class="comment"># McAfee/Trellix exclusions for MDE</span>
+C:\Program Files\McAfee\
+C:\Program Files\Common Files\McAfee\
+mcshield.exe, mfefire.exe, mfemms.exe
+
+<span class="comment"># Similarly, add MDE exclusions in legacy EDR:</span>
+C:\Program Files\Windows Defender\
+C:\Program Files\Windows Defender Advanced Threat Protection\
+C:\ProgramData\Microsoft\Windows Defender\
+MsSense.exe, MsMpEng.exe, NisSrv.exe</code></pre>
+                </div>
+            </div>
+
+            <h2>Phase 3: Migration Execution</h2>
+
+            <h3>Switching to MDE Active Mode</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Migration Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>Step 1: Put legacy EDR in passive/monitor mode
+        (Vendor-specific: usually via management console)
+
+Step 2: Enable MDE active mode
+        Remove ForceDefenderPassiveMode registry key
+        Or: Set legacy EDR to not register as primary AV
+
+Step 3: Verify MDE is active
+        Get-MpComputerStatus | Select AMRunningMode
+        Expected: "Normal"
+
+Step 4: Validate protection
+        - Run EICAR test file
+        - Check MDE portal for device
+        - Verify real-time protection active
+
+Step 5: Monitor for 24-48 hours
+        - Check for detection gaps
+        - Monitor system performance
+        - Review alert volume</code></pre>
+                </div>
+            </div>
+
+            <h3>Validation Checklist</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Post-Migration Validation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>□ Device appears in MDE portal with "Normal" status
+□ Real-time protection enabled (Get-MpComputerStatus)
+□ Cloud-delivered protection working
+□ ASR rules applied (if configured)
+□ Network protection active (if configured)
+□ EDR telemetry flowing (check device timeline)
+□ Alerts generating for test scenarios
+□ SIEM receiving MDE alerts
+□ Response actions working (isolate, scan, etc.)
+□ Legacy EDR fully removed
+□ No duplicate alerts from both systems</code></pre>
+                </div>
+            </div>
+
+            <h2>Phase 4: Cleanup & Optimization</h2>
+
+            <h3>Legacy EDR Removal</h3>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Important: Remove Legacy EDR Properly</h5>
+                    <p>Most enterprise EDRs require specific uninstall procedures or tokens. Using standard Windows uninstall may leave kernel drivers or services behind. Always use vendor-provided removal tools.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vendor</th>
+                            <th>Removal Method</th>
+                            <th>Cleanup Tool</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CrowdStrike</td>
+                            <td>Falcon console or uninstall token</td>
+                            <td>CsUninstallTool.exe</td>
+                        </tr>
+                        <tr>
+                            <td>Symantec</td>
+                            <td>SEPM console or CleanWipe</td>
+                            <td>CleanWipe.exe</td>
+                        </tr>
+                        <tr>
+                            <td>McAfee/Trellix</td>
+                            <td>ePO or MCPR tool</td>
+                            <td>MCPR.exe</td>
+                        </tr>
+                        <tr>
+                            <td>Carbon Black</td>
+                            <td>Console or uninstall code</td>
+                            <td>cbuninstall.exe</td>
+                        </tr>
+                        <tr>
+                            <td>Cortex XDR</td>
+                            <td>Cortex console uninstall</td>
+                            <td>CortexUninstaller.exe</td>
+                        </tr>
+                        <tr>
+                            <td>SentinelOne</td>
+                            <td>Console or passphrase</td>
+                            <td>SentinelCleaner.exe</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Migrating Custom Detections</h2>
+
+            <h3>Detection Rule Mapping</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Example: CrowdStrike Custom IOA → MDE Custom Detection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// CrowdStrike IOA (example logic):</span>
+<span class="comment">// "PowerShell executing encoded command from Office app"</span>
+
+<span class="comment">// Equivalent MDE Custom Detection Rule (KQL):</span>
+<span class="variable">DeviceProcessEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">1</span>h)
+<span class="operator">|</span> <span class="keyword">where</span> InitiatingProcessFileName <span class="keyword">in~</span> (<span class="string">"winword.exe"</span>, <span class="string">"excel.exe"</span>, <span class="string">"powerpnt.exe"</span>)
+<span class="operator">|</span> <span class="keyword">where</span> FileName <span class="operator">=~</span> <span class="string">"powershell.exe"</span>
+<span class="operator">|</span> <span class="keyword">where</span> ProcessCommandLine <span class="function">has_any</span> (<span class="string">"-enc"</span>, <span class="string">"-EncodedCommand"</span>)
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, InitiatingProcessFileName, FileName, ProcessCommandLine
+
+<span class="comment">// Configure in MDE Portal:</span>
+<span class="comment">// Settings → Endpoints → Rules → Custom detection rules → Create</span>
+<span class="comment">// Frequency: Every hour</span>
+<span class="comment">// Actions: Generate alert, optionally isolate device</span></code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>During Migration</h4>
+                <ul>
+                    <li>Monitor both EDR consoles for detection gaps</li>
+                    <li>Track migration progress by device groups</li>
+                    <li>Document and resolve coexistence issues</li>
+                    <li>Validate custom detections are working</li>
+                    <li>Update integrations (SIEM, SOAR, ticketing)</li>
+                </ul>
+
+                <h4>Common Migration Issues</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"MDE stuck in passive mode"</span>
+                    <span class="ticket-solution">→ Remove legacy AV registration, check ForceDefenderPassiveMode registry</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"BSOD after MDE install"</span>
+                    <span class="ticket-solution">→ Kernel driver conflict; add exclusions, update both products, test in lab first</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Legacy agent won't uninstall"</span>
+                    <span class="ticket-solution">→ Use vendor cleanup tool, check tamper protection settings, verify uninstall token</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Passive mode</strong>: MDE can run alongside other EDR in passive mode for validation</li>
+                    <li><strong>Coexistence</strong>: Mutual exclusions are critical to avoid conflicts</li>
+                    <li><strong>Phased approach</strong>: Plan → Coexist → Transition → Cleanup</li>
+                    <li><strong>Detection parity</strong>: Map custom rules from legacy EDR to MDE custom detections</li>
+                    <li><strong>Validation</strong>: Test protection, verify telemetry, check integrations before going live</li>
+                    <li><strong>Cleanup</strong>: Use vendor removal tools, not standard uninstall</li>
+                </ul>
+            </div>
+
+            <!-- Page Navigation -->
+            <nav class="page-nav">
+                <a href="10-4-intune-policies.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Intune Policies</span>
+                </a>
+                <a href="10-6-multi-tenant-management.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Multi-Tenant Management</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

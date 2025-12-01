@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Questions | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-4-kql-cheat-sheet.html" class="header-link">KQL Cheat Sheet</a>
+            <a href="12-3-scenario-walkthroughs.html" class="header-link">Scenarios</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Comprehensive MDE interview preparation with technical questions, scenario-based questions, and detailed answers organized by experience level (L1, L2, L3). Perfect for security engineer and SOC analyst interviews.</p>
+            </div>
+
+            <h1>MDE Interview Questions</h1>
+
+            <p>This guide covers common interview questions for positions involving Microsoft Defender for Endpoint. Questions are organized by difficulty level and topic area.</p>
+
+            <h2>Fundamentals Questions <span class="badge badge-l1">L1/L2</span></h2>
+
+            <h3>Q: What is Microsoft Defender for Endpoint and how does it differ from traditional antivirus?</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p>MDE is a cloud-native endpoint security platform that provides both EPP (Endpoint Protection Platform) and EDR (Endpoint Detection and Response) capabilities. Unlike traditional AV which focuses primarily on signature-based file scanning, MDE offers:</p>
+                    <ul>
+                        <li><strong>Behavioral detection</strong>: Monitors process behavior, not just file signatures</li>
+                        <li><strong>Cloud-powered analysis</strong>: Uses Microsoft's threat intelligence and ML models</li>
+                        <li><strong>Post-breach capabilities</strong>: Timeline investigation, advanced hunting, live response</li>
+                        <li><strong>Attack surface reduction</strong>: Proactive rules to block common attack techniques</li>
+                        <li><strong>Integration</strong>: Part of Microsoft 365 Defender XDR ecosystem</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Q: Explain the difference between EDR, EPP, and XDR.</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <ul>
+                        <li><strong>EPP (Endpoint Protection Platform)</strong>: Preventive controls - antivirus, anti-malware, device control, firewall. Focus on <em>blocking known threats</em>.</li>
+                        <li><strong>EDR (Endpoint Detection and Response)</strong>: Post-breach detection and investigation - behavioral monitoring, threat hunting, forensics, response actions. Focus on <em>detecting unknown threats</em>.</li>
+                        <li><strong>XDR (Extended Detection and Response)</strong>: Cross-domain detection correlating multiple security products (endpoints, email, identity, cloud apps) for unified threat visibility and response.</li>
+                    </ul>
+                    <p>MDE provides both EPP and EDR. Combined with MDO, MDI, and MDA, it becomes part of Microsoft 365 Defender XDR.</p>
+                </div>
+            </div>
+
+            <h3>Q: What's the difference between MDE P1 and P2 licensing?</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p><strong>P1</strong> provides preventive capabilities only:</p>
+                    <ul>
+                        <li>Next-gen antivirus protection</li>
+                        <li>Attack surface reduction rules</li>
+                        <li>Device control</li>
+                        <li>Endpoint firewall</li>
+                    </ul>
+                    <p><strong>P2</strong> adds full EDR capabilities:</p>
+                    <ul>
+                        <li>Behavioral sensors and detection</li>
+                        <li>Advanced hunting with KQL</li>
+                        <li>Automated investigation and response (AIR)</li>
+                        <li>Live Response</li>
+                        <li>Threat & Vulnerability Management</li>
+                        <li>Device timeline</li>
+                    </ul>
+                    <p>P2 is included in Microsoft 365 E5, E5 Security, or as standalone license.</p>
+                </div>
+            </div>
+
+            <h3>Q: How does MDE onboard devices? What methods are available?</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p>MDE supports multiple onboarding methods:</p>
+                    <ul>
+                        <li><strong>Microsoft Intune</strong>: Preferred for cloud-managed devices, creates EDR configuration profile</li>
+                        <li><strong>Group Policy</strong>: For domain-joined devices, deploys onboarding package via GP</li>
+                        <li><strong>SCCM/ConfigMgr</strong>: For ConfigMgr-managed environments</li>
+                        <li><strong>Local Script</strong>: For testing or small deployments, runs WindowsDefenderATPOnboardingScript.cmd</li>
+                        <li><strong>VDI onboarding</strong>: Special scripts for non-persistent VDI environments</li>
+                    </ul>
+                    <p>For non-Windows: macOS uses MDM profiles (Intune/Jamf), Linux uses package managers (apt/yum), Mobile uses Intune MAM/MDM.</p>
+                </div>
+            </div>
+
+            <h2>Architecture Questions <span class="badge badge-l2">L2/L3</span></h2>
+
+            <h3>Q: Describe the MDE sensor architecture. What components run on the endpoint?</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p>MDE uses a multi-layered sensor architecture:</p>
+                    <p><strong>Kernel Mode Components:</strong></p>
+                    <ul>
+                        <li><code>WdFilter.sys</code>: File system minifilter for monitoring file operations</li>
+                        <li><code>WdNisDrv.sys</code>: Network inspection driver for network activity</li>
+                        <li><code>WdBoot.sys</code>: ELAM driver for early boot protection</li>
+                    </ul>
+                    <p><strong>User Mode Components:</strong></p>
+                    <ul>
+                        <li><code>MsSense.exe</code>: Main sensor service, collects and processes telemetry</li>
+                        <li><code>SenseCncProxy.exe</code>: Handles cloud communication</li>
+                        <li><code>SenseIR.exe</code>: Live Response handler</li>
+                    </ul>
+                    <p>Data collection uses Windows Event Tracing (ETW) and is sent to Microsoft cloud over HTTPS/443 with certificate pinning.</p>
+                </div>
+            </div>
+
+            <h3>Q: A device isn't appearing in the MDE portal. How would you troubleshoot?</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p>Systematic troubleshooting approach:</p>
+                    <ol>
+                        <li><strong>Check onboarding status</strong>: Run <code>Get-MpComputerStatus</code> in PowerShell, look for <code>AMRunningMode</code></li>
+                        <li><strong>Verify MsSense service</strong>: <code>Get-Service Sense</code> - should be Running</li>
+                        <li><strong>Check connectivity</strong>: Test connectivity to MDE URLs (*.securitycenter.windows.com, winatp-gw-*.microsoft.com)</li>
+                        <li><strong>Review Event Logs</strong>: Check Microsoft-Windows-SENSE/Operational for errors</li>
+                        <li><strong>Run Client Analyzer</strong>: Download MDEClientAnalyzer.exe from Microsoft, generates diagnostic report</li>
+                        <li><strong>Check proxy/SSL inspection</strong>: MDE uses certificate pinning, SSL inspection will break connectivity</li>
+                        <li><strong>Verify licensing</strong>: Ensure user/device has appropriate license assigned in Azure AD</li>
+                    </ol>
+                </div>
+            </div>
+
+            <h2>Detection & Hunting Questions <span class="badge badge-l2">L2/L3</span></h2>
+
+            <h3>Q: Write a KQL query to find encoded PowerShell commands in the last 7 days.</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                        </div>
+                        <div class="code-content">
+<pre><code>DeviceProcessEvents
+| where Timestamp > ago(7d)
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+| where ProcessCommandLine has_any ("-enc", "-EncodedCommand", "FromBase64String")
+| project Timestamp, DeviceName, AccountName, 
+         ProcessCommandLine, InitiatingProcessFileName
+| order by Timestamp desc</code></pre>
+                        </div>
+                    </div>
+                    <p>Key points: Use <code>has_any</code> for performance over <code>contains</code>, include parent process for context, <code>in~</code> for case-insensitive matching.</p>
+                </div>
+            </div>
+
+            <h3>Q: How would you detect lateral movement in MDE?</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p>Multiple detection approaches:</p>
+                    <p><strong>1. Remote execution tools:</strong></p>
+                    <ul>
+                        <li>Hunt for PsExec, WMI, WinRM, RDP usage</li>
+                        <li>Query DeviceProcessEvents for <code>psexec.exe</code>, <code>wmic.exe</code> with remote targets</li>
+                    </ul>
+                    <p><strong>2. Logon events:</strong></p>
+                    <ul>
+                        <li>DeviceLogonEvents with LogonType 3 (Network) or 10 (RemoteInteractive)</li>
+                        <li>Look for unusual source IPs or account patterns</li>
+                    </ul>
+                    <p><strong>3. Network connections:</strong></p>
+                    <ul>
+                        <li>Internal connections to ports 445, 135, 5985, 3389</li>
+                        <li>Connections from workstations to other workstations</li>
+                    </ul>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">KQL</span>
+                        </div>
+                        <div class="code-content">
+<pre><code>DeviceNetworkEvents
+| where Timestamp > ago(24h)
+| where RemotePort in (445, 135, 5985, 5986)
+| where RemoteIPType == "Private"
+| summarize ConnectionCount = count() by DeviceName, RemoteIP
+| where ConnectionCount > 10</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Q: Explain the difference between <code>has</code> and <code>contains</code> in KQL.</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <ul>
+                        <li><strong><code>has</code></strong>: Token/word-based matching, uses term indexing. Faster because it searches indexed terms. Matches whole words only.</li>
+                        <li><strong><code>contains</code></strong>: Substring matching, scans entire string. Slower but finds partial matches anywhere in string.</li>
+                    </ul>
+                    <p><strong>Example:</strong></p>
+                    <ul>
+                        <li><code>"invoke-mimikatz" has "mimikatz"</code> → TRUE (whole word)</li>
+                        <li><code>"invoke-mimikatz" has "mimi"</code> → FALSE (partial word)</li>
+                        <li><code>"invoke-mimikatz" contains "mimi"</code> → TRUE (substring)</li>
+                    </ul>
+                    <p><strong>Best practice:</strong> Use <code>has</code> when searching for complete terms (faster), use <code>contains</code> when you need substring matching.</p>
+                </div>
+            </div>
+
+            <h2>Response & Operations Questions <span class="badge badge-l2">L2/L3</span></h2>
+
+            <h3>Q: What response actions are available in MDE and when would you use each?</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p><strong>Device Actions:</strong></p>
+                    <ul>
+                        <li><strong>Isolate device</strong>: Cut network except MDE communication. Use for active compromise to prevent spread.</li>
+                        <li><strong>Restrict app execution</strong>: Only Microsoft-signed apps can run. Use when malware persistence is suspected.</li>
+                        <li><strong>Run AV scan</strong>: Trigger quick/full scan remotely.</li>
+                        <li><strong>Collect investigation package</strong>: Gather forensic artifacts (autoruns, network, processes).</li>
+                        <li><strong>Initiate Live Response</strong>: Remote shell for investigation/remediation.</li>
+                    </ul>
+                    <p><strong>File Actions:</strong></p>
+                    <ul>
+                        <li><strong>Stop and quarantine</strong>: Kill processes using file, quarantine file.</li>
+                        <li><strong>Add indicator</strong>: Block file hash across all endpoints.</li>
+                        <li><strong>Download file</strong>: Retrieve for analysis.</li>
+                        <li><strong>Deep analysis</strong>: Submit to sandbox for behavioral analysis.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Q: Describe your approach to handling a ransomware alert in MDE.</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p><strong>Immediate Response (First 15 minutes):</strong></p>
+                    <ol>
+                        <li>Verify alert legitimacy - check device timeline and alert details</li>
+                        <li>If confirmed, immediately <strong>isolate the device</strong> to prevent spread</li>
+                        <li>Check for related alerts on other devices - use incident correlation</li>
+                        <li>Notify incident response team / escalate per runbook</li>
+                    </ol>
+                    <p><strong>Investigation (Next 1-2 hours):</strong></p>
+                    <ol>
+                        <li>Use device timeline to identify patient zero and initial access vector</li>
+                        <li>Hunt for IOCs (file hashes, C2 domains) across environment</li>
+                        <li>Identify scope - how many devices affected?</li>
+                        <li>Collect investigation packages from affected devices</li>
+                    </ol>
+                    <p><strong>Containment & Remediation:</strong></p>
+                    <ol>
+                        <li>Block IOCs as indicators (hash, URL, IP)</li>
+                        <li>Use Live Response to remove persistence</li>
+                        <li>Coordinate with IT for restore from backup if needed</li>
+                        <li>Document timeline for post-incident review</li>
+                    </ol>
+                </div>
+            </div>
+
+            <h2>Scenario-Based Questions <span class="badge badge-l3">L3</span></h2>
+
+            <h3>Q: How would you design an MDE deployment for a 10,000-device enterprise?</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p><strong>Phase 1: Planning (2-4 weeks)</strong></p>
+                    <ul>
+                        <li>Audit current endpoint landscape (OS versions, management tools)</li>
+                        <li>Define deployment rings: Pilot (50) → Early Adopters (500) → Broad (remaining)</li>
+                        <li>Establish success criteria and rollback procedures</li>
+                        <li>Configure ASR rules in Audit mode first</li>
+                    </ul>
+                    <p><strong>Phase 2: Pilot (2-4 weeks)</strong></p>
+                    <ul>
+                        <li>Deploy to IT/Security team devices first</li>
+                        <li>Monitor for false positives, performance issues</li>
+                        <li>Tune exclusions based on business applications</li>
+                        <li>Validate integrations (SIEM, SOAR, ticketing)</li>
+                    </ul>
+                    <p><strong>Phase 3: Staged Rollout (4-8 weeks)</strong></p>
+                    <ul>
+                        <li>Expand to early adopters (power users, willing departments)</li>
+                        <li>Continue monitoring and tuning</li>
+                        <li>Broad deployment in waves of 1000-2000 devices</li>
+                        <li>Enable ASR Block mode progressively</li>
+                    </ul>
+                    <p><strong>Phase 4: Steady State</strong></p>
+                    <ul>
+                        <li>Establish SOC workflows and runbooks</li>
+                        <li>Define metrics (MTTD, MTTR, alert volume)</li>
+                        <li>Regular reviews of detection coverage and false positives</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Q: Your organization is migrating from CrowdStrike to MDE. What's your approach?</h3>
+
+            <div class="callout interview">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Strong Answer</h5>
+                    <p><strong>Key Considerations:</strong></p>
+                    <ul>
+                        <li><strong>Coexistence period</strong>: Run both solutions temporarily, CrowdStrike in detection-only mode</li>
+                        <li><strong>Detection parity</strong>: Map CrowdStrike custom detections to MDE custom detection rules</li>
+                        <li><strong>Exclusions migration</strong>: Document and replicate necessary exclusions</li>
+                        <li><strong>Integration updates</strong>: Update SIEM connectors, SOAR playbooks, ticketing integrations</li>
+                    </ul>
+                    <p><strong>Migration Steps:</strong></p>
+                    <ol>
+                        <li>Deploy MDE in passive mode alongside CrowdStrike</li>
+                        <li>Validate MDE telemetry and detections are working</li>
+                        <li>Switch MDE to active mode, CrowdStrike to passive</li>
+                        <li>Monitor for gaps in detection coverage</li>
+                        <li>Uninstall CrowdStrike after validation period</li>
+                    </ol>
+                    <p><strong>Training:</strong> SOC team needs training on MDE portal, KQL for hunting, Live Response.</p>
+                </div>
+            </div>
+
+            <!-- Quick Reference -->
+            <h2>Quick Reference: Must-Know Facts</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Topic</th>
+                            <th>Key Facts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Data Retention</td>
+                            <td>Default 30 days, configurable up to 180 days</td>
+                        </tr>
+                        <tr>
+                            <td>Main Service</td>
+                            <td><code>MsSense.exe</code> - check this for troubleshooting</td>
+                        </tr>
+                        <tr>
+                            <td>Live Response Sessions</td>
+                            <td>Max 25 concurrent, 30-minute timeout</td>
+                        </tr>
+                        <tr>
+                            <td>ASR Modes</td>
+                            <td>Disabled (0), Block (1), Audit (2), Warn (6)</td>
+                        </tr>
+                        <tr>
+                            <td>KQL Performance</td>
+                            <td><code>has</code> faster than <code>contains</code> (uses indexing)</td>
+                        </tr>
+                        <tr>
+                            <td>Hunting Tables</td>
+                            <td>DeviceProcessEvents, DeviceNetworkEvents, DeviceFileEvents, DeviceLogonEvents</td>
+                        </tr>
+                        <tr>
+                            <td>XDR Platform</td>
+                            <td>Microsoft 365 Defender = MDE + MDO + MDI + MDA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Page Navigation -->
+            <nav class="page-nav">
+                <a href="12-1-mde-glossary.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">MDE Glossary</span>
+                </a>
+                <a href="12-3-scenario-walkthroughs.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Scenario Walkthroughs</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Portal Overview | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to the Microsoft 365 Defender portal. Learn portal navigation, key sections, daily workflows, and how to efficiently use the security console.</p>
+            </div>
+
+            <h1>Security Portal Overview</h1>
+
+            <p>The Microsoft 365 Defender portal (security.microsoft.com) is the unified console for managing MDE and other Microsoft security products. Understanding the portal layout is essential for efficient security operations.</p>
+
+            <h2>Portal Architecture</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Microsoft 365 Defender Portal Layout</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    MICROSOFT 365 DEFENDER PORTAL                        │
+│                    https://security.microsoft.com                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌──────────────┐  ┌────────────────────────────────────────────────┐  │
+│  │              │  │                                                 │  │
+│  │   LEFT       │  │              MAIN CONTENT AREA                  │  │
+│  │   NAVIGATION │  │                                                 │  │
+│  │              │  │  ┌─────────────────────────────────────────┐   │  │
+│  │  • Home      │  │  │  Dashboard / Selected View              │   │  │
+│  │  • Incidents │  │  │                                         │   │  │
+│  │  • Hunting   │  │  │  • Cards with metrics                   │   │  │
+│  │  • Actions   │  │  │  • Tables with data                     │   │  │
+│  │  • Threat    │  │  │  • Charts and graphs                    │   │  │
+│  │    Intel     │  │  │  • Detail panels                        │   │  │
+│  │  • Endpoints │  │  │                                         │   │  │
+│  │  • Email     │  │  └─────────────────────────────────────────┘   │  │
+│  │  • Cloud     │  │                                                 │  │
+│  │    Apps      │  │                                                 │  │
+│  │  • Reports   │  │                                                 │  │
+│  │  • Settings  │  │                                                 │  │
+│  │              │  │                                                 │  │
+│  └──────────────┘  └────────────────────────────────────────────────┘  │
+│                                                                          │
+│  UNIFIED EXPERIENCE: MDE + MDO + MDI + MCAS in one portal              │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Main Navigation Sections</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal Navigation</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>MAIN NAVIGATION SECTIONS:
+
+HOME
+├── Security overview dashboard
+├── Key metrics at a glance
+├── Active incidents summary
+├── Device health status
+└── Threat analytics highlights
+
+INCIDENTS & ALERTS
+├── Incidents: Correlated alerts grouped together
+├── Alerts: Individual security detections
+├── Filters: Severity, status, category, time
+└── Actions: Assign, classify, manage
+
+HUNTING
+├── Advanced hunting: KQL query interface
+├── Custom detection rules
+├── Queries library
+└── Schema reference
+
+ACTIONS & SUBMISSIONS
+├── Action center: Track response actions
+├── Submissions: Submit files for analysis
+├── Suppression rules: Manage alert tuning
+└── Quarantine: Manage quarantined items
+
+THREAT INTELLIGENCE
+├── Threat analytics: Campaign reports
+├── Intel profiles: Threat actor info
+├── Intel explorer: IOC search
+└── Intel projects: Custom tracking
+
+ENDPOINTS (MDE-Specific)
+├── Device inventory
+├── Vulnerability management
+├── Configuration management
+├── Reports
+└── Partners & APIs
+
+SETTINGS
+├── Endpoints settings
+├── Permissions & roles
+├── Automation rules
+├── Advanced features
+└── Device groups</code></pre>
+                </div>
+            </div>
+
+            <h2>Key Portal Areas for SOC</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Daily SOC Areas</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>KEY AREAS FOR DAILY SOC OPERATIONS:
+
+1. INCIDENTS QUEUE (Primary Workflow)
+   Path: Incidents & alerts → Incidents
+   Purpose: Main work queue for analysts
+   ├── View all correlated security events
+   ├── Filter by severity, status, assigned
+   ├── Click incident for full investigation
+   └── Manage, assign, classify incidents
+
+2. ALERTS QUEUE (Granular View)
+   Path: Incidents & alerts → Alerts
+   Purpose: See all individual alerts
+   ├── Not grouped into incidents
+   ├── Useful for specific alert hunting
+   ├── Filter by detection source
+   └── Link alerts to incidents
+
+3. DEVICE INVENTORY
+   Path: Assets → Devices
+   Purpose: All onboarded endpoints
+   ├── Search specific devices
+   ├── View device health
+   ├── Access device page for investigation
+   └── Filter by OS, health, exposure
+
+4. ADVANCED HUNTING
+   Path: Hunting → Advanced hunting
+   Purpose: Proactive threat hunting
+   ├── Write KQL queries
+   ├── Search across all tables
+   ├── Save and share queries
+   └── Create detection rules
+
+5. ACTION CENTER
+   Path: Actions & submissions → Action center
+   Purpose: Track all response actions
+   ├── Pending actions awaiting completion
+   ├── History of all actions taken
+   ├── Approve/reject pending actions
+   └── Download investigation packages</code></pre>
+                </div>
+            </div>
+
+            <h2>Portal URL Shortcuts</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Direct URLs</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>USEFUL DIRECT URLS:
+
+BASE PORTAL:
+https://security.microsoft.com
+
+INCIDENTS:
+https://security.microsoft.com/incidents
+
+ALERTS:
+https://security.microsoft.com/alerts
+
+DEVICE INVENTORY:
+https://security.microsoft.com/machines
+
+ADVANCED HUNTING:
+https://security.microsoft.com/hunting
+
+THREAT ANALYTICS:
+https://security.microsoft.com/threatanalytics3
+
+ACTION CENTER:
+https://security.microsoft.com/action-center
+
+VULNERABILITY MANAGEMENT:
+https://security.microsoft.com/tvm_dashboard
+
+SETTINGS:
+https://security.microsoft.com/securitysettings
+
+SPECIFIC DEVICE (by ID):
+https://security.microsoft.com/machines/[DeviceId]
+
+SPECIFIC INCIDENT:
+https://security.microsoft.com/incidents/[IncidentId]
+
+SPECIFIC ALERT:
+https://security.microsoft.com/alerts/[AlertId]</code></pre>
+                </div>
+            </div>
+
+            <h2>Dashboard Cards</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Home Dashboard</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>HOME DASHBOARD CARDS:
+
+ACTIVE INCIDENTS
+├── Count of open incidents by severity
+├── Click to go to incidents queue
+└── Quick indicator of workload
+
+DEVICES AT RISK
+├── Devices with active alerts
+├── High exposure devices
+└── Sensor health issues
+
+USERS AT RISK
+├── Users with risky sign-ins
+├── Compromised accounts
+└── Identity alerts
+
+THREAT ANALYTICS
+├── Active threat campaigns
+├── Relevant to your environment
+└── Recommended actions
+
+SECURE SCORE
+├── Security posture score
+├── Improvement actions
+└── Comparison to baseline
+
+DEVICE COMPLIANCE
+├── Devices meeting baseline
+├── Non-compliant devices
+└── Pending compliance check
+
+VULNERABILITY SUMMARY
+├── Critical vulnerabilities
+├── Exposed devices count
+└── Remediation progress
+
+CUSTOMIZATION:
+├── Add/remove cards
+├── Resize cards
+├── Reorder dashboard
+└── Save custom layouts</code></pre>
+                </div>
+            </div>
+
+            <h2>Search Capabilities</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Portal Search</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>GLOBAL SEARCH (Top Bar):
+
+SEARCH FOR:
+├── Devices: By name, IP, or ID
+├── Users: By name or email
+├── Files: By hash or name
+├── Alerts: By ID or title
+├── Incidents: By ID or title
+└── IPs/URLs/Domains: IOC lookup
+
+HOW TO USE:
+1. Click search bar (or press /)
+2. Type search term
+3. Select entity type from results
+4. Click to navigate to details
+
+EXAMPLES:
+├── "WKSTN-001" → Device page
+├── "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cba1a4a3a5e5b8a6a2bfa38ba8a4a6bbaaa5b2e5a8a4a6">[email&#160;protected]</a>" → User page
+├── "abc123def456..." (SHA256) → File details
+├── "192.168.1.100" → IP details
+└── "mimikatz" → Related alerts/files
+
+TIPS:
+├── Search is fuzzy (partial matches work)
+├── Recent searches saved
+├── Can search from any page
+└── Results grouped by entity type</code></pre>
+                </div>
+            </div>
+
+            <h2>Role-Based Access</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">RBAC Roles</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>PORTAL RBAC ROLES:
+
+SECURITY READER
+├── View all security data
+├── Cannot take actions
+├── Cannot modify settings
+└── Use: Auditors, managers
+
+SECURITY OPERATOR
+├── View all security data
+├── Manage alerts and incidents
+├── Run response actions
+├── Cannot modify settings
+└── Use: SOC analysts (L1/L2)
+
+SECURITY ADMINISTRATOR
+├── Full view access
+├── Full response actions
+├── Modify security settings
+├── Manage detection rules
+└── Use: SOC leads, engineers
+
+GLOBAL ADMINISTRATOR
+├── Full access to everything
+├── Manage permissions
+├── Configure integrations
+└── Use: Security managers
+
+CUSTOM ROLES:
+├── Create custom role combinations
+├── Assign to device groups
+├── Granular permissions
+└── Location: Settings → Permissions → Roles</code></pre>
+                </div>
+            </div>
+
+            <h2>Day-to-Day Tasks</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Daily Workflow</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>TYPICAL DAILY WORKFLOW:
+
+MORNING REVIEW (15-30 min):
+1. Check Home dashboard for overnight activity
+2. Review new high/critical incidents
+3. Check device health status
+4. Review threat analytics for new campaigns
+5. Check action center for pending items
+
+INCIDENT TRIAGE:
+1. Go to Incidents queue
+2. Filter: Status = New, Severity = High/Critical
+3. Open each incident
+4. Review alert story and evidence
+5. Assign to analyst or self
+6. Begin investigation or escalate
+
+INVESTIGATION:
+1. From incident, click affected device
+2. Review device timeline
+3. Use Advanced Hunting for deep dive
+4. Collect investigation package if needed
+5. Take response actions
+6. Document findings
+
+END OF DAY:
+1. Update incident status/notes
+2. Check for new critical alerts
+3. Review action center completion
+4. Handoff to next shift (if 24x7)
+5. Log any outstanding items</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Portal Tips</h5>
+                    <ul>
+                        <li><strong>Bookmark key pages</strong>: Incidents, devices, hunting for quick access</li>
+                        <li><strong>Use keyboard shortcuts</strong>: / for search, ? for help</li>
+                        <li><strong>Customize dashboard</strong>: Add cards relevant to your role</li>
+                        <li><strong>Save hunting queries</strong>: Build a library of useful queries</li>
+                        <li><strong>Learn the URL structure</strong>: Direct links save time</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Portal URL</strong>: security.microsoft.com (M365 Defender portal)</li>
+                    <li><strong>Unified portal</strong>: MDE + MDO + MDI + MCAS in one console</li>
+                    <li><strong>Key sections</strong>: Incidents, Devices, Hunting, Action Center</li>
+                    <li><strong>RBAC roles</strong>: Reader, Operator, Administrator</li>
+                    <li><strong>Primary workflow</strong>: Incidents queue for correlated alerts</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="1-2-mde-architecture.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">MDE Architecture</span>
+                </a>
+                <a href="2-2-device-inventory.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Device Inventory</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>

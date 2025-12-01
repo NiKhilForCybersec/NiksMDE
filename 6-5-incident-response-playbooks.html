@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Response Playbooks | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Ready-to-use incident response playbooks for common threat scenarios in MDE. Each playbook includes detection, investigation steps, containment actions, and remediation procedures using MDE capabilities.</p>
+            </div>
+
+            <h1>Incident Response Playbooks</h1>
+
+            <p>These playbooks provide structured response procedures for common security incidents detected by MDE. Each playbook follows the NIST incident response framework: Preparation → Detection → Containment → Eradication → Recovery → Lessons Learned.</p>
+
+            <h2>Playbook 1: Ransomware Response</h2>
+
+            <div class="callout warning">
+                <div class="callout-icon">🚨</div>
+                <div class="callout-content">
+                    <h5>Priority: CRITICAL - Immediate Response Required</h5>
+                    <p>Ransomware incidents require immediate action to prevent spread. Time is critical.</p>
+                </div>
+            </div>
+
+            <h3>Detection Indicators</h3>
+            <ul>
+                <li>MDE alerts: "Ransomware behavior detected", "Suspicious file encryption"</li>
+                <li>Mass file modifications with new extensions</li>
+                <li>Ransom notes appearing on endpoints</li>
+                <li>Shadow copy deletion attempts</li>
+            </ul>
+
+            <h3>Immediate Actions (First 15 Minutes)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Step-by-Step Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>1. ISOLATE AFFECTED DEVICE(S) IMMEDIATELY
+   Portal: Device page → "Isolate device"
+   - Select "Full isolation" (allows only MDE communication)
+   - Add comment: "Ransomware incident - [ticket#]"
+
+2. IDENTIFY SCOPE
+   - Check incident for related alerts
+   - Run hunting query to find other affected devices:
+
+   DeviceFileEvents
+   | where Timestamp > ago(1h)
+   | where ActionType == "FileModified"
+   | where FileName endswith ".encrypted" or FileName endswith ".locked"
+   | summarize FileCount = count() by DeviceName
+   | where FileCount > 100
+
+3. ISOLATE ALL AFFECTED DEVICES
+   - Bulk isolate if multiple devices identified
+   - Consider isolating device groups if spread is active
+
+4. NOTIFY STAKEHOLDERS
+   - Security leadership
+   - IT operations
+   - Legal/Compliance (if data exfiltration suspected)
+   - Communications team (if customer impact)</code></pre>
+                </div>
+            </div>
+
+            <h3>Investigation (Next 1-2 Hours)</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Investigation Checklist</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>□ Identify patient zero (first infected device)
+  - Sort alerts by timestamp
+  - Check device timeline for initial compromise
+
+□ Determine initial access vector
+  - Phishing email? Check MDO alerts
+  - Exposed RDP? Check network events
+  - Vulnerable application? Check exploit alerts
+
+□ Map lateral movement
+  DeviceLogonEvents
+  | where Timestamp > ago(24h)
+  | where LogonType in ("RemoteInteractive", "Network")
+  | where DeviceName in (affected_devices)
+  | project Timestamp, DeviceName, RemoteIP, AccountName
+
+□ Identify ransomware variant
+  - Collect sample using Live Response: getfile C:\path\to\ransomware.exe
+  - Submit for deep analysis
+  - Check ransom note for variant identification
+
+□ Check for data exfiltration
+  DeviceNetworkEvents
+  | where Timestamp > ago(24h)
+  | where DeviceName in (affected_devices)
+  | where RemoteIPType == "Public"
+  | summarize TotalBytes = sum(SentBytes) by RemoteIP
+  | where TotalBytes > 100000000  // >100MB</code></pre>
+                </div>
+            </div>
+
+            <h3>Containment & Eradication</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Containment Steps</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>1. BLOCK IOCs ORGANIZATION-WIDE
+   Settings → Endpoints → Indicators → Add indicator
+   - Block ransomware file hash (SHA256)
+   - Block C2 domains/IPs
+   - Set action: Block and remediate
+
+2. DISABLE COMPROMISED ACCOUNTS
+   - Azure AD: Disable user accounts
+   - Reset passwords for affected users
+   - Revoke active sessions
+
+3. COLLECT EVIDENCE (before remediation)
+   - Investigation package from affected devices
+   - Memory dump if needed (Live Response)
+   - Preserve ransom notes and encrypted file samples
+
+4. REMEDIATE AFFECTED DEVICES
+   Option A: Run AV scan + manual cleanup
+   Option B: Reimage from known-good backup (preferred)
+   
+   Live Response cleanup:
+   > remediate file C:\path\to\ransomware.exe
+   > run RemoveScheduledTask.ps1 -TaskName "MaliciousTask"</code></pre>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>Playbook 2: Business Email Compromise (BEC)</h2>
+
+            <h3>Detection Indicators</h3>
+            <ul>
+                <li>Suspicious sign-in from unusual location</li>
+                <li>Email forwarding rules created</li>
+                <li>OAuth app consent from user</li>
+                <li>Impossible travel alerts</li>
+            </ul>
+
+            <h3>Response Steps</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">BEC Response Procedure</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>IMMEDIATE (First 30 Minutes):
+1. Reset user password immediately
+2. Revoke all active sessions (Azure AD)
+3. Disable suspicious OAuth apps
+4. Check and remove email forwarding rules
+5. Enable MFA if not already enabled
+
+INVESTIGATION:
+□ Review sign-in logs for unauthorized access
+  SigninLogs
+  | where UserPrincipalName == "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f6c60627f7d6062667c6a6b4f6c60627f6e6176216c6062">[email&#160;protected]</a>"
+  | where TimeGenerated > ago(30d)
+  | project TimeGenerated, IPAddress, Location, AppDisplayName, Status
+
+□ Check for inbox rule modifications
+  CloudAppEvents
+  | where AccountObjectId == "user-object-id"
+  | where ActionType == "New-InboxRule"
+
+□ Review emails sent during compromise period
+□ Check for any financial requests sent
+□ Identify recipients of potentially fraudulent emails
+
+CONTAINMENT:
+1. Block source IP addresses
+2. Remove malicious inbox rules
+3. Revoke OAuth app permissions
+4. Notify recipients of fraudulent emails
+5. Contact finance if wire transfer requested
+
+RECOVERY:
+1. User security training
+2. Implement conditional access policies
+3. Consider moving to passwordless authentication</code></pre>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>Playbook 3: Credential Theft (Mimikatz/LSASS)</h2>
+
+            <h3>Detection Indicators</h3>
+            <ul>
+                <li>MDE alert: "Credential dumping activity"</li>
+                <li>LSASS memory access from unusual process</li>
+                <li>Mimikatz command line patterns</li>
+                <li>Suspicious procdump execution</li>
+            </ul>
+
+            <h3>Response Steps</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Credential Theft Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>IMMEDIATE:
+1. Isolate affected device
+2. Assume ALL credentials on device are compromised
+3. Identify all accounts that logged into device recently:
+
+   DeviceLogonEvents
+   | where DeviceId == "affected-device-id"
+   | where Timestamp > ago(30d)
+   | where LogonType in ("Interactive", "RemoteInteractive", "CachedInteractive")
+   | distinct AccountName, AccountDomain
+
+4. Reset passwords for ALL identified accounts
+5. If Domain Admin credentials exposed:
+   - Reset krbtgt account password (TWICE)
+   - Consider domain-wide password reset
+
+INVESTIGATION:
+□ How did attacker get access to run credential tools?
+□ Check for persistence mechanisms
+□ Hunt for credential use across environment:
+
+   DeviceLogonEvents
+   | where Timestamp > ago(24h)
+   | where AccountName in (compromised_accounts)
+   | where DeviceName != "original-compromised-device"
+   | project Timestamp, DeviceName, AccountName, LogonType, RemoteIP
+
+□ Check for DCSync attacks (Domain Controller queries)
+□ Review privileged group membership changes
+
+HARDENING:
+1. Enable Credential Guard on sensitive systems
+2. Implement LAPS for local admin passwords
+3. Enable ASR rule for LSASS protection
+4. Consider PAW for privileged access
+5. Implement tiered administration model</code></pre>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>Playbook 4: Malware Outbreak</h2>
+
+            <h3>Detection Indicators</h3>
+            <ul>
+                <li>Same malware hash detected on multiple devices</li>
+                <li>Rapid increase in AV detections</li>
+                <li>Similar C2 communication patterns</li>
+            </ul>
+
+            <h3>Response Steps</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Malware Outbreak Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>SCOPE ASSESSMENT (First 15 minutes):
+1. Identify all affected devices:
+
+   DeviceFileEvents
+   | where SHA256 == "malware-hash"
+   | distinct DeviceName
+   
+   // Or by file name
+   DeviceProcessEvents
+   | where FileName =~ "malware.exe"
+   | distinct DeviceName
+
+2. Determine spread rate:
+   - How many devices in last hour?
+   - Is it actively spreading?
+
+CONTAINMENT:
+1. Block file hash as indicator (Block + Remediate)
+   Settings → Indicators → Add file hash
+
+2. Block C2 infrastructure:
+   - Add IP/domain indicators
+   - Enable network protection if not already
+
+3. For active spreading:
+   - Consider network segment isolation
+   - Block SMB if worm behavior detected
+
+INVESTIGATION:
+□ Determine malware capabilities
+  - Submit to deep analysis
+  - Check external threat intel
+
+□ Identify distribution method
+  - Phishing campaign?
+  - Vulnerable service?
+  - Lateral movement technique?
+
+□ Check for persistence
+   DeviceRegistryEvents
+   | where DeviceName in (affected_devices)
+   | where RegistryKey has "CurrentVersion\\Run"
+   
+   DeviceProcessEvents
+   | where DeviceName in (affected_devices)
+   | where FileName == "schtasks.exe"
+   | where ProcessCommandLine has "/create"
+
+REMEDIATION:
+1. Automated: Let MDE quarantine with indicator
+2. Manual: Live Response to remove if needed
+3. Reimage if extensive infection</code></pre>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>Playbook 5: Insider Threat / Data Exfiltration</h2>
+
+            <h3>Detection Indicators</h3>
+            <ul>
+                <li>Unusual data access patterns</li>
+                <li>Large file uploads to cloud storage</li>
+                <li>USB device usage with sensitive files</li>
+                <li>After-hours access to sensitive systems</li>
+            </ul>
+
+            <h3>Response Steps</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Data Exfiltration Response</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>IMPORTANT: Coordinate with HR and Legal before taking action
+
+INVESTIGATION (Covert):
+1. Review data access patterns:
+
+   DeviceFileEvents
+   | where InitiatingProcessAccountName == "suspect-user"
+   | where ActionType in ("FileRead", "FileCopied")
+   | where FolderPath has_any ("confidential", "sensitive", "hr", "finance")
+   | summarize FileCount = count(), Files = make_set(FileName) by bin(Timestamp, 1d)
+
+2. Check for cloud uploads:
+
+   DeviceNetworkEvents
+   | where InitiatingProcessAccountName == "suspect-user"
+   | where RemoteUrl has_any ("dropbox", "drive.google", "onedrive", "wetransfer", "mega.nz")
+   | project Timestamp, RemoteUrl, SentBytes
+
+3. Review USB activity:
+
+   DeviceEvents
+   | where ActionType == "UsbDriveMounted"
+   | where DeviceName == "user-device"
+   
+   DeviceFileEvents
+   | where FolderPath startswith "E:\\" or FolderPath startswith "F:\\"
+   | where ActionType == "FileCreated"
+
+4. Check email attachments (coordinate with MDO)
+
+CONTAINMENT (When authorized):
+1. Restrict device network access
+2. Disable USB ports via Device Control
+3. Block cloud storage domains
+4. Preserve evidence before taking action
+
+EVIDENCE PRESERVATION:
+- Collect investigation package
+- Export relevant hunting query results
+- Screenshot timeline evidence
+- Document chain of custody</code></pre>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>IR Readiness</h4>
+                <ul>
+                    <li>Maintain updated playbooks for common scenarios</li>
+                    <li>Run tabletop exercises quarterly</li>
+                    <li>Ensure response actions are tested and working</li>
+                    <li>Keep contact lists and escalation paths current</li>
+                    <li>Document lessons learned from each incident</li>
+                </ul>
+
+                <h4>During Incidents</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">First response priority</span>
+                    <span class="ticket-solution">→ Contain first, investigate second. Stop the bleeding.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">Documentation</span>
+                    <span class="ticket-solution">→ Log every action with timestamps. You'll need this for reporting.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">Communication</span>
+                    <span class="ticket-solution">→ Keep stakeholders informed with regular updates during active incidents.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>IR Framework</strong>: Preparation → Detection → Containment → Eradication → Recovery → Lessons Learned</li>
+                    <li><strong>First action for ransomware</strong>: Isolate affected devices immediately</li>
+                    <li><strong>Credential theft response</strong>: Assume all credentials on device are compromised</li>
+                    <li><strong>Evidence preservation</strong>: Collect before remediation when possible</li>
+                    <li><strong>Scope assessment</strong>: Always determine how many devices are affected</li>
+                    <li><strong>Documentation</strong>: Log all actions with timestamps for post-incident review</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="6-4-automated-remediation.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Automated Remediation</span>
+                </a>
+                <a href="6-6-forensics-evidence.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Forensics & Evidence</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASR Rule Reference | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete reference for all Attack Surface Reduction (ASR) rules. Includes GUIDs, descriptions, MITRE ATT&CK mappings, and recommended configurations.</p>
+            </div>
+
+            <h1>ASR Rule Reference</h1>
+
+            <p>This page provides a comprehensive reference for all Attack Surface Reduction rules available in Microsoft Defender for Endpoint.</p>
+
+            <h2>Rule Modes</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">ASR Rule Modes</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>ASR RULE MODES:
+
+MODE          VALUE    BEHAVIOR
+──────────────────────────────────────────────────────
+Disabled      0        Rule is off, no action taken
+Block         1        Rule enforced, action blocked
+Audit         2        Rule logs only, no blocking
+Warn          6        User warned, can proceed
+
+RECOMMENDATION:
+1. Deploy all rules in Audit mode (2)
+2. Monitor for 2-4 weeks
+3. Create exclusions for legitimate blocks
+4. Enable Block mode (1) for validated rules
+5. Continue monitoring after enabling</code></pre>
+                </div>
+            </div>
+
+            <h2>Office Application Rules</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Office Rules</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>BLOCK OFFICE APPS FROM CREATING CHILD PROCESSES
+GUID: D4F940AB-401B-4EFC-AADC-AD5F3C50688A
+├── Blocks: Office apps spawning cmd, PowerShell, etc.
+├── MITRE: T1204.002 (Malicious File)
+├── Impact: May block legitimate macros
+└── Recommendation: Block (with exclusions)
+
+BLOCK OFFICE APPS FROM CREATING EXECUTABLE CONTENT
+GUID: 3B576869-A4EC-4529-8536-B80A7769E899
+├── Blocks: Office writing EXE, DLL, scripts
+├── MITRE: T1204.002 (Malicious File)
+├── Impact: Blocks macro-created executables
+└── Recommendation: Block
+
+BLOCK OFFICE APPS FROM INJECTING CODE INTO OTHER PROCESSES
+GUID: 75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84
+├── Blocks: Office process injection
+├── MITRE: T1055 (Process Injection)
+├── Impact: Low, injection is rarely legitimate
+└── Recommendation: Block
+
+BLOCK WIN32 API CALLS FROM OFFICE MACROS
+GUID: 92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B
+├── Blocks: Win32 API calls from VBA
+├── MITRE: T1106 (Native API)
+├── Impact: May break some macros
+└── Recommendation: Audit first, then Block
+
+BLOCK OFFICE COMMUNICATION APPS FROM CREATING CHILD PROCESSES
+GUID: 26190899-1602-49E8-8B27-EB1D0A1CE869
+├── Blocks: Outlook spawning processes
+├── MITRE: T1566.001 (Spearphishing Attachment)
+├── Impact: Low for most users
+└── Recommendation: Block</code></pre>
+                </div>
+            </div>
+
+            <h2>Script & Email Rules</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Script and Email Rules</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>BLOCK JAVASCRIPT OR VBSCRIPT FROM LAUNCHING DOWNLOADED CONTENT
+GUID: D3E037E1-3EB8-44C8-A917-57927947596D
+├── Blocks: JS/VBS executing downloads
+├── MITRE: T1059.005, T1059.007 (Scripting)
+├── Impact: Blocks drive-by downloads
+└── Recommendation: Block
+
+BLOCK EXECUTION OF POTENTIALLY OBFUSCATED SCRIPTS
+GUID: 5BEB7EFE-FD9A-4556-801D-275E5FFC04CC
+├── Blocks: Obfuscated script execution
+├── MITRE: T1027 (Obfuscated Files)
+├── Impact: May affect legitimate obfuscated code
+└── Recommendation: Block (with exclusions)
+
+BLOCK EXECUTABLE CONTENT FROM EMAIL CLIENT AND WEBMAIL
+GUID: BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550
+├── Blocks: Executables from Outlook, webmail
+├── MITRE: T1566.001 (Spearphishing)
+├── Impact: Low, executables in email are risky
+└── Recommendation: Block
+
+BLOCK UNTRUSTED AND UNSIGNED PROCESSES FROM USB
+GUID: B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4
+├── Blocks: Unsigned executables from USB
+├── MITRE: T1091 (Replication Through Removable)
+├── Impact: May block legitimate USB tools
+└── Recommendation: Block (with exclusions)</code></pre>
+                </div>
+            </div>
+
+            <h2>Credential & Lateral Movement Rules</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Credential Protection Rules</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>BLOCK CREDENTIAL STEALING FROM LSASS
+GUID: 9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2
+├── Blocks: Suspicious LSASS access
+├── MITRE: T1003.001 (LSASS Memory)
+├── Impact: May block security tools
+├── Exclusions: Known security products
+└── Recommendation: Block (critical rule)
+
+BLOCK PROCESS CREATIONS FROM PSEXEC AND WMI COMMANDS
+GUID: D1E49AAC-8F56-4280-B9BA-993A6D77406C
+├── Blocks: PsExec/WMI remote execution
+├── MITRE: T1047, T1569.002 (WMI, Service Exec)
+├── Impact: May block admin tools
+├── Exclusions: Authorized management tools
+└── Recommendation: Block (with exclusions)
+
+BLOCK PERSISTENCE THROUGH WMI EVENT SUBSCRIPTION
+GUID: E6DB77E5-3DF2-4CF1-B95A-636979351E5B
+├── Blocks: WMI persistence mechanisms
+├── MITRE: T1546.003 (WMI Event Subscription)
+├── Impact: Low, rarely legitimate
+└── Recommendation: Block</code></pre>
+                </div>
+            </div>
+
+            <h2>Ransomware & Exploit Rules</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Ransomware Protection Rules</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>USE ADVANCED PROTECTION AGAINST RANSOMWARE
+GUID: C1DB55AB-C21A-4637-BB3F-A12568109D35
+├── Blocks: Ransomware-like behavior
+├── MITRE: T1486 (Data Encrypted for Impact)
+├── Impact: Low false positive rate
+├── Uses: Machine learning detection
+└── Recommendation: Block
+
+BLOCK ABUSE OF EXPLOITED VULNERABLE SIGNED DRIVERS
+GUID: 56A863A9-875E-4185-98A7-B882C64B5CE5
+├── Blocks: Known vulnerable drivers
+├── MITRE: T1068 (Exploitation for Privilege)
+├── Impact: May block legitimate old drivers
+├── Updates: Microsoft updates blocklist
+└── Recommendation: Block
+
+BLOCK EXECUTABLE FILES FROM RUNNING UNLESS THEY MEET CRITERIA
+GUID: 01443614-CD74-433A-B99E-2ECDC07BFC25
+├── Blocks: Unsigned/untrusted executables
+├── MITRE: Multiple techniques
+├── Impact: HIGH - very restrictive
+├── Note: Requires prevalence/age/trusted list
+└── Recommendation: Audit first, careful deployment
+
+BLOCK ADOBE READER FROM CREATING CHILD PROCESSES
+GUID: 7674BA52-37EB-4A4F-A9A1-F0F9A1619A2C
+├── Blocks: Adobe Reader spawning processes
+├── MITRE: T1203 (Exploitation for Client Exec)
+├── Impact: Blocks PDF exploits
+└── Recommendation: Block</code></pre>
+                </div>
+            </div>
+
+            <h2>Complete GUID Reference</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">All ASR Rule GUIDs</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>COMPLETE ASR RULE GUID LIST:
+
+# Office Rules
+D4F940AB-401B-4EFC-AADC-AD5F3C50688A  # Block Office child processes
+3B576869-A4EC-4529-8536-B80A7769E899  # Block Office executable content
+75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84  # Block Office code injection
+92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B  # Block Win32 API from macros
+26190899-1602-49E8-8B27-EB1D0A1CE869  # Block Outlook child processes
+
+# Script Rules
+D3E037E1-3EB8-44C8-A917-57927947596D  # Block JS/VBS downloads
+5BEB7EFE-FD9A-4556-801D-275E5FFC04CC  # Block obfuscated scripts
+
+# Email Rules
+BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550  # Block email executables
+
+# Credential Rules
+9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2  # Block LSASS credential theft
+
+# Lateral Movement Rules
+D1E49AAC-8F56-4280-B9BA-993A6D77406C  # Block PSExec/WMI
+E6DB77E5-3DF2-4CF1-B95A-636979351E5B  # Block WMI persistence
+
+# USB Rules
+B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4  # Block unsigned USB executables
+
+# Ransomware Rules
+C1DB55AB-C21A-4637-BB3F-A12568109D35  # Advanced ransomware protection
+
+# Exploit Rules
+56A863A9-875E-4185-98A7-B882C64B5CE5  # Block vulnerable drivers
+01443614-CD74-433A-B99E-2ECDC07BFC25  # Block untrusted executables
+7674BA52-37EB-4A4F-A9A1-F0F9A1619A2C  # Block Adobe Reader child processes</code></pre>
+                </div>
+            </div>
+
+            <h2>PowerShell Configuration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell ASR Commands</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># View current ASR rules status</span>
+Get-MpPreference | Select-Object -ExpandProperty AttackSurfaceReductionRules_Ids
+Get-MpPreference | Select-Object -ExpandProperty AttackSurfaceReductionRules_Actions
+
+<span class="comment"># Enable rule in Block mode</span>
+Add-MpPreference -AttackSurfaceReductionRules_Ids "D4F940AB-401B-4EFC-AADC-AD5F3C50688A" `
+    -AttackSurfaceReductionRules_Actions Enabled
+
+<span class="comment"># Enable rule in Audit mode</span>
+Add-MpPreference -AttackSurfaceReductionRules_Ids "D4F940AB-401B-4EFC-AADC-AD5F3C50688A" `
+    -AttackSurfaceReductionRules_Actions AuditMode
+
+<span class="comment"># Enable all recommended rules in Block mode</span>
+$rules = @(
+    "BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550",
+    "D4F940AB-401B-4EFC-AADC-AD5F3C50688A",
+    "3B576869-A4EC-4529-8536-B80A7769E899",
+    "75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84",
+    "D3E037E1-3EB8-44C8-A917-57927947596D",
+    "5BEB7EFE-FD9A-4556-801D-275E5FFC04CC",
+    "92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B",
+    "9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2",
+    "B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4",
+    "D1E49AAC-8F56-4280-B9BA-993A6D77406C",
+    "E6DB77E5-3DF2-4CF1-B95A-636979351E5B",
+    "C1DB55AB-C21A-4637-BB3F-A12568109D35"
+)
+foreach ($rule in $rules) {
+    Add-MpPreference -AttackSurfaceReductionRules_Ids $rule `
+        -AttackSurfaceReductionRules_Actions Enabled
+}
+
+<span class="comment"># Add exclusion for specific rule</span>
+Add-MpPreference -AttackSurfaceReductionOnlyExclusions "C:\Program Files\TrustedApp\"</code></pre>
+                </div>
+            </div>
+
+            <div class="callout tip">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <h5>Deployment Strategy</h5>
+                    <ul>
+                        <li><strong>Phase 1</strong>: Enable all rules in Audit mode</li>
+                        <li><strong>Phase 2</strong>: Monitor for 2-4 weeks, create exclusions</li>
+                        <li><strong>Phase 3</strong>: Enable low-impact rules in Block mode</li>
+                        <li><strong>Phase 4</strong>: Enable remaining rules incrementally</li>
+                        <li><strong>Ongoing</strong>: Monitor and adjust exclusions as needed</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Rule modes</strong>: Disabled (0), Block (1), Audit (2), Warn (6)</li>
+                    <li><strong>Top rules</strong>: LSASS protection, Office child processes, ransomware protection</li>
+                    <li><strong>Deployment</strong>: Audit first, then Block after validation</li>
+                    <li><strong>Configuration</strong>: GPO, Intune, or PowerShell</li>
+                    <li><strong>Key GUIDs</strong>: Know the purpose of major rules by GUID</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="3-2-attack-surface-reduction.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Attack Surface Reduction</span>
+                </a>
+                <a href="3-4-controlled-folder-access.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Controlled Folder Access</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Protection | MDE Ultimate Guide</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">MDE</div>
+                <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
+            </a>
+        </div>
+        <div class="search-container">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search documentation...</span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
+            <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay"></div>
+    <aside class="sidebar"></aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="overview-box">
+                <h4>🎯 What This Page Covers</h4>
+                <p>Complete guide to Network Protection in MDE. Learn how it blocks malicious network connections, configuration methods, integration with SmartScreen, web content filtering, and troubleshooting network blocks.</p>
+            </div>
+
+            <h1>Network Protection</h1>
+
+            <p>Network Protection extends Microsoft Defender SmartScreen protection to block outbound HTTP(S) traffic to low-reputation destinations, protecting against phishing, exploits, and malicious content regardless of which application initiates the connection.</p>
+
+            <h2>How Network Protection Works</h2>
+
+            <div class="flow-diagram">
+                <div class="diagram-title">Network Protection Flow</div>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    NETWORK PROTECTION FLOW                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  APPLICATION INITIATES NETWORK CONNECTION                               │
+│                              │                                          │
+│                              ▼                                          │
+│                    ┌─────────────────┐                                  │
+│                    │ Network Filter  │                                  │
+│                    │ Driver (WFP)    │                                  │
+│                    └────────┬────────┘                                  │
+│                             │                                           │
+│                             ▼                                           │
+│                    ┌─────────────────┐                                  │
+│                    │ Extract URL/IP  │                                  │
+│                    │ from connection │                                  │
+│                    └────────┬────────┘                                  │
+│                             │                                           │
+│                    ┌────────┴────────┐                                  │
+│                    │                 │                                  │
+│               HTTP/HTTPS         Other                                  │
+│                    │             Traffic                                │
+│                    ▼                │                                   │
+│         ┌──────────────────┐       ▼                                   │
+│         │ Check Reputation │   ┌───────┐                               │
+│         │ • SmartScreen    │   │ ALLOW │                               │
+│         │ • Custom IOCs    │   └───────┘                               │
+│         │ • Web filtering  │                                           │
+│         └────────┬─────────┘                                           │
+│                  │                                                      │
+│         ┌────────┴────────┐                                            │
+│         │                 │                                            │
+│    Good/Unknown      Malicious/Blocked                                 │
+│         │                 │                                            │
+│         ▼                 ▼                                            │
+│    ┌─────────┐    ┌─────────────────────────────────┐                 │
+│    │ ALLOW   │    │ BLOCK                           │                 │
+│    └─────────┘    │ • Connection dropped            │                 │
+│                   │ • User notification shown       │                 │
+│                   │ • Event logged                  │                 │
+│                   │ • Alert generated               │                 │
+│                   └─────────────────────────────────┘                 │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h2>Protection Capabilities</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Protection Type</th>
+                            <th>What It Blocks</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Phishing Sites</strong></td>
+                            <td>Known phishing URLs</td>
+                            <td>SmartScreen reputation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Malware Distribution</strong></td>
+                            <td>Sites hosting malware</td>
+                            <td>SmartScreen reputation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Exploit Kits</strong></td>
+                            <td>Known exploit kit infrastructure</td>
+                            <td>SmartScreen reputation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>C2 Servers</strong></td>
+                            <td>Command and control infrastructure</td>
+                            <td>SmartScreen + Custom IOCs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom Blocks</strong></td>
+                            <td>Your defined IOCs</td>
+                            <td>Indicator management</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Category Blocks</strong></td>
+                            <td>Content categories (adult, gambling)</td>
+                            <td>Web content filtering</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Network Protection Modes</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Configuration Modes</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>NETWORK PROTECTION MODES:
+
+DISABLED (0):
+├── No network filtering
+├── All connections allowed
+└── No protection active
+
+ENABLED / BLOCK MODE (1):
+├── Blocks malicious connections
+├── User sees block page
+├── Events logged and alerted
+└── RECOMMENDED for production
+
+AUDIT MODE (2):
+├── Logs but doesn't block
+├── User experience unchanged
+├── Events logged for analysis
+└── Use for testing before enforcement
+
+WARN MODE (3):
+├── Shows warning to user
+├── User can bypass warning
+├── Logs bypass decisions
+└── Use for gradual rollout</code></pre>
+                </div>
+            </div>
+
+            <h2>Configuration Methods</h2>
+
+            <h3>PowerShell Configuration</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell - Network Protection</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment"># Check current status</span>
+<span class="function">Get-MpPreference</span> <span class="operator">|</span> <span class="function">Select-Object</span> EnableNetworkProtection
+
+<span class="comment"># Enable Network Protection (Block mode)</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableNetworkProtection</span> Enabled
+
+<span class="comment"># Enable in Audit mode (recommended for testing)</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableNetworkProtection</span> AuditMode
+
+<span class="comment"># Enable in Warn mode</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableNetworkProtection</span> Warn
+
+<span class="comment"># Disable Network Protection</span>
+<span class="function">Set-MpPreference</span> <span class="variable">-EnableNetworkProtection</span> Disabled
+
+<span class="comment"># Verify configuration</span>
+(<span class="function">Get-MpPreference</span>).EnableNetworkProtection
+<span class="comment"># 0 = Disabled, 1 = Enabled, 2 = Audit</span>
+
+<span class="comment"># Check if SmartScreen is enabled (required)</span>
+<span class="function">Get-ItemProperty</span> <span class="string">"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span> <span class="variable">-Name</span> SmartScreenEnabled</code></pre>
+                </div>
+            </div>
+
+            <h3>Intune Configuration</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Intune Deployment</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>INTUNE CONFIGURATION PATH:
+
+Endpoint security → Attack surface reduction → Create policy
+Platform: Windows 10 and later
+Profile: Attack surface reduction rules
+
+SETTING:
+├── Enable network protection
+│   ├── Not configured
+│   ├── Disabled
+│   ├── Enabled (block mode) ← RECOMMENDED
+│   └── Audit mode
+
+ALTERNATIVE PATH:
+Devices → Configuration profiles → Create profile
+Platform: Windows 10 and later
+Profile type: Endpoint protection
+Settings: Microsoft Defender Exploit Guard → Network filtering
+
+GROUP POLICY PATH:
+Computer Configuration → Administrative Templates
+→ Windows Components → Microsoft Defender Antivirus
+→ Microsoft Defender Exploit Guard → Network Protection
+→ "Prevent users and apps from accessing dangerous websites"
+   ├── Enabled → Block
+   ├── Enabled → Audit Only
+   └── Disabled</code></pre>
+                </div>
+            </div>
+
+            <h2>Web Content Filtering</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Content Filtering Categories</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>WEB CONTENT FILTERING CATEGORIES:
+
+ADULT CONTENT:
+├── Adult sites
+├── Nudity
+├── Sex education
+├── Tasteless content
+└── Violence
+
+LIABILITY:
+├── Child abuse
+├── Criminal activity
+├── Hacking
+├── Hate and discrimination
+├── Illegal drug use
+├── Illegal software
+├── School cheating
+└── Weapons
+
+LEGAL LIABILITY:
+├── Gambling
+├── Plagiarism
+└── Self-harm
+
+PRODUCTIVITY:
+├── Advertising
+├── Dating and personals
+├── Games
+├── Instant messaging
+├── Professional networking
+├── Social networking
+├── Streaming media
+└── Web-based email
+
+UNCATEGORIZED:
+└── Sites not in any category
+
+CONFIGURATION:
+Settings → Endpoints → Rules → Web content filtering
+├── Create policy
+├── Select categories to block
+├── Assign to device groups
+└── Set audit or block mode</code></pre>
+                </div>
+            </div>
+
+            <h2>Custom Indicators Integration</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Custom Network Blocks</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>CUSTOM NETWORK INDICATORS:
+
+Network Protection enforces custom indicators:
+├── IP addresses (block specific IPs)
+├── Domains (block domain and all subdomains)
+├── URLs (block specific URL paths)
+└── CIDR ranges (block IP ranges)
+
+ADDING CUSTOM BLOCK:
+Settings → Endpoints → Indicators → Add indicator
+
+Example - Block C2 IP:
+├── Type: IP address
+├── Value: 185.123.45.67
+├── Action: Alert and block
+├── Title: "C2 Server - Incident INC-001"
+├── Severity: High
+└── Scope: All devices
+
+Example - Block Malicious Domain:
+├── Type: Domain
+├── Value: malware-distribution.com
+├── Action: Alert and block
+├── Title: "Malware hosting domain"
+├── Severity: High
+└── Scope: All devices
+
+INDICATOR PRIORITY:
+1. Allow indicators (explicit allow)
+2. Block indicators (explicit block)
+3. SmartScreen reputation
+4. Web content filtering categories</code></pre>
+                </div>
+            </div>
+
+            <h2>Monitoring and Troubleshooting</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Event Logs and Alerts</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code>EVENT LOG LOCATION:
+Applications and Services Logs → Microsoft → Windows
+→ Windows Defender → Operational
+
+KEY EVENT IDS:
+├── 1125: Network Protection block (Audit mode)
+├── 1126: Network Protection block (Block mode)
+├── 5007: Configuration change
+└── 1116: Malware detected (includes network events)
+
+POWERSHELL - VIEW NETWORK BLOCKS:
+<span class="function">Get-WinEvent</span> <span class="variable">-LogName</span> <span class="string">"Microsoft-Windows-Windows Defender/Operational"</span> <span class="operator">|</span>
+    <span class="function">Where-Object</span> { <span class="variable">$_</span>.Id <span class="operator">-in</span> @(<span class="number">1125</span>, <span class="number">1126</span>) } <span class="operator">|</span>
+    <span class="function">Select-Object</span> TimeCreated, Id, Message <span class="operator">|</span>
+    <span class="function">Format-List</span>
+
+MDE PORTAL - VIEW NETWORK BLOCKS:
+Advanced Hunting:
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ExploitGuardNetworkProtectionBlocked"</span>
+<span class="operator">|</span> <span class="keyword">project</span> Timestamp, DeviceName, RemoteUrl, 
+         InitiatingProcessFileName, InitiatingProcessCommandLine
+<span class="operator">|</span> <span class="keyword">order by</span> Timestamp <span class="keyword">desc</span>
+
+TROUBLESHOOTING CHECKLIST:
+□ Is Network Protection enabled?
+□ Is SmartScreen enabled?
+□ Is cloud protection enabled?
+□ Is the URL actually malicious?
+□ Check for proxy issues
+□ Verify Windows Filtering Platform (WFP) is working</code></pre>
+                </div>
+            </div>
+
+            <h2>KQL Queries</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">KQL - Network Protection Analysis</span>
+                    <button class="code-copy">📋 Copy</button>
+                </div>
+                <div class="code-content">
+<pre><code><span class="comment">// All Network Protection blocks</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="function">startswith</span> <span class="string">"ExploitGuardNetworkProtection"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count <span class="operator">=</span> <span class="function">count</span>() <span class="keyword">by</span> ActionType, RemoteUrl
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// Top blocked URLs</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ExploitGuardNetworkProtectionBlocked"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> 
+    BlockCount = <span class="function">count</span>(),
+    Devices = <span class="function">dcount</span>(DeviceName)
+    <span class="keyword">by</span> RemoteUrl
+<span class="operator">|</span> <span class="keyword">order by</span> BlockCount <span class="keyword">desc</span>
+<span class="operator">|</span> <span class="keyword">take</span> <span class="number">20</span>
+
+<span class="comment">// Blocks by application (which apps trying to reach bad sites)</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ExploitGuardNetworkProtectionBlocked"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> InitiatingProcessFileName
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span>
+
+<span class="comment">// Audit mode - what WOULD be blocked</span>
+<span class="variable">DeviceEvents</span>
+<span class="operator">|</span> <span class="keyword">where</span> Timestamp <span class="operator">></span> <span class="function">ago</span>(<span class="number">7</span>d)
+<span class="operator">|</span> <span class="keyword">where</span> ActionType <span class="operator">==</span> <span class="string">"ExploitGuardNetworkProtectionAudited"</span>
+<span class="operator">|</span> <span class="keyword">summarize</span> Count = <span class="function">count</span>() <span class="keyword">by</span> RemoteUrl, InitiatingProcessFileName
+<span class="operator">|</span> <span class="keyword">order by</span> Count <span class="keyword">desc</span></code></pre>
+                </div>
+            </div>
+
+            <div class="callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <h5>Common Issues</h5>
+                    <ul>
+                        <li><strong>Legitimate site blocked</strong>: Check if miscategorized, submit for review, or add allow indicator</li>
+                        <li><strong>No blocks appearing</strong>: Verify Network Protection is enabled and SmartScreen is on</li>
+                        <li><strong>Proxy issues</strong>: May need to configure proxy settings for SmartScreen cloud lookups</li>
+                        <li><strong>Browser-only protection</strong>: Some browsers use their own filtering - Network Protection works for all apps</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Day-to-Day Section -->
+            <div class="day-to-day">
+                <h3>🔧 Security Engineer Day-to-Day Tasks</h3>
+                
+                <h4>Network Protection Operations</h4>
+                <ul>
+                    <li>Monitor network blocks for threats</li>
+                    <li>Investigate blocked connections for IOC correlation</li>
+                    <li>Add custom IP/domain blocks during incidents</li>
+                    <li>Review audit mode data before enabling block mode</li>
+                    <li>Handle false positive reports from users</li>
+                    <li>Configure web content filtering categories</li>
+                </ul>
+
+                <h4>Common Scenarios</h4>
+                <div class="ticket-item">
+                    <span class="ticket-type">"User can't access website"</span>
+                    <span class="ticket-solution">→ Check if Network Protection block. Verify if site is malicious. Add allow indicator if FP.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Block C2 from threat intel"</span>
+                    <span class="ticket-solution">→ Add IP/domain as indicator with block action. Monitor for hits.</span>
+                </div>
+                <div class="ticket-item">
+                    <span class="ticket-type">"Unknown app connecting to bad site"</span>
+                    <span class="ticket-solution">→ Investigate the app, check if malware, trace how it got there.</span>
+                </div>
+            </div>
+
+            <!-- Interview Tips -->
+            <div class="interview-tips">
+                <h3>💡 Key Interview Points</h3>
+                <ul>
+                    <li><strong>Purpose</strong>: Block outbound connections to malicious sites from ANY application</li>
+                    <li><strong>Difference from SmartScreen</strong>: SmartScreen is browser-only, Network Protection is system-wide</li>
+                    <li><strong>Modes</strong>: Disabled, Enabled (block), Audit, Warn</li>
+                    <li><strong>Sources</strong>: SmartScreen reputation, custom indicators, web content filtering</li>
+                    <li><strong>Prerequisite</strong>: SmartScreen and cloud protection must be enabled</li>
+                    <li><strong>Works for</strong>: HTTP/HTTPS traffic from any application</li>
+                    <li><strong>Event IDs</strong>: 1125 (audit), 1126 (block)</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="3-4-exploit-protection.html" class="page-nav-link prev">
+                    <span class="page-nav-label">← Previous</span>
+                    <span class="page-nav-title">Exploit Protection</span>
+                </a>
+                <a href="3-7-device-control.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next →</span>
+                    <span class="page-nav-title">Device Control</span>
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <div class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
+                <button class="search-modal-close">ESC</button>
+            </div>
+            <div class="search-results"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
