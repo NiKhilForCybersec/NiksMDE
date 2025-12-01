@@ -202,7 +202,7 @@
 INVESTIGATION:
 □ Review sign-in logs for unauthorized access
   SigninLogs
-  | where UserPrincipalName == "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f6c60627f7d6062667c6a6b4f6c60627f6e6176216c6062">[email&#160;protected]</a>"
+  | where UserPrincipalName == "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0764686a7775686a6e7462634764686a7766697e2964686a">[email&#160;protected]</a>"
   | where TimeGenerated > ago(30d)
   | project TimeGenerated, IPAddress, Location, AppDisplayName, Status
 

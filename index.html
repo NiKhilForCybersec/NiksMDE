@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MDE Ultimate Guide | Microsoft Defender for Endpoint Documentation</title>
-    <meta name="description" content="Comprehensive Microsoft Defender for Endpoint guide with 80+ pages covering EDR, threat hunting, KQL queries, and security operations.">
+    <title>MDE Ultimate Guide | Microsoft Defender for Endpoint</title>
     <link rel="stylesheet" href="main.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-left">
             <button class="mobile-menu-btn" aria-label="Toggle menu">☰</button>
@@ -18,324 +15,295 @@
                 <div class="logo-text"><span>MDE</span> Ultimate Guide</div>
             </a>
         </div>
-        
         <div class="search-container">
-            <button class="search-btn">
+            <button class="search-btn" onclick="openSearch()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="M21 21l-4.35-4.35"></path>
                 </svg>
                 <span>Search documentation...</span>
-                <span class="search-shortcut">
-                    <kbd>⌘</kbd><kbd>K</kbd>
-                </span>
+                <span class="search-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
             </button>
         </div>
-        
         <div class="header-right">
             <a href="12-2-interview-questions.html" class="header-link">Interview Prep</a>
             <a href="5-3-kql-fundamentals.html" class="header-link">KQL Guide</a>
         </div>
     </header>
 
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay"></div>
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <aside class="sidebar" id="sidebar"></aside>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <!-- Navigation built by JavaScript -->
-    </aside>
-
-    <!-- Main Content -->
     <main class="main-content">
-        <div class="content-wrapper">
-            <!-- Hero Section -->
-            <section class="hero">
-                <div class="hero-badge">
-                    <span>📚</span> 80+ Comprehensive Pages
-                </div>
-                <h1>MDE Ultimate Guide</h1>
-                <p class="hero-subtitle">
-                    Master Microsoft Defender for Endpoint with comprehensive documentation covering 
-                    architecture, detection engineering, threat hunting, and security operations.
-                </p>
-                <a href="1-1-mde-overview.html" class="hero-cta">
-                    Start Learning →
-                </a>
-            </section>
-
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">80+</div>
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">MDE Ultimate Guide</h1>
+            <p class="hero-subtitle">Comprehensive Microsoft Defender for Endpoint documentation for Security Engineers, SOC Analysts, and Interview Preparation</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-value">100+</div>
                     <div class="stat-label">Pages</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-item">
                     <div class="stat-value">12</div>
                     <div class="stat-label">Sections</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value">100+</div>
+                <div class="stat-item">
+                    <div class="stat-value">200+</div>
                     <div class="stat-label">KQL Queries</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-item">
                     <div class="stat-value">50+</div>
-                    <div class="stat-label">Interview Tips</div>
+                    <div class="stat-label">Playbooks</div>
                 </div>
             </div>
+        </section>
 
-            <!-- What's Inside -->
-            <h2>What's Inside</h2>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-card-icon">🏗️</div>
-                    <h4>Architecture & Deployment</h4>
-                    <p>Deep dive into MDE sensor architecture, cloud connectivity, and multi-platform onboarding.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-card-icon">🛡️</div>
-                    <h4>Prevention Controls</h4>
-                    <p>Complete ASR rules reference, exploit protection, network filtering, and device control.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-card-icon">🎯</div>
-                    <h4>Advanced Hunting</h4>
-                    <p>KQL from basics to advanced, with 100+ ready-to-use detection queries.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-card-icon">⚡</div>
-                    <h4>Response & Remediation</h4>
-                    <p>Live Response commands, automated investigations, and IR playbooks.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-card-icon">🔧</div>
-                    <h4>Day-to-Day Operations</h4>
-                    <p>Real-world tasks, common tickets, and troubleshooting procedures.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-card-icon">💡</div>
-                    <h4>Interview Preparation</h4>
-                    <p>Key points, scenario walkthroughs, and technical questions for each topic.</p>
-                </div>
-            </div>
-
-            <!-- Sections -->
-            <h2>Documentation Sections</h2>
-            <div class="sections-grid">
-                <!-- Section 1: Foundations -->
-                <a href="1-1-mde-overview.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">🏗️</span>
-                        <span class="section-card-num">01</span>
-                    </div>
-                    <h3>MDE Foundations</h3>
-                    <p>Architecture, licensing, and deployment across Windows, macOS, Linux, and mobile.</p>
-                    <div class="section-card-meta">
-                        <span>8 pages</span>
-                        <span class="badge badge-l1">Beginner</span>
-                    </div>
+        <!-- Quick Start -->
+        <section class="quick-start" style="margin: 2rem; max-width: 1400px; margin-left: auto; margin-right: auto;">
+            <h3>🚀 Quick Start</h3>
+            <div class="quick-start-grid">
+                <a href="1-1-mde-overview.html" class="quick-start-item">
+                    <span class="quick-start-icon">📖</span>
+                    <span>Getting Started</span>
                 </a>
-
-                <!-- Section 2: Portal -->
-                <a href="2-1-security-portal-overview.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">🖥️</span>
-                        <span class="section-card-num">02</span>
-                    </div>
-                    <h3>Portal & Interface</h3>
-                    <p>Navigate the security portal, device inventory, alerts, incidents, and dashboards.</p>
-                    <div class="section-card-meta">
-                        <span>8 pages</span>
-                        <span class="badge badge-l1">Beginner</span>
-                    </div>
+                <a href="5-3-kql-fundamentals.html" class="quick-start-item">
+                    <span class="quick-start-icon">🔍</span>
+                    <span>Learn KQL</span>
                 </a>
-
-                <!-- Section 3: Prevention -->
-                <a href="3-1-next-gen-protection.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">🛡️</span>
-                        <span class="section-card-num">03</span>
-                    </div>
-                    <h3>Prevention & Protection</h3>
-                    <p>ASR rules, exploit protection, network protection, device control, and exclusions.</p>
-                    <div class="section-card-meta">
-                        <span>10 pages</span>
-                        <span class="badge badge-l2">Intermediate</span>
-                    </div>
+                <a href="12-2-interview-questions.html" class="quick-start-item">
+                    <span class="quick-start-icon">💼</span>
+                    <span>Interview Prep</span>
                 </a>
-
-                <!-- Section 4: Detection -->
-                <a href="4-1-edr-capabilities.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">🔍</span>
-                        <span class="section-card-num">04</span>
-                    </div>
-                    <h3>Detection & EDR</h3>
-                    <p>EDR capabilities, alert types, device timeline, live response, and custom detections.</p>
-                    <div class="section-card-meta">
-                        <span>10 pages</span>
-                        <span class="badge badge-l2">Intermediate</span>
-                    </div>
+                <a href="11-1-soc-workflows.html" class="quick-start-item">
+                    <span class="quick-start-icon">🛡️</span>
+                    <span>SOC Workflows</span>
                 </a>
-
-                <!-- Section 5: Hunting -->
-                <a href="5-1-advanced-hunting-overview.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">🎯</span>
-                        <span class="section-card-num">05</span>
-                    </div>
-                    <h3>Advanced Hunting</h3>
-                    <p>KQL mastery, schema reference, and hunting queries for processes, network, and more.</p>
-                    <div class="section-card-meta">
-                        <span>10 pages</span>
-                        <span class="badge badge-l3">Advanced</span>
-                    </div>
+                <a href="6-1-remediation-actions.html" class="quick-start-item">
+                    <span class="quick-start-icon">⚡</span>
+                    <span>Incident Response</span>
                 </a>
-
-                <!-- Section 6: Response -->
-                <a href="6-1-response-actions-overview.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">⚡</span>
-                        <span class="section-card-num">06</span>
-                    </div>
-                    <h3>Response & Remediation</h3>
-                    <p>Response actions, automated remediation, IR playbooks, and forensics collection.</p>
-                    <div class="section-card-meta">
-                        <span>8 pages</span>
-                        <span class="badge badge-l2">Intermediate</span>
-                    </div>
-                </a>
-
-                <!-- Section 7: Vulnerability -->
-                <a href="7-1-tvm-overview.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">🔓</span>
-                        <span class="section-card-num">07</span>
-                    </div>
-                    <h3>Vulnerability Management</h3>
-                    <p>TVM overview, vulnerability assessment, recommendations, and exposure insights.</p>
-                    <div class="section-card-meta">
-                        <span>6 pages</span>
-                        <span class="badge badge-l2">Intermediate</span>
-                    </div>
-                </a>
-
-                <!-- Section 8: Integration -->
-                <a href="8-1-microsoft-365-defender.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">🔗</span>
-                        <span class="section-card-num">08</span>
-                    </div>
-                    <h3>Integration & Automation</h3>
-                    <p>M365 Defender, Sentinel, Intune, APIs, Logic Apps, and SIEM integration.</p>
-                    <div class="section-card-meta">
-                        <span>8 pages</span>
-                        <span class="badge badge-l3">Advanced</span>
-                    </div>
-                </a>
-
-                <!-- Section 9: Troubleshooting -->
-                <a href="9-1-sensor-health.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">🔧</span>
-                        <span class="section-card-num">09</span>
-                    </div>
-                    <h3>Troubleshooting & Health</h3>
-                    <p>Sensor health, connectivity issues, onboarding failures, and Client Analyzer.</p>
-                    <div class="section-card-meta">
-                        <span>6 pages</span>
-                        <span class="badge badge-l2">Intermediate</span>
-                    </div>
-                </a>
-
-                <!-- Section 10: Enterprise -->
-                <a href="10-1-deployment-planning.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">🏢</span>
-                        <span class="section-card-num">10</span>
-                    </div>
-                    <h3>Enterprise Deployment</h3>
-                    <p>Deployment planning, rings strategy, GPO/Intune policies, and migrations.</p>
-                    <div class="section-card-meta">
-                        <span>6 pages</span>
-                        <span class="badge badge-l3">Advanced</span>
-                    </div>
-                </a>
-
-                <!-- Section 11: SecOps -->
-                <a href="11-1-soc-workflows.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">📊</span>
-                        <span class="section-card-num">11</span>
-                    </div>
-                    <h3>Security Operations</h3>
-                    <p>SOC workflows, metrics & KPIs, stakeholder reporting, and continuous improvement.</p>
-                    <div class="section-card-meta">
-                        <span>5 pages</span>
-                        <span class="badge badge-l2">Intermediate</span>
-                    </div>
-                </a>
-
-                <!-- Section 12: Reference -->
-                <a href="12-1-mde-glossary.html" class="section-card">
-                    <div class="section-card-header">
-                        <span class="section-card-icon">📚</span>
-                        <span class="section-card-num">12</span>
-                    </div>
-                    <h3>Reference & Interview</h3>
-                    <p>Glossary, interview questions, scenario walkthroughs, and cheat sheets.</p>
-                    <div class="section-card-meta">
-                        <span>6 pages</span>
-                        <span class="badge badge-l1">All Levels</span>
-                    </div>
+                <a href="12-4-kql-cheat-sheet.html" class="quick-start-item">
+                    <span class="quick-start-icon">📋</span>
+                    <span>KQL Cheat Sheet</span>
                 </a>
             </div>
+        </section>
 
-            <!-- Quick Start -->
-            <h2>Quick Start Paths</h2>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-card-icon">🆕</div>
-                    <h4>New to MDE?</h4>
-                    <p>Start with <a href="1-1-mde-overview.html">MDE Overview</a> → <a href="1-2-mde-architecture.html">Architecture</a> → <a href="2-1-security-portal-overview.html">Portal Overview</a></p>
+        <!-- Section Cards Grid -->
+        <section class="section-grid">
+            <!-- Section 1: Fundamentals -->
+            <a href="1-1-mde-overview.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">🏗️</div>
+                    <div>
+                        <div class="section-card-number">Section 01</div>
+                        <div class="section-card-title">MDE Fundamentals</div>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-card-icon">🎯</div>
-                    <h4>Threat Hunter?</h4>
-                    <p>Jump to <a href="5-3-kql-fundamentals.html">KQL Fundamentals</a> → <a href="5-5-hunting-queries-processes.html">Process Hunting</a> → <a href="5-10-hunting-workflows.html">Hunting Workflows</a></p>
+                <p class="section-card-description">Core architecture, deployment options, and onboarding procedures for Windows, macOS, Linux, and mobile devices.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">8 pages</span>
+                    <span class="section-card-arrow">→</span>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-card-icon">💼</div>
-                    <h4>Interview Prep?</h4>
-                    <p>Check <a href="12-2-interview-questions.html">Interview Questions</a> → <a href="12-3-scenario-walkthroughs.html">Scenario Walkthroughs</a> → <a href="12-4-kql-cheat-sheet.html">KQL Cheat Sheet</a></p>
-                </div>
-            </div>
+            </a>
 
-            <!-- Callout -->
-            <div class="callout tip">
-                <div class="callout-icon">💡</div>
-                <div class="callout-content">
-                    <h5>Pro Tip</h5>
-                    <p>Use <kbd>⌘</kbd>+<kbd>K</kbd> (or <kbd>Ctrl</kbd>+<kbd>K</kbd>) to quickly search and navigate to any page in this guide.</p>
+            <!-- Section 2: Security Portal -->
+            <a href="2-1-security-portal-overview.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">🖥️</div>
+                    <div>
+                        <div class="section-card-number">Section 02</div>
+                        <div class="section-card-title">Security Portal</div>
+                    </div>
                 </div>
-            </div>
-        </div>
+                <p class="section-card-description">Navigate the Microsoft 365 Defender portal, device inventory, alerts queue, incidents, and reporting dashboards.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">8 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 3: Next-Gen Protection -->
+            <a href="3-1-realtime-protection.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">🛡️</div>
+                    <div>
+                        <div class="section-card-number">Section 03</div>
+                        <div class="section-card-title">Next-Gen Protection</div>
+                    </div>
+                </div>
+                <p class="section-card-description">Real-time protection, ASR rules, Controlled Folder Access, Network Protection, Device Control, and Tamper Protection.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">10 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 4: EDR -->
+            <a href="4-1-edr-overview.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">🔬</div>
+                    <div>
+                        <div class="section-card-number">Section 04</div>
+                        <div class="section-card-title">Endpoint Detection & Response</div>
+                    </div>
+                </div>
+                <p class="section-card-description">EDR capabilities, detection sources, alert types, device timeline, Live Response, custom detections, and indicators.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">10 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 5: Advanced Hunting -->
+            <a href="5-1-advanced-hunting-overview.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">🔍</div>
+                    <div>
+                        <div class="section-card-number">Section 05</div>
+                        <div class="section-card-title">Advanced Hunting</div>
+                    </div>
+                </div>
+                <p class="section-card-description">KQL fundamentals and advanced techniques, schema reference, and hunting queries for processes, network, persistence, and more.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">10 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 6: Incident Response -->
+            <a href="6-1-remediation-actions.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">⚡</div>
+                    <div>
+                        <div class="section-card-number">Section 06</div>
+                        <div class="section-card-title">Incident Response</div>
+                    </div>
+                </div>
+                <p class="section-card-description">Response actions, device isolation, file actions, AIR, IR playbooks, forensics, containment, and recovery procedures.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">8 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 7: TVM -->
+            <a href="7-1-tvm-overview.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">📊</div>
+                    <div>
+                        <div class="section-card-number">Section 07</div>
+                        <div class="section-card-title">Threat & Vulnerability Management</div>
+                    </div>
+                </div>
+                <p class="section-card-description">Vulnerability assessment, security recommendations, software inventory, exposure insights, and remediation tracking.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">6 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 8: Integrations -->
+            <a href="8-1-microsoft-365-defender.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">🔗</div>
+                    <div>
+                        <div class="section-card-number">Section 08</div>
+                        <div class="section-card-title">Integrations</div>
+                    </div>
+                </div>
+                <p class="section-card-description">M365 Defender, Microsoft Sentinel, Intune, Cloud Apps, APIs, Logic Apps automation, and SIEM integration.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">8 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 9: Troubleshooting -->
+            <a href="9-1-sensor-health.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">🔧</div>
+                    <div>
+                        <div class="section-card-number">Section 09</div>
+                        <div class="section-card-title">Troubleshooting</div>
+                    </div>
+                </div>
+                <p class="section-card-description">Sensor health monitoring, connectivity issues, onboarding problems, performance tuning, and Client Analyzer tool.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">6 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 10: Deployment -->
+            <a href="10-1-deployment-planning.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">🚀</div>
+                    <div>
+                        <div class="section-card-number">Section 10</div>
+                        <div class="section-card-title">Deployment</div>
+                    </div>
+                </div>
+                <p class="section-card-description">Deployment planning, ring strategies, Group Policy, Intune policies, migration from other EDR, and multi-tenant management.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">6 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 11: Operations -->
+            <a href="11-1-soc-workflows.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">📈</div>
+                    <div>
+                        <div class="section-card-number">Section 11</div>
+                        <div class="section-card-title">Security Operations</div>
+                    </div>
+                </div>
+                <p class="section-card-description">SOC workflows, metrics and KPIs, stakeholder reporting, continuous improvement, and managed services options.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">5 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+
+            <!-- Section 12: Resources -->
+            <a href="12-1-mde-glossary.html" class="section-card">
+                <div class="section-card-header">
+                    <div class="section-card-icon">📚</div>
+                    <div>
+                        <div class="section-card-number">Section 12</div>
+                        <div class="section-card-title">Resources & Reference</div>
+                    </div>
+                </div>
+                <p class="section-card-description">Glossary, interview questions, scenario walkthroughs, KQL cheat sheet, PowerShell reference, and comparison tables.</p>
+                <div class="section-card-meta">
+                    <span class="section-card-pages">6 pages</span>
+                    <span class="section-card-arrow">→</span>
+                </div>
+            </a>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-dark); margin-top: 2rem;">
+            <p>Built for Security Engineers & SOC Analysts | Interview Ready Documentation</p>
+            <p style="font-size: 0.875rem; margin-top: 0.5rem;">© 2024 MDE Ultimate Guide | Cyberpunk Edition</p>
+        </footer>
     </main>
 
     <!-- Search Modal -->
-    <div class="search-modal">
+    <div class="search-modal" id="searchModal">
         <div class="search-modal-content">
-            <div class="search-modal-input-wrapper">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="search-input-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; margin-right: 0.75rem; color: var(--text-muted);">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="M21 21l-4.35-4.35"></path>
                 </svg>
-                <input type="text" class="search-modal-input" placeholder="Search pages..." autofocus>
-                <button class="search-modal-close">ESC</button>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search documentation..." autocomplete="off">
+                <kbd style="padding: 0.25rem 0.5rem; background: var(--bg-dark); border-radius: 4px; font-size: 0.75rem; color: var(--text-muted);">ESC</kbd>
             </div>
-            <div class="search-results">
-                <!-- Results populated by JavaScript -->
-            </div>
+            <div class="search-results" id="searchResults"></div>
         </div>
     </div>
 
